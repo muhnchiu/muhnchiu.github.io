@@ -21,7 +21,7 @@ updated: 2026-09-23
 status: evolving
 confidence: medium
 featured: true
-publish: true
+publish: false
 ---
 
 ## 研究定义

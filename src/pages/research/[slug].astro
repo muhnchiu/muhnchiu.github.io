@@ -1,8 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../../data/research';
+import { statusLabel, confidenceLabel, formatDate } from '../../data/research';
 import { getTopicLabel } from '../../data/topics';
+import { formatRadarDate, radarCatalog, signalPriority } from '../../data/radar';
 
 // Static paths from published research
 export async function getStaticPaths() {
@@ -14,42 +15,39 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
 // Build TOC from H2s
-const tocItems = (headings as any[]).filter((h) => h.depth === 2 || h.depth === 3);
+const tocItems = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 
-// Related Research: match by topics overlap
+// Related Research: shared Topic count, then most recently updated.
 const allResearch = await getCollection('research', ({ data }) => data.publish);
 const related = allResearch
   .filter((e) => e.data.slug !== entry.data.slug)
   .map((e) => {
-    const overlap = e.data.topics.filter((t) => entry.data.topics.includes(t)).length;
-    const catOverlap = e.data.category.filter((c) => entry.data.category.includes(c)).length;
-    const timeDiff = Math.abs(e.data.updated.getTime() - entry.data.updated.getTime());
-    const score = overlap * 10 + catOverlap * 3 - timeDiff / (1000 * 60 * 60 * 24);
-    return { entry: e, overlap, catOverlap, score };
+    const sharedTopicCount = new Set(e.data.topics.filter((topic) => entry.data.topics.includes(topic))).size;
+    return { entry: e, sharedTopicCount };
   })
-  .filter((r) => r.overlap > 0 || r.catOverlap > 0)
-  .sort((a, b) => b.score - a.score
+  .filter((r) => r.sharedTopicCount > 0)
+  .sort((a, b) => b.sharedTopicCount - a.sharedTopicCount
     || b.entry.data.updated.getTime() - a.entry.data.updated.getTime()
     || b.entry.data.created.getTime() - a.entry.data.created.getTime())
   .slice(0, 3);
 
-// Related Signals: match either Radar report topics or highlight topics.
+// Related Intelligence uses only explicitly tagged highlights.
 const radarEntries = await getCollection('radar', ({ data }) => data.publish);
 const researchTopics = entry.data.topics;
-const relatedSignals = radarEntries
-  .filter((r) => r.data.topics.some((topic) => researchTopics.includes(topic))
-    || r.data.highlights.some((highlight) => highlight.topic && researchTopics.includes(highlight.topic)))
-  .map((r) => {
-    const matchingHighlight = r.data.highlights.find((highlight) => highlight.topic && researchTopics.includes(highlight.topic));
-    return {
-      title: matchingHighlight?.title ?? r.data.title,
-      radar: r.data.radar,
-      date: r.data.date,
-      radarId: r.data.radar,
-    };
-  })
-  .sort((a, b) => b.date.getTime() - a.date.getTime())
+const relatedSignals = radarEntries.flatMap((radarEntry) => radarEntry.data.highlights
+  .filter((highlight) => highlight.topic && researchTopics.includes(highlight.topic))
+  .map((highlight) => ({ ...highlight, radar: radarEntry.data.radar, date: radarEntry.data.date })))
+  .filter((highlight, index, all) => all.findIndex((other) =>
+    other.radar === highlight.radar
+      && formatRadarDate(other.date) === formatRadarDate(highlight.date)
+      && other.title.trim().toLocaleLowerCase() === highlight.title.trim().toLocaleLowerCase(),
+  ) === index)
+  .sort((a, b) => b.date.getTime() - a.date.getTime()
+    || signalPriority[a.signal] - signalPriority[b.signal]
+    || a.title.localeCompare(b.title))
   .slice(0, 5);
+const actionLabels: Record<string, string> = { action: '立即行动', test: '建议测试', explore: '探索', watch: '持续观察', read: '阅读', ignore: '忽略' };
+const signalLabels: Record<string, string> = { critical: '严重', high: '高', medium: '中', low: '低' };
 
 // Link only when the referenced published Radar report exists.
 const sourceMatch = entry.data.source?.match(/(\w+)\s+Radar\s+(\d{4}-\d{2}-\d{2})/i);
@@ -141,7 +139,7 @@ const isArchived = entry.data.status === 'archived';
         <div class="related-grid">
           {related.map((r) => (
             <a href={`/research/${r.entry.data.slug}`} class="related-card">
-              <span class="related-topics">{r.entry.data.topics.slice(0, 2).map((t) => topicLabel(t)).join(' · ')}</span>
+              <span class="related-topics">{r.entry.data.topics.slice(0, 2).map((t) => getTopicLabel(t)).join(' · ')}</span>
               <h3>{r.entry.data.title}</h3>
               <span class="related-date">{formatDate(r.entry.data.updated)}</span>
             </a>
@@ -155,10 +153,12 @@ const isArchived = entry.data.status === 'archived';
         <p class="section-label">相关信号</p>
         <div class="signals-list">
           {relatedSignals.map((s) => (
-            <a href={`/radar/${s.radarId}/${s.date.toISOString().slice(0, 10)}`} class="signal-item">
+            <a href={`/radar/${s.radar}/${formatRadarDate(s.date)}`} class="signal-item">
               <span class="signal-date">{formatDate(s.date)}</span>
-              <span class="signal-radar">{s.radar}</span>
+              <span class="signal-radar">{radarCatalog.find((radar) => radar.id === s.radar)?.name ?? s.radar} Radar</span>
+              <span class="signal-level">{signalLabels[s.signal]}</span>
               <span class="signal-title">{s.title}</span>
+              <span class="signal-action">{actionLabels[s.action] ?? s.action}</span>
             </a>
           ))}
         </div>
@@ -237,15 +237,22 @@ const isArchived = entry.data.status === 'archived';
 
 .signals-section { margin-top: 40px; }
 .signals-list { display: flex; flex-direction: column; gap: 0; }
-.signal-item { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: .85rem; }
+.signal-item { display: grid; grid-template-columns: 72px 104px 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: .85rem; }
 .signal-item:last-child { border-bottom: none; }
 .signal-date { font-family: var(--font-mono); font-size: .75rem; color: var(--text-tertiary); min-width: 50px; }
 .signal-radar { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .06em; color: var(--accent-tech); text-transform: uppercase; min-width: 40px; }
 .signal-title { color: var(--text-secondary); }
+.signal-level { min-width: 32px; color: var(--accent-tech); font-size: .72rem; }.signal-action { color: var(--text-tertiary); font-size: .72rem; }
 
 @media (max-width: 768px) {
   .related-grid { grid-template-columns: 1fr; }
   .meta-grid { flex-direction: column; gap: 12px; }
   .prose { font-size: .95rem; }
+  .signal-item { grid-template-columns: 1fr auto; gap: 6px 12px; }
+  .signal-date { grid-column: 1; grid-row: 1; }
+  .signal-radar { grid-column: 2; grid-row: 1; text-align: right; }
+  .signal-level { grid-column: 1; grid-row: 2; }
+  .signal-title { grid-column: 1 / -1; grid-row: 3; }
+  .signal-action { grid-column: 2; grid-row: 2; text-align: right; }
 }
 </style>

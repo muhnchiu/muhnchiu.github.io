@@ -53,9 +53,9 @@ export async function loadHomeData() {
   const featuredResearch = research.at(0);
   const recentResearch = research.slice(1, 6);
 
-  const topics = aggregateTopics(radars, research, topicEntries).topics.slice(0, 6).map((topic) => ({
+  const topics = aggregateTopics(radars, research, topicEntries).slice(0, 6).map((topic) => ({
     ...topic,
-    updatedLabel: topic.lastActivityLabel ?? '—',
+    updatedLabel: topic.latestActivity?.toISOString().slice(0, 10) ?? '—',
   }));
 
   return {
