@@ -28,3 +28,62 @@ const { data } = entry;
   </div>
   <span class="card-arrow">阅读研究 →</span>
 </a>
+
+<style>
+.research-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 290px;
+  padding: 26px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+.research-card[hidden] { display: none; }
+.research-card:hover {
+  color: inherit;
+  border-color: var(--accent-tech-border);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.research-card[data-status="archived"] { opacity: .7; }
+.card-cats { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat {
+  color: var(--accent-tech);
+  font-family: var(--font-mono);
+  font-size: .64rem;
+  letter-spacing: .06em;
+}
+.card-title {
+  margin-top: 17px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  line-height: 1.35;
+  letter-spacing: -.025em;
+}
+.card-sub { margin-top: 9px; color: var(--text-secondary); font-size: .84rem; line-height: 1.6; }
+.card-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+.topic {
+  padding: 3px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: .7rem;
+}
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 24px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: .66rem;
+}
+.meta-sep { color: var(--border-default); }
+.card-arrow { margin-top: 14px; color: var(--accent-tech); font-size: .77rem; }
+@media (max-width: 600px) { .research-card { min-height: 0; padding: 21px; } }
+</style>

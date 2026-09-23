@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import CollectionHero from '../../components/CollectionHero.astro';
 import { loadTopics } from '../../data/topics';
 
 const topics = await loadTopics();
@@ -7,21 +8,19 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
 ---
 
 <Base title="主题脉络｜Horizon" description="从每日讯号，到长期趋势。浏览已发布 Radar 与 Research 汇聚的长期研究主题。">
-  <section class="topics-index container">
-    <header class="page-heading">
-      <p class="eyebrow">SIGNAL → RESEARCH → KNOWLEDGE</p>
-      <h1>主题脉络</h1>
-      <p>从每日讯号，到长期趋势</p>
-    </header>
+  <section class="topics-index collection-index container">
+    <CollectionHero eyebrow="TOPICS / KNOWLEDGE MAP" title="主题脉络" description="从每日讯号，到长期趋势。" count={topics.length} countLabel="活跃主题" />
 
     {topics.length ? (
-      <div class="topic-grid">
+      <section class="topics-catalog" aria-labelledby="all-topics-heading">
+        <div class="collection-section-heading"><div><p class="section-label">TOPIC INDEX</p><h2 id="all-topics-heading">全部主题</h2></div><span>Signal → Research → Knowledge</span></div>
+        <div class="topic-grid">
         {topics.map((topic) => (
           <a class="topic-card" href={`/topics/${topic.slug}/`}>
             <div class="topic-card-heading">
               <div>
                 {topic.category && <span class="topic-category">{topic.category}</span>}
-                <h2>{topic.name}</h2>
+                <h3>{topic.name}</h3>
               </div>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
@@ -42,7 +41,8 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
             )}
           </a>
         ))}
-      </div>
+        </div>
+      </section>
     ) : (
       <div class="empty-state">尚无已发布内容关联到主题。</div>
     )}
@@ -50,28 +50,24 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
 </Base>
 
 <style>
-.topics-index { max-width: 1120px; padding-top: 82px; padding-bottom: 112px; }
-.page-heading { padding-bottom: 34px; border-bottom: 1px solid var(--border-subtle); }
-.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; color: var(--accent-tech); }
-.page-heading h1 { margin-top: 12px; font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: -.04em; }
-.page-heading > p:last-child { margin-top: 12px; color: var(--text-secondary); }
-.topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 30px; }
-.topic-card { display: flex; flex-direction: column; min-height: 270px; padding: 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); transition: border-color var(--transition), box-shadow var(--transition); }
-.topic-card:hover { color: inherit; border-color: #a8c9e3; box-shadow: var(--shadow-md); }
+.topics-catalog { padding-top: 46px; }
+.topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.topic-card { display: flex; flex-direction: column; min-height: 280px; padding: 26px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); }
+.topic-card:hover { color: inherit; border-color: var(--accent-tech-border); box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .topic-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .topic-category { color: var(--accent-tech); font-family: var(--font-mono); font-size: .61rem; letter-spacing: .07em; }
-.topic-card h2 { margin-top: 4px; font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; letter-spacing: -.02em; }
+.topic-card h3 { margin-top: 5px; font-family: var(--font-display); font-weight: 400; font-size: clamp(1.3rem, 2vw, 1.6rem); line-height: 1.35; letter-spacing: -.025em; overflow-wrap: anywhere; }
 .arrow { color: #7b94ac; font-size: 1rem; }
-.topic-slug { margin-top: 4px; color: var(--text-tertiary); font-size: .67rem; }
+.topic-slug { margin-top: 4px; color: var(--text-tertiary); font-size: .67rem; overflow-wrap: anywhere; }
 .topic-description { margin-top: 12px; color: var(--text-secondary); font-size: .83rem; line-height: 1.6; }
 .topic-stats { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: .71rem; }
 .topic-stats b { color: var(--text-primary); font-size: .9rem; }
 .topic-stats time { font-family: var(--font-mono); }
-.recent-content { display: grid; gap: 8px; margin-top: 18px; padding-top: 13px; border-top: 1px solid var(--border-subtle); }
+.recent-content { display: grid; gap: 8px; margin-top: auto; padding-top: 18px; }
 .recent-label { color: var(--text-tertiary); font-size: .64rem; }
 .recent-item { display: grid; grid-template-columns: 68px minmax(0, 1fr); gap: 9px; align-items: baseline; font-size: .74rem; }
 .recent-item small { color: #6f89a0; font-family: var(--font-mono); font-size: .57rem; }
 .recent-item > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty-state { margin-top: 28px; padding: 48px; text-align: center; color: var(--text-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
-@media (max-width: 700px) { .topics-index { padding-top: 54px; }.topic-grid { grid-template-columns: 1fr; }.topic-card { min-height: 0; } }
+@media (max-width: 700px) { .topics-catalog { padding-top: 36px; }.topics-catalog .collection-section-heading > span { display: none; }.topic-grid { grid-template-columns: 1fr; }.topic-card { min-height: 0; padding: 21px; }.recent-content { margin-top: 18px; } }
 </style>

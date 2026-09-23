@@ -1,0 +1,84 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  count: number;
+  countLabel: string;
+}
+
+const { eyebrow, title, description, count, countLabel } = Astro.props;
+---
+
+<header class="collection-hero">
+  <div class="hero-copy">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    <p class="description">{description}</p>
+  </div>
+  <div class="hero-count" aria-label={`${count} ${countLabel}`}>
+    <span class="count-number">{String(count).padStart(2, '0')}</span>
+    <span class="count-label">{countLabel}</span>
+  </div>
+</header>
+
+<style>
+.collection-hero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 0 0 36px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.hero-copy { min-width: 0; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .1em;
+  color: var(--accent-tech);
+}
+h1 {
+  margin-top: 15px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 5vw, 4rem);
+  line-height: 1.15;
+  letter-spacing: -.045em;
+}
+.description {
+  max-width: 680px;
+  margin-top: 13px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.hero-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  min-width: 128px;
+  padding: 0 0 5px 24px;
+  border-left: 1px solid var(--border-subtle);
+}
+.count-number {
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+.count-label {
+  margin-top: 9px;
+  color: var(--text-tertiary);
+  font-size: .72rem;
+}
+@media (max-width: 600px) {
+  .collection-hero { align-items: start; gap: 22px; padding-bottom: 29px; }
+  h1 { font-size: clamp(2.5rem, 10vw, 3.2rem); }
+  .description { font-size: .91rem; }
+  .hero-count { min-width: auto; padding-left: 16px; }
+  .count-number { font-size: 1.55rem; }
+  .count-label { max-width: 66px; font-size: .65rem; text-align: right; }
+}
+</style>
