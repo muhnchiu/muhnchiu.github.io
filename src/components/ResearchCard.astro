@@ -1,0 +1,30 @@
+---
+import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../data/research';
+
+const { entry } = Astro.props;
+const { data } = entry;
+---
+
+<a
+  href={`/research/${data.slug}`}
+  class="research-card"
+  data-status={data.status}
+  data-categories={data.category.join('|')}
+>
+  <div class="card-cats">
+    {data.category.map((category) => <span class="cat">{category}</span>)}
+  </div>
+  <h3 class="card-title">{data.title}</h3>
+  <p class="card-sub">{data.subtitle}</p>
+  <div class="card-topics">
+    {data.topics.slice(0, 4).map((topic) => <span class="topic">{topicLabel(topic)}</span>)}
+  </div>
+  <div class="card-meta">
+    <span class="meta-date">{formatDate(data.created)}</span>
+    <span class="meta-sep">·</span>
+    <span class="meta-status">{statusLabel(data.status)}</span>
+    <span class="meta-sep">·</span>
+    <span class="meta-conf">{confidenceLabel(data.confidence)}</span>
+  </div>
+  <span class="card-arrow">阅读研究 →</span>
+</a>

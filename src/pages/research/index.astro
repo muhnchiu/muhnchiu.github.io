@@ -1,13 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../../data/research';
+import ResearchCard from '../../components/ResearchCard.astro';
+import { formatDate } from '../../data/research';
 
 const all = (await getCollection('research', ({ data }) => data.publish))
   .sort((a, b) => {
     if (a.data.featured && !b.data.featured) return -1;
     if (!a.data.featured && b.data.featured) return 1;
-    return b.data.updated.getTime() - a.data.updated.getTime();
+    return b.data.updated.getTime() - a.data.updated.getTime()
+      || b.data.created.getTime() - a.data.created.getTime();
   });
 
 const featured = all.filter((e) => e.data.featured).slice(0, 3);
@@ -22,26 +24,6 @@ const totalTopics = [...new Set(all.flatMap((e) => e.data.topics))].length;
 const evolvingCount = all.filter((e) => e.data.status === 'evolving').length;
 const lastUpdate = all[0]?.data.updated;
 
-function entryCard(entry: typeof all[number]) {
-  return (`<a href="/research/${entry.data.slug}" class="research-card" data-status={entry.data.status}>
-      <div class="card-cats">
-        ${entry.data.category.map((c) => `<span class="cat">${c}</span>`).join('')}
-      </div>
-      <h3 class="card-title">${entry.data.title}</h3>
-      <p class="card-sub">${entry.data.subtitle}</p>
-      <div class="card-topics">
-        ${entry.data.topics.slice(0, 4).map((t) => `<span class="topic">${topicLabel(t)}</span>`).join('')}
-      </div>
-      <div class="card-meta">
-        <span class="meta-date">${formatDate(entry.data.created)}</span>
-        <span class="meta-sep">·</span>
-        <span class="meta-status">${statusLabel(entry.data.status)}</span>
-        <span class="meta-sep">·</span>
-        <span class="meta-conf">${confidenceLabel(entry.data.confidence)}</span>
-      </div>
-      <span class="card-arrow">阅读研究 →</span>
-    </a>`);
-}
 ---
 
 <Base title="深度研究 — Horizon" description="从每日信号出发，追踪技术背后的长期变量。">
@@ -62,21 +44,28 @@ function entryCard(entry: typeof all[number]) {
     {categories.length > 0 && (
       <nav class="filter-bar">
         <span class="filter-label">分类：</span>
-        {categories.map((c) => <span class="filter-cat">{c}</span>)}
+        <a class="filter-cat" href="/research/" data-category="">全部</a>
+        {categories.map((category) => (
+          <a class="filter-cat" href={`/research/?category=${encodeURIComponent(category)}`} data-category={category}>{category}</a>
+        ))}
       </nav>
     )}
 
     {featured.length > 0 && (
       <section class="featured-section">
         <p class="section-label">FEATURED</p>
-        <div class="cards-grid" set:html={featured.map(entryCard).join('')} />
+        <div class="cards-grid">
+          {featured.map((entry) => <ResearchCard entry={entry} />)}
+        </div>
       </section>
     )}
 
     {rest.length > 0 && (
       <section class="rest-section">
         <p class="section-label">ALL RESEARCH</p>
-        <div class="cards-grid" set:html={rest.map(entryCard).join('')} />
+        <div class="cards-grid">
+          {rest.map((entry) => <ResearchCard entry={entry} />)}
+        </div>
       </section>
     )}
 
@@ -86,8 +75,37 @@ function entryCard(entry: typeof all[number]) {
         <p class="empty-sub">每日深度研究正在持续积累中。</p>
       </div>
     )}
+    <div class="empty-state filtered-empty" hidden>
+      <p>该分类下暂无公开研究</p>
+      <p class="empty-sub">试试其他分类，或查看全部研究。</p>
+    </div>
   </section>
 </Base>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const selectedCategory = params.get('category') || '';
+  const cards = [...document.querySelectorAll<HTMLElement>('.research-card')];
+
+  for (const card of cards) {
+    const categories = (card.dataset.categories || '').split('|');
+    card.hidden = Boolean(selectedCategory) && !categories.includes(selectedCategory);
+  }
+
+  for (const section of document.querySelectorAll<HTMLElement>('.featured-section, .rest-section')) {
+    section.hidden = !section.querySelector('.research-card:not([hidden])');
+  }
+
+  const hasVisibleCards = cards.some((card) => !card.hidden);
+  const filteredEmpty = document.querySelector<HTMLElement>('.filtered-empty');
+  if (filteredEmpty) filteredEmpty.hidden = !selectedCategory || hasVisibleCards;
+
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('.filter-cat')) {
+    const active = (link.dataset.category || '') === selectedCategory;
+    link.classList.toggle('active', active);
+    link.setAttribute('aria-current', active ? 'page' : 'false');
+  }
+</script>
 
 <style>
 .research-index { padding-top: 88px; padding-bottom: 112px; }
@@ -103,6 +121,9 @@ function entryCard(entry: typeof all[number]) {
 .filter-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
 .filter-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; color: var(--text-tertiary); }
 .filter-cat { font-size: .82rem; color: var(--text-secondary); padding: 4px 12px; border: 1px solid var(--border-subtle); border-radius: 20px; }
+.filter-cat:hover, .filter-cat.active { color: var(--accent-tech); border-color: var(--accent-tech); }
+.research-card[hidden], .featured-section[hidden], .rest-section[hidden] { display: none; }
+.filtered-empty[hidden] { display: none; }
 
 .section-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 20px; }
 

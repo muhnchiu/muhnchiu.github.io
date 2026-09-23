@@ -12,9 +12,18 @@ const site = {
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
+  ogImage?: string;
+  type?: 'website' | 'article';
 }
 
-const { title = 'Horizon — Technology Intelligence & Research', description = '扫描变化，理解技术，沉淀判断。' } = Astro.props;
+const {
+  title = 'Horizon — Technology Intelligence & Research',
+  description = '扫描变化，理解技术，沉淀判断。',
+  canonical = new URL(Astro.url.pathname, site.url).href,
+  ogImage,
+  type = 'website',
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -25,6 +34,14 @@ const { title = 'Horizon — Technology Intelligence & Research', description = 
   <meta name="generator" content={Astro.generator} />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content={type} />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  {ogImage && <meta property="og:image" content={new URL(ogImage, site.url).href} />}
+  <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head>
 <body>

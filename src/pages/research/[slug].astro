@@ -24,24 +24,40 @@ const related = allResearch
     const catOverlap = e.data.category.filter((c) => entry.data.category.includes(c)).length;
     const timeDiff = Math.abs(e.data.updated.getTime() - entry.data.updated.getTime());
     const score = overlap * 10 + catOverlap * 3 - timeDiff / (1000 * 60 * 60 * 24);
-    return { entry: e, overlap, score };
+    return { entry: e, overlap, catOverlap, score };
   })
-  .filter((r) => r.overlap > 0)
-  .sort((a, b) => b.score - a.score)
+  .filter((r) => r.overlap > 0 || r.catOverlap > 0)
+  .sort((a, b) => b.score - a.score
+    || b.entry.data.updated.getTime() - a.entry.data.updated.getTime()
+    || b.entry.data.created.getTime() - a.entry.data.created.getTime())
   .slice(0, 3);
 
-// Related Signals: match Radar highlights by topic
+// Related Signals: match either Radar report topics or highlight topics.
 const radarEntries = await getCollection('radar', ({ data }) => data.publish);
 const researchTopics = entry.data.topics;
 const relatedSignals = radarEntries
-  .flatMap((r) => r.data.highlights.map((h) => ({ ...h, radar: r.data.radar, date: r.data.date, radarId: r.data.radar })))
-  .filter((h) => h.topic && researchTopics.includes(h.topic))
+  .filter((r) => r.data.topics.some((topic) => researchTopics.includes(topic))
+    || r.data.highlights.some((highlight) => highlight.topic && researchTopics.includes(highlight.topic)))
+  .map((r) => {
+    const matchingHighlight = r.data.highlights.find((highlight) => highlight.topic && researchTopics.includes(highlight.topic));
+    return {
+      title: matchingHighlight?.title ?? r.data.title,
+      radar: r.data.radar,
+      date: r.data.date,
+      radarId: r.data.radar,
+    };
+  })
   .sort((a, b) => b.date.getTime() - a.date.getTime())
   .slice(0, 5);
 
-// Parse source for Radar link
+// Link only when the referenced published Radar report exists.
 const sourceMatch = entry.data.source?.match(/(\w+)\s+Radar\s+(\d{4}-\d{2}-\d{2})/i);
-const radarLink = sourceMatch ? `/radar/${sourceMatch[1].toLowerCase()}/${sourceMatch[2]}` : null;
+const sourceRadarId = sourceMatch?.[1].toLowerCase();
+const sourceRadarDate = sourceMatch?.[2];
+const sourceRadarExists = sourceRadarId && sourceRadarDate && radarEntries.some((radarEntry) =>
+  radarEntry.data.radar === sourceRadarId && radarEntry.data.date.toISOString().slice(0, 10) === sourceRadarDate,
+);
+const radarLink = sourceRadarExists ? `/radar/${sourceRadarId}/${sourceRadarDate}` : null;
 
 const createdStr = formatDate(entry.data.created);
 const updatedStr = formatDate(entry.data.updated);
@@ -49,7 +65,7 @@ const isUpdated = entry.data.updated.getTime() !== entry.data.created.getTime();
 const isArchived = entry.data.status === 'archived';
 ---
 
-<Base title={`${entry.data.title} — Horizon`} description={entry.data.subtitle}>
+<Base title={`${entry.data.title} — Horizon`} description={entry.data.subtitle} type="article">
   <article class="research-detail container">
     <header class="research-header">
       <p class="breadcrumb">
@@ -97,7 +113,8 @@ const isArchived = entry.data.status === 'archived';
         <Content />
       </div>
       {tocItems.length > 0 && (
-        <aside class="toc">
+        <>
+        <aside class="toc toc-desktop">
           <p class="toc-label">文章目录</p>
           <nav>
             {tocItems.map((h) => (
@@ -105,6 +122,15 @@ const isArchived = entry.data.status === 'archived';
             ))}
           </nav>
         </aside>
+        <details class="toc-mobile">
+          <summary>文章目录</summary>
+          <nav>
+            {tocItems.map((h) => (
+              <a href={`#${h.slug}`} class={`toc-item toc-h${h.depth}`}>{h.text}</a>
+            ))}
+          </nav>
+        </details>
+        </>
       )}
     </div>
 
@@ -128,7 +154,7 @@ const isArchived = entry.data.status === 'archived';
         <p class="section-label">相关信号</p>
         <div class="signals-list">
           {relatedSignals.map((s) => (
-            <a href={`/radar/${s.radarId}/${formatDate(s.date)}`} class="signal-item">
+            <a href={`/radar/${s.radarId}/${s.date.toISOString().slice(0, 10)}`} class="signal-item">
               <span class="signal-date">{formatDate(s.date)}</span>
               <span class="signal-radar">{s.radar}</span>
               <span class="signal-title">{s.title}</span>
@@ -187,8 +213,16 @@ const isArchived = entry.data.status === 'archived';
 
 @media (max-width: 1024px) {
   .content-layout { grid-template-columns: 1fr; }
-  .toc { display: none; }
+  .toc-desktop { display: none; }
+  .toc-mobile { display: block; grid-row: 1; padding: 12px 0; }
+  .prose { grid-row: 2; }
 }
+
+.toc-mobile { display: none; }
+.toc-mobile summary { cursor: pointer; font-weight: 600; color: var(--text-secondary); }
+.toc-mobile nav { margin-top: 12px; }
+.toc-mobile[open] { padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); }
+.toc-mobile .toc-item { color: var(--text-secondary); }
 
 .related-section { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
 .section-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 20px; }
