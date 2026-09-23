@@ -1,0 +1,91 @@
+---
+// Recent Research — 研究目录列表
+const recent = [
+  { date: '09.23', title: 'Agent Skills 正在成为新的 AI 能力封装层', tags: 'AGENT · SKILL · EVOLVING' },
+  { date: '09.22', title: 'Cloudflare Python Workers GA', tags: 'DEV · INFRASTRUCTURE' },
+  { date: '09.21', title: 'Local LLM 推理性能基准测试', tags: 'LOCAL AI · MODEL' },
+  { date: '09.18', title: 'MCP 工具生态半年回顾', tags: 'MCP · AGENT' },
+];
+---
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="mono-label">RECENT RESEARCH</span>
+      </div>
+      <a href="/research" class="section-link">View all →</a>
+    </div>
+    <div class="recent-list">
+      {recent.map(r => (
+        <a href="#" class="recent-item">
+          <span class="recent-date">{r.date}</span>
+          <div class="recent-content">
+            <h3 class="recent-title">{r.title}</h3>
+            <span class="recent-tags">{r.tags}</span>
+          </div>
+          <span class="recent-arrow">→</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.recent-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: padding-left var(--transition);
+}
+
+.recent-item:hover {
+  padding-left: var(--space-sm);
+}
+
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+.recent-date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  color: var(--text-tertiary);
+  min-width: 50px;
+}
+
+.recent-content {
+  flex: 1;
+}
+
+.recent-title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.recent-tags {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+.recent-arrow {
+  color: var(--text-tertiary);
+  font-size: var(--fs-small);
+}
+
+.section-link {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--accent-tech);
+}
+</style>

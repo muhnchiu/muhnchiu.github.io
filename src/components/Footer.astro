@@ -1,0 +1,50 @@
+---
+const { site } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand"><span class="footer-logo">HORIZON</span><span class="footer-tag">Scan. Understand. Build a clearer tomorrow.</span></div>
+    <nav class="footer-nav" aria-label="页脚导航"><a href="/radar">Radar</a><a href="/research">Research</a><a href="/topics">Topics</a><a href="/stack">Stack</a><a href="/about">About</a></nav>
+    <div class="footer-right"><span class="footer-icons">◖　◔　□</span><span class="footer-copy">© {year} Horizon. All rights reserved.</span></div>
+  </div>
+</footer>
+
+<style>
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 20px 0;
+  background: #f9fbfc;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.footer-logo {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 0.82rem;
+}
+
+.footer-tag {
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+}
+
+.footer-copy {
+  font-size: 0.57rem;
+  color: var(--text-tertiary);
+}
+.footer-nav { display: flex; gap: 24px; }.footer-nav a { font-size: .63rem; color: #425873; }.footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }.footer-icons { font-size: .83rem; color: #263e5a; }
+@media (max-width: 720px) { .footer-inner { flex-wrap: wrap; gap: 18px; }.footer-nav { order: 3; width: 100%; justify-content: space-between; gap: 0; }.footer-right { margin-left: auto; } }
+</style>

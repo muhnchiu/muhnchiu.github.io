@@ -1,0 +1,168 @@
+/* Horizon Design System — Design Tokens */
+:root {
+  /* Background */
+  --bg-base: #F6F7F8;
+  --bg-surface: #FFFFFF;
+  --bg-surface-alt: #FAFAFA;
+  --bg-glass: rgba(255, 255, 255, 0.72);
+  --bg-tint-blue: #edf7ff;
+
+  /* Text */
+  --text-primary: #16181D;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-inverse: #FFFFFF;
+
+  /* Border */
+  --border-subtle: #E5E7EB;
+  --border-default: #D1D5DB;
+  --border-hover: #9CA3AF;
+
+  /* Technology Accent — 冰蓝 */
+  --accent-tech: #3B9CFF;
+  --accent-tech-soft: rgba(59, 156, 255, 0.08);
+  --accent-tech-border: rgba(59, 156, 255, 0.20);
+
+  /* Signal Accent — 珊瑚红 */
+  --accent-signal: #FF5A4E;
+  --accent-signal-soft: rgba(255, 90, 78, 0.08);
+
+  /* Signal Levels */
+  --signal-action: #FF5A4E;
+  --signal-test: #F59E0B;
+  --signal-watch: #3B9CFF;
+  --signal-read: #8B5CF6;
+  --signal-ignore: #9CA3AF;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+
+  /* Font Sizes */
+  --fs-hero: clamp(3.5rem, 7vw, 6.25rem);
+  --fs-h1: 2.25rem;
+  --fs-h2: 1.5rem;
+  --fs-h3: 1.125rem;
+  --fs-body: 0.9375rem;
+  --fs-small: 0.8125rem;
+  --fs-micro: 0.6875rem;
+  --fs-mono-label: 0.75rem;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 128px;
+
+  /* Layout */
+  --max-width: 1280px;
+  --header-height: 64px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Transitions */
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(59, 156, 255, 0.38);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  color: var(--accent-tech);
+}
+
+/* Container */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+/* Section base */
+.section {
+  padding: 76px 0;
+}
+
+/* Mono label */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* Section header */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+}
+
+.section-header h2 {
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.section-header .section-sub {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+}
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: var(--space-2xl) 0;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 var(--space-lg); }
+  .section { padding: 52px 0; }
+}

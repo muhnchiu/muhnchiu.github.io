@@ -1,0 +1,116 @@
+---
+const navItems = [
+  { label: 'Radar', href: '/radar' },
+  { label: 'Deep Dive', href: '/research' },
+  { label: 'Topics', href: '/topics' },
+  { label: 'Stack', href: '/stack' },
+  { label: 'About', href: '/about' },
+];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">
+      <span class="logo-text">HORIZON</span>
+      <span class="logo-dot"></span>
+      <span class="logo-live">LIVE</span>
+    </a>
+    <nav class="nav">
+      {navItems.map(item => (
+        <a href={item.href} class="nav-link">{item.label}</a>
+      ))}
+    </nav>
+    <div class="header-tools" aria-label="站点工具">
+      <button class="icon-button" type="button" aria-label="搜索">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="5.8"></circle><path d="m16 16 4 4"></path></svg>
+      </button>
+      <button class="icon-button" type="button" aria-label="切换主题">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.6"></circle><path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4M18.7 18.7l-1.4-1.4M6.7 6.7 5.3 5.3"></path></svg>
+      </button>
+      <span class="header-slogan">Scan. Understand. Build a clearer tomorrow.</span>
+    </div>
+  </div>
+</header>
+
+<style>
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-height);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.header-inner {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.logo-text {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.logo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.logo-live {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.header-tools { display: flex; align-items: center; gap: 9px; margin-left: 22px; }
+.icon-button { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; background: transparent; border: 0; color: var(--text-primary); cursor: pointer; }
+.icon-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.header-slogan { padding-left: 14px; border-left: 1px solid var(--border-subtle); font-size: 0.64rem; color: var(--text-tertiary); white-space: nowrap; }
+
+.nav-link {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    display: none;
+  }
+  .header-slogan { display: none; }
+  .header-tools { margin-left: auto; }
+}
+</style>

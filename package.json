@@ -1,0 +1,26 @@
+{
+  "name": "horizon",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Horizon — Technology Intelligence & Research",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muhnchiu/muhnchiu.github.io.git"
+  },
+  "keywords": ["horizon", "radar", "research"],
+  "author": "muhnchiu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/muhnchiu/muhnchiu.github.io/issues"
+  },
+  "homepage": "https://muhnchiu.github.io/",
+  "dependencies": {
+    "astro": "^7.3.4"
+  }
+}
