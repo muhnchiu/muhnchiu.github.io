@@ -17,6 +17,7 @@ const radar = defineCollection({
     radar: z.enum(['ai', 'dev', 'app', 'security', 'skill']),
     signalCount: z.number().int().nonnegative(),
     highSignalCount: z.number().int().nonnegative(),
+    actionableCount: z.number().int().nonnegative(),
     actionRequired: z.number().int().nonnegative(),
     verdict: z.string().min(1),
     highlights: z.array(z.object({
@@ -26,13 +27,15 @@ const radar = defineCollection({
       action: signalAction,
       topic: z.string().min(1).optional(),
       sourceLevel: z.enum(['official', 'ecosystem', 'community', 'media', 'research']),
+      sourceName: z.string().min(1).optional(),
       sourceUrl: z.string().url().optional(),
     }).strict()),
     topics: z.array(z.string().min(1)).min(1),
     confidence,
     publish: z.boolean(),
   }).strict().refine(
-    ({ signalCount, highSignalCount, actionRequired }) => highSignalCount <= signalCount && actionRequired <= signalCount,
+    ({ signalCount, highSignalCount, actionableCount, actionRequired }) =>
+      highSignalCount <= signalCount && actionableCount <= signalCount && actionRequired <= signalCount,
     'Signal counts cannot exceed the total number of signals.',
   ).refine(
     ({ signalCount, highlights }) => highlights.length <= 5 && highlights.length <= signalCount,
@@ -41,8 +44,14 @@ const radar = defineCollection({
     ({ highlights, highSignalCount }) => highSignalCount === highlights.filter(({ signal }) => signal === 'critical' || signal === 'high').length,
     'highSignalCount must equal the number of critical and high highlights.',
   ).refine(
-    ({ highlights, actionRequired }) => actionRequired === highlights.filter(({ action }) => action === 'action' || action === 'test').length,
-    'actionRequired must equal the number of action and test highlights.',
+    ({ highlights, actionableCount }) => actionableCount === highlights.filter(({ action }) => action === 'action' || action === 'test').length,
+    'actionableCount must equal the number of action and test highlights.',
+  ).refine(
+    ({ highlights, actionRequired }) => actionRequired === highlights.filter(({ action }) => action === 'action').length,
+    'actionRequired must equal the number of action-only highlights.',
+  ).refine(
+    ({ actionableCount, actionRequired }) => actionRequired <= actionableCount,
+    'actionRequired cannot exceed actionableCount.',
   ),
 });
 
