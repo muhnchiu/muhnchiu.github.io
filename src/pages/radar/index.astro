@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from '../../data/radar';
+
+const reports = (await getCollection('radar', ({ data }) => data.publish))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const latestDate = reports.at(0)?.data.date;
+const latestDateKey = latestDate && formatRadarDate(latestDate);
+const today = latestDateKey ? reports.filter((report) => formatRadarDate(report.data.date) === latestDateKey) : [];
+const totals = today.reduce((result, report) => ({
+  signals: result.signals + report.data.signalCount,
+  highSignals: result.highSignals + report.data.highSignalCount,
+  actionRequired: result.actionRequired + report.data.actionRequired,
+}), { signals: 0, highSignals: 0, actionRequired: 0 });
+const highSignals = today.flatMap((report) => report.data.highlights.map((highlight) => ({ ...highlight, radar: report.data.radar, date: report.data.date })))
+  .sort((a, b) => signalPriority[a.signal] - signalPriority[b.signal])
+  .slice(0, 5);
+const sevenDayActivity = latestDate ? Array.from({ length: 7 }, (_, index) => {
+  const date = new Date(latestDate);
+  date.setUTCDate(date.getUTCDate() - (6 - index));
+  const key = formatRadarDate(date);
+  return { date, key, count: reports.filter((report) => formatRadarDate(report.data.date) === key).reduce((sum, report) => sum + report.data.signalCount, 0) };
+}) : [];
+const activityMax = Math.max(...sevenDayActivity.map((day) => day.count), 1);
+---
+
+<Base title="Radar — Horizon" description="Continuous Technology Scanning">
+  <section class="radar-dashboard container">
+    <header class="radar-hero">
+      <div><p class="eyebrow">CONTINUOUS TECHNOLOGY SCANNING</p><h1>RADAR</h1><p class="intro">持续扫描 AI、开发者工具、安全、软件与 Agent Skills 的变化。</p></div>
+      <div class="scan-status"><span class="live-dot"></span><strong>{radarCatalog.length} RADARS ACTIVE</strong><span>{latestDate ? `LATEST REPORT ${displayRadarDate(latestDate)}` : 'AWAITING REPORTS'}</span></div>
+    </header>
+
+    <section class="dashboard-section overview">
+      <p class="section-label">TODAY’S OVERVIEW {latestDate && `· ${displayRadarDate(latestDate)}`}</p>
+      <div class="overview-metrics"><div><b>{String(totals.signals).padStart(2, '0')}</b><span>SIGNALS</span></div><div><b>{String(totals.highSignals).padStart(2, '0')}</b><span>HIGH SIGNAL</span></div><div><b>{String(totals.actionRequired).padStart(2, '0')}</b><span>ACTION REQUIRED</span></div></div>
+    </section>
+
+    <section class="dashboard-section"><div class="section-heading"><div><p class="section-label">RADAR SYSTEM</p><h2>Five lenses, one operating picture.</h2></div></div><div class="radar-grid">
+      {radarCatalog.map((radar) => {
+        const latest = reports.find((report) => report.data.radar === radar.id);
+        return <a class="radar-card" href={`/radar/${radar.id}`}><p>{radar.name}</p><strong>{latest ? String(latest.data.signalCount).padStart(2, '0') : '—'}</strong><span>{latest ? 'SIGNALS' : 'NO REPORT'}</span><small>{latest ? `${latest.data.highSignalCount} HIGH · ${latest.data.actionRequired} ACTION` : 'Waiting for published data'}</small></a>;
+      })}
+    </div></section>
+
+    <section class="dashboard-section split-section"><div><div class="section-heading"><div><p class="section-label">HIGH SIGNAL</p><h2>What deserves attention now.</h2></div></div><div class="highlights">
+      {highSignals.length ? highSignals.map((highlight, index) => <a href={`/radar/${highlight.radar}/${formatRadarDate(highlight.date)}`} class="highlight"><span>{String(index + 1).padStart(2, '0')}</span><em class={`signal-${highlight.action}`}>{highlight.action.toUpperCase()}</em><small>{highlight.radar.toUpperCase()} / {highlight.type.toUpperCase()}</small><strong>{highlight.title}</strong><i>→</i></a>) : <p class="empty">尚无已发布的高信号。</p>}
+    </div></div><div><div class="section-heading"><div><p class="section-label">7 DAY ACTIVITY</p><h2>Signal volume over time.</h2></div></div><div class="activity">
+      {sevenDayActivity.length ? sevenDayActivity.map((day) => <div class="activity-day"><span class="bar" style={`height: ${Math.max((day.count / activityMax) * 100, day.count ? 10 : 2)}%`}></span><b>{day.count}</b><small>{formatRadarDate(day.date).slice(5).replace('-', '.')}</small></div>) : <p class="empty">尚无日报数据。</p>}
+    </div></div></section>
+
+    <section class="dashboard-section split-section reports-status"><div><div class="section-heading"><div><p class="section-label">RECENT REPORTS</p><h2>Published radar archive.</h2></div></div><div class="reports">
+      {reports.length ? reports.slice(0, 8).map((report) => <a href={`/radar/${report.data.radar}/${formatRadarDate(report.data.date)}`}><span>{displayRadarDate(report.data.date).slice(5)}</span><strong>{report.data.radar.toUpperCase()} Radar</strong><small>{report.data.signalCount} SIGNALS</small><i>→</i></a>) : <p class="empty">尚无已发布的日报。</p>}
+    </div></div><div><div class="section-heading"><div><p class="section-label">SYSTEM STATUS</p><h2>Radar availability.</h2></div></div><div class="system-status-list">
+      {radarCatalog.map((radar) => <div><span>{radar.name} Radar</span><b class={reports.some((report) => report.data.radar === radar.id) ? 'active' : 'pending'}>{reports.some((report) => report.data.radar === radar.id) ? 'ACTIVE' : 'PENDING'}</b></div>)}
+    </div></div></section>
+  </section>
+</Base>
+
+<style>
+.radar-dashboard { padding-top: 72px; padding-bottom: 112px; }.radar-hero { display: flex; justify-content: space-between; align-items: end; padding-bottom: 45px; border-bottom: 1px solid var(--border-subtle); }.eyebrow,.section-label { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .1em; color: var(--accent-tech); }.radar-hero h1 { margin-top: 9px; font-size: clamp(3rem, 7vw, 6.1rem); letter-spacing: -.07em; line-height: .9; }.intro { max-width: 520px; margin-top: 15px; color: var(--text-secondary); font-size: 1rem; }.scan-status { display: grid; grid-template-columns: 10px auto; gap: 8px 10px; min-width: 210px; padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); font-family: var(--font-mono); font-size: .68rem; }.scan-status strong { color: var(--text-primary); }.scan-status span:last-child { grid-column: 1 / -1; color: var(--text-tertiary); font-size: .58rem; }.live-dot { width: 8px; height: 8px; margin-top: 3px; border-radius: 50%; background: #16c784; box-shadow: 0 0 0 3px rgba(22,199,132,.12); }.dashboard-section { padding: 54px 0; border-bottom: 1px solid var(--border-subtle); }.overview-metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 18px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-surface); }.overview-metrics div { padding: 24px; border-right: 1px solid var(--border-subtle); }.overview-metrics div:last-child { border: 0; }.overview-metrics b { display: block; font-family: var(--font-mono); font-size: 2.6rem; line-height: 1; }.overview-metrics span { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: .62rem; color: var(--text-secondary); }.section-heading h2 { margin-top: 5px; font-size: 1.25rem; }.radar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }.radar-card { display: flex; flex-direction: column; min-height: 160px; padding: 17px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition); }.radar-card:hover { color: inherit; transform: translateY(-2px); border-color: var(--accent-tech); box-shadow: var(--shadow-md); }.radar-card p { font-size: .75rem; font-weight: 700; }.radar-card strong { margin-top: 19px; font-family: var(--font-mono); font-size: 2rem; line-height: 1; }.radar-card > span { margin-top: 7px; font-family: var(--font-mono); font-size: .55rem; letter-spacing: .08em; color: var(--text-tertiary); }.radar-card small { margin-top: auto; font-family: var(--font-mono); font-size: .56rem; color: var(--accent-tech); }.split-section { display: grid; grid-template-columns: 1.18fr .82fr; gap: 60px; }.highlights,.reports { margin-top: 18px; border-top: 1px solid var(--border-subtle); }.highlight { display: grid; grid-template-columns: 25px 62px 118px minmax(0,1fr) 12px; align-items: center; gap: 8px; min-height: 55px; border-bottom: 1px solid var(--border-subtle); }.highlight:hover,.reports a:hover { color: inherit; background: #f9fcff; }.highlight > span,.highlight small,.reports span,.reports small { font-family: var(--font-mono); font-size: .58rem; color: var(--text-tertiary); }.highlight em { padding: 3px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: .54rem; font-style: normal; }.signal-action { color: #b91c25; background: #ffe4e5; }.signal-test { color: #1762ae; background: #e0efff; }.signal-watch { color: #168153; background: #e0f7e9; }.signal-read,.signal-explore,.signal-ignore { color: #566275; background: #eef1f5; }.highlight strong { font-size: .72rem; }.highlight i,.reports i { font-style: normal; color: var(--text-tertiary); }.activity { display: flex; align-items: end; gap: 12px; height: 166px; margin-top: 22px; padding: 16px 10px 0; border-bottom: 1px solid var(--border-subtle); }.activity-day { display: flex; flex: 1; flex-direction: column; align-items: center; height: 100%; }.bar { width: min(28px, 70%); margin-top: auto; border-radius: 3px 3px 0 0; background: linear-gradient(#82c7ff, #318ee0); }.activity-day b { margin-top: 7px; font-family: var(--font-mono); font-size: .63rem; }.activity-day small { margin-top: 4px; font-family: var(--font-mono); font-size: .54rem; color: var(--text-tertiary); }.reports a { display: grid; grid-template-columns: 38px 1fr 70px 12px; align-items: center; gap: 8px; min-height: 48px; border-bottom: 1px solid var(--border-subtle); }.reports strong { font-size: .73rem; }.system-status-list { margin-top: 18px; border-top: 1px solid var(--border-subtle); }.system-status-list div { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border-subtle); font-size: .75rem; }.system-status-list b { font-family: var(--font-mono); font-size: .58rem; }.active { color: #168153; }.pending { color: var(--text-tertiary); }.empty { margin-top: 18px; font-size: .8rem; color: var(--text-secondary); }@media (max-width: 850px) { .radar-hero,.split-section { grid-template-columns: 1fr; flex-direction: column; align-items: flex-start; }.split-section { display: grid; gap: 42px; }.radar-grid { grid-template-columns: repeat(3, 1fr); } }@media (max-width: 560px) { .radar-dashboard { padding-top: 48px; }.overview-metrics { grid-template-columns: 1fr; }.overview-metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.overview-metrics div:last-child { border-bottom: 0; }.radar-grid { grid-template-columns: repeat(2, 1fr); }.highlight { grid-template-columns: 23px 57px 1fr 12px; }.highlight small { display: none; }.reports a { grid-template-columns: 34px 1fr 12px; }.reports small { display: none; } }
+</style>

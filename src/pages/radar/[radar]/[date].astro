@@ -15,14 +15,14 @@ const { Content } = await render(entry);
 const date = entry.data.date.toISOString().slice(0, 10);
 ---
 
-<Base title={`${entry.data.title} — Horizon`} description={entry.data.description}>
+<Base title={`${entry.data.title} — Horizon`} description={entry.data.description ?? entry.data.verdict}>
   <article class="radar-report container">
     <header>
       <p class="eyebrow">{entry.data.radar.toUpperCase()} RADAR　/　DAILY</p>
       <p class="report-date">{date.replaceAll('-', '.')}</p>
       <h1>{entry.data.title}</h1>
-      <p class="description">{entry.data.description}</p>
-      <dl class="metrics"><div><dt>SIGNALS</dt><dd>{entry.data.signals}</dd></div><div><dt>HIGH SIGNALS</dt><dd>{entry.data.highSignals}</dd></div><div><dt>ACTION REQUIRED</dt><dd>{entry.data.actionRequired}</dd></div></dl>
+      <p class="description">{entry.data.description ?? entry.data.verdict}</p>
+      <dl class="metrics"><div><dt>SIGNALS</dt><dd>{entry.data.signalCount}</dd></div><div><dt>HIGH SIGNALS</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>ACTION REQUIRED</dt><dd>{entry.data.actionRequired}</dd><small>CONFIDENCE {entry.data.confidence.toUpperCase()}</small></div></dl>
     </header>
     <div class="prose"><Content /></div>
   </article>

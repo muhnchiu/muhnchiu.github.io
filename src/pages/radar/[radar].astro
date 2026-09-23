@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from '../../data/radar';
+
+export async function getStaticPaths() {
+  const allReports = await getCollection('radar', ({ data }) => data.publish);
+  return radarCatalog.map((radar) => ({
+    params: { radar: radar.id },
+    props: {
+      radar,
+      reports: allReports.filter((report) => report.data.radar === radar.id)
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+const { radar, reports } = Astro.props;
+const latest = reports.at(0);
+const highlights = latest?.data.highlights
+  .slice()
+  .sort((a, b) => signalPriority[a.signal] - signalPriority[b.signal]) ?? [];
+---
+
+<Base title={`${radar.name} Radar — Horizon`} description={radar.description}>
+  <section class="category-page container">
+    <header class="category-hero">
+      <p class="eyebrow">{radar.id.toUpperCase()} RADAR</p>
+      <h1>{radar.name} Radar</h1>
+      <p>{radar.description}</p>
+      <div class="active-line"><span></span>{latest ? `ACTIVE · LATEST REPORT ${displayRadarDate(latest.data.date)}` : 'PENDING · NO PUBLISHED REPORT'}</div>
+    </header>
+
+    {latest ? <>
+      <section class="metrics"><div><b>{String(latest.data.signalCount).padStart(2, '0')}</b><span>SIGNALS</span></div><div><b>{String(latest.data.highSignalCount).padStart(2, '0')}</b><span>HIGH SIGNAL</span></div><div><b>{String(latest.data.actionRequired).padStart(2, '0')}</b><span>ACTION REQUIRED</span></div></section>
+      <section class="category-section verdict"><p class="section-label">LATEST VERDICT</p><blockquote>{latest.data.verdict}</blockquote><a href={`/radar/${radar.id}/${formatRadarDate(latest.data.date)}`}>View Daily Report　→</a></section>
+      <section class="category-section"><div class="section-heading"><div><p class="section-label">LATEST HIGHLIGHTS</p><h2>Signals from the latest report.</h2></div></div><div class="highlights">
+        {highlights.map((highlight, index) => <a href={`/radar/${radar.id}/${formatRadarDate(latest.data.date)}`}><span>{String(index + 1).padStart(2, '0')}</span><em class={`signal-${highlight.action}`}>{highlight.action.toUpperCase()}</em><div><strong>{highlight.title}</strong><small>{highlight.type.toUpperCase()}{highlight.topic && ` · ${highlight.topic}`}</small></div><i>→</i></a>)}
+      </div></section>
+    </> : <section class="category-section empty-state"><p>尚未发布 {radar.name} Radar。发布一份符合 schema 的 Markdown 后，该页面会自动生成最新摘要与归档。</p></section>}
+
+    <section class="category-section archive"><div class="section-heading"><div><p class="section-label">REPORT ARCHIVE</p><h2>Published daily reports.</h2></div></div><div class="archive-list">
+      {reports.length ? reports.map((report) => <a href={`/radar/${radar.id}/${formatRadarDate(report.data.date)}`}><time>{displayRadarDate(report.data.date)}</time><strong>{report.data.title}</strong><span>{report.data.signalCount} SIGNALS</span><i>→</i></a>) : <p>暂无公开日报。</p>}
+    </div></section>
+  </section>
+</Base>
+
+<style>
+.category-page { max-width: 1040px; padding-top: 76px; padding-bottom: 112px; }.eyebrow,.section-label { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .1em; color: var(--accent-tech); }.category-hero { padding-bottom: 39px; border-bottom: 1px solid var(--border-subtle); }.category-hero h1 { margin-top: 10px; font-size: clamp(2.9rem, 6vw, 5rem); letter-spacing: -.065em; line-height: .95; }.category-hero > p:not(.eyebrow) { margin-top: 16px; color: var(--text-secondary); }.active-line { display: flex; align-items: center; gap: 8px; margin-top: 27px; font-family: var(--font-mono); font-size: .63rem; color: #4e657d; }.active-line span { width: 8px; height: 8px; border-radius: 50%; background: #16c784; }.metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 35px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-surface); }.metrics div { padding: 19px 21px; border-right: 1px solid var(--border-subtle); }.metrics div:last-child { border: 0; }.metrics b { display: block; font-family: var(--font-mono); font-size: 2.25rem; line-height: 1; }.metrics span { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: .59rem; color: var(--text-secondary); }.category-section { padding: 54px 0; border-bottom: 1px solid var(--border-subtle); }.verdict blockquote { max-width: 760px; margin: 18px 0; font-size: 1.38rem; font-weight: 500; line-height: 1.55; letter-spacing: -.02em; }.verdict a { font-size: .75rem; color: var(--accent-tech); }.section-heading h2 { margin-top: 5px; font-size: 1.25rem; }.highlights,.archive-list { margin-top: 18px; border-top: 1px solid var(--border-subtle); }.highlights a { display: grid; grid-template-columns: 28px 64px 1fr 12px; align-items: center; gap: 11px; min-height: 64px; border-bottom: 1px solid var(--border-subtle); }.highlights a:hover,.archive-list a:hover { color: inherit; background: #f9fcff; }.highlights > a > span,.highlights small,.archive-list time,.archive-list span { font-family: var(--font-mono); font-size: .59rem; color: var(--text-tertiary); }.highlights em { padding: 3px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: .55rem; font-style: normal; }.signal-action { color: #b91c25; background: #ffe4e5; }.signal-test { color: #1762ae; background: #e0efff; }.signal-watch { color: #168153; background: #e0f7e9; }.signal-read,.signal-explore,.signal-ignore { color: #566275; background: #eef1f5; }.highlights strong { display: block; font-size: .77rem; }.highlights small { display: block; margin-top: 3px; }.highlights i,.archive-list i { color: var(--text-tertiary); font-style: normal; }.archive-list a { display: grid; grid-template-columns: 95px minmax(0, 1fr) 84px 12px; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid var(--border-subtle); }.archive-list strong { font-size: .76rem; }.archive-list > p,.empty-state p { color: var(--text-secondary); font-size: .88rem; }@media (max-width: 560px) { .category-page { padding-top: 48px; }.metrics { grid-template-columns: 1fr; }.metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.metrics div:last-child { border-bottom: 0; }.highlights a { grid-template-columns: 25px 60px 1fr 12px; gap: 8px; }.archive-list a { grid-template-columns: 1fr 12px; }.archive-list span { display: none; }.archive-list time { grid-column: 1; }.archive-list strong { grid-column: 1; }.archive-list i { grid-column: 2; grid-row: 1 / span 2; } }
+</style>
