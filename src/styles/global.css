@@ -127,6 +127,11 @@ a:hover {
   padding: 76px 0;
 }
 
+/* The dashboard grid benefits from a little more room on large screens; Hero remains unchanged. */
+.section .container {
+  max-width: 1360px;
+}
+
 /* Mono label */
 .mono-label {
   font-family: var(--font-mono);

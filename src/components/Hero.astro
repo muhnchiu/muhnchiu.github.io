@@ -1,5 +1,6 @@
 ---
 // Hero — the site’s operating-system-like introduction
+import { homeSnapshot } from '../data/home';
 ---
 <section class="hero">
   <div class="hero-atmosphere" aria-hidden="true">
@@ -24,7 +25,7 @@
       <div class="system-status">
         <span class="status-label mono-label">SYSTEM STATUS</span>
         <div class="status-row"><span class="status-dot"></span><span class="status-text">5 RADARS ACTIVE</span></div>
-        <div class="status-scan">LAST SCAN&nbsp;&nbsp;2026.09.23&nbsp;&nbsp;09:15 CST</div>
+        <div class="status-scan">LAST SCAN&nbsp;&nbsp;{homeSnapshot.lastScan}</div>
       </div>
     </div>
   </div>

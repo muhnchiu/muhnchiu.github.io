@@ -1,11 +1,5 @@
 ---
-const recent = [
-  ['09.22', 'Agent Skills 正在成为新的 AI 能力封装层', 'AGENT　 SKILL　 EVOLVING'],
-  ['09.21', 'Local LLM 在企业场景的实际应用探索', 'LOCAL AI　 DEPLOYMENT'],
-  ['09.20', 'MCP：AI 应用的通用连接层', 'MCP　 STANDARD'],
-  ['09.19', '开发者效率工具的新范式', 'DEVELOPER　 PRODUCTIVITY'],
-  ['09.18', 'AI 安全：从模型对齐到应用防护', 'SECURITY　 SAFETY'],
-];
+import { homeSnapshot, recentResearch } from '../data/home';
 ---
 <section id="research" class="section research-section">
   <div class="container">
@@ -17,12 +11,12 @@ const recent = [
           <h3>Cloudflare Python Workers GA</h3>
           <p class="research-subtitle">Python 走向边缘计算的新阶段</p>
           <p class="research-desc">Cloudflare 将 Python Workers 推向 GA 后，真正值得研究的并不是“现在可以用 Python 了”，而是这背后代表的边缘计算生态、开发者体验和未来应用形态的变化。</p>
-          <div class="research-bottom"><span>12 MIN READ　·　2026.09.23</span><a href="/research/cloudflare-python-workers" class="read-button">Read Research　→</a></div>
+          <div class="research-bottom"><span>12 MIN READ　·　{homeSnapshot.latestRadarDate}</span><a href="/research/cloudflare-python-workers-ga" class="read-button">Read Research　→</a></div>
         </div>
         <div class="research-art" aria-hidden="true"><span>EDGE<br />PYTHON<br />A MORE OPEN<br />COMPUTING<br />WORLD.</span><i></i><b></b><em></em></div>
       </article>
       <div class="recent-list">
-        {recent.map(item => <a href="/research" class="recent-item"><span>{item[0]}</span><div><h3>{item[1]}</h3><p>{item[2]}</p></div></a>)}
+        {recentResearch.map(item => <a href="/research" class="recent-item"><span>{item[0]}</span><div><h3>{item[1]}</h3><p>{item[2]}</p></div></a>)}
       </div>
     </div>
   </div>
@@ -35,7 +29,7 @@ const recent = [
 .research-feature h3 { margin-top: 17px; font-size: 1.6rem; line-height: 1.12; letter-spacing: -.035em; }.research-subtitle { margin-top: 5px; font-size: 1.05rem; color: #233c5d; }.research-desc { margin-top: 19px; font-size: .75rem; line-height: 1.65; color: #59708b; }
 .research-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; font-family: var(--font-mono); font-size: .59rem; color: #55708d; }.read-button { padding: 9px 13px; border-radius: 4px; background: #1e4773; color: #fff; font-family: var(--font-sans); font-size: .68rem; }.read-button:hover { color: #fff; background: #286caa; }
 .research-art { position: absolute; inset: 0 0 0 auto; width: 45%; overflow: hidden; background: radial-gradient(circle at 88% 50%, rgba(255,255,255,.9), transparent 34%); }.research-art span { position: absolute; top: 47px; right: 18px; font-family: var(--font-mono); font-size: .55rem; line-height: 1.65; letter-spacing: .1em; color: #6386ab; }.research-art i,.research-art b,.research-art em { position: absolute; bottom: 26px; display: block; width: 39px; height: 126px; transform: skewY(38deg); transform-origin: bottom; background: linear-gradient(90deg, rgba(83,155,221,.52), rgba(207,235,255,.12)); box-shadow: 11px 6px 0 rgba(103,171,228,.15); }.research-art i { left: 42px; height: 100px; }.research-art b { left: 85px; height: 143px; }.research-art em { left: 128px; height: 88px; }
-.recent-list { border-top: 1px solid var(--border-subtle); }.recent-item { display: grid; grid-template-columns: 40px 1fr; gap: 8px; min-height: 58px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }.recent-item:hover { color: inherit; background: #fbfdff; }.recent-item > span { font-family: var(--font-mono); font-size: .63rem; color: #596e87; }.recent-item h3 { font-size: .68rem; font-weight: 650; line-height: 1.35; }.recent-item p { margin-top: 4px; font-family: var(--font-mono); font-size: .48rem; letter-spacing: .04em; color: #85a0ba; }
+.recent-list { border-top: 1px solid var(--border-subtle); }.recent-item { display: grid; grid-template-columns: 42px 1fr; gap: 9px; min-height: 58px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }.recent-item:hover { color: inherit; background: #fbfdff; }.recent-item > span { font-family: var(--font-mono); font-size: .68rem; color: #465f7b; }.recent-item h3 { font-size: .76rem; font-weight: 700; line-height: 1.35; }.recent-item p { margin-top: 4px; font-family: var(--font-mono); font-size: .54rem; letter-spacing: .04em; color: #708da9; }
 @media (max-width: 850px) { .research-layout { grid-template-columns: 1fr; }.research-copy { max-width: 66%; } }
 @media (max-width: 520px) { .research-copy { max-width: 100%; }.research-art { opacity: .26; }.research-feature h3 { font-size: 1.35rem; }.research-bottom { align-items: flex-start; flex-direction: column; } }
 </style>

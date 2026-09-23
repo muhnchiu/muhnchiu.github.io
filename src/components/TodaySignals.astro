@@ -1,18 +1,12 @@
 ---
-const radars = [
-  { name: 'AI', icon: '✦', signals: 3, states: ['2 TEST', '1 WATCH'], href: '/radar/ai', accent: 'blue' },
-  { name: 'DEVELOPER', icon: '</>', signals: 4, states: ['1 TEST', '2 WATCH', '1 READ'], href: '/radar/dev', accent: 'green' },
-  { name: 'SECURITY', icon: '♢', signals: 2, states: ['1 ACTION', '1 WATCH'], href: '/radar/security', accent: 'red' },
-  { name: 'APP / SOFTWARE', icon: '◇', signals: 5, states: ['2 TEST', '2 WATCH', '1 READ'], href: '/radar/app', accent: 'purple' },
-  { name: 'AGENT SKILLS', icon: '⌘', signals: 6, states: ['3 EXPLORE', '2 WATCH', '1 READ'], href: '/radar/skill', accent: 'orange' },
-];
+import { homeSnapshot, radars } from '../data/home';
 ---
 
 <section id="signals" class="section signals-section">
   <div class="container">
     <div class="section-header">
       <div><h2>TODAY’S SIGNALS</h2><p class="section-sub">What actually matters today.</p></div>
-      <div class="signals-heading-right"><span class="section-date">2026.09.23</span><span class="pager" aria-hidden="true">‹　›</span></div>
+      <div class="signals-heading-right"><span class="section-date">{homeSnapshot.latestRadarDate}</span><span class="pager" aria-hidden="true">‹　›</span></div>
     </div>
     <div class="signals-grid">
       {radars.map(r => (
@@ -44,7 +38,7 @@ const radars = [
 .signal-icon { display: grid; place-items: center; width: 18px; height: 18px; font-family: var(--font-mono); font-size: .82rem; color: var(--tone); }
 .radar-count { margin-top: 15px; font-family: var(--font-mono); font-size: 2rem; font-weight: 500; line-height: .9; color: color-mix(in srgb, var(--tone) 72%, #1a2b43); }
 .radar-label { margin-top: 7px; font-family: var(--font-mono); font-size: .57rem; letter-spacing: .1em; color: color-mix(in srgb, var(--tone) 70%, #59708b); }
-.signal-states { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 12px; font-family: var(--font-mono); font-size: .55rem; color: #50667f; }
+.signal-states { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 12px; font-family: var(--font-mono); font-size: .62rem; font-weight: 550; color: #435b75; }
 .signal-states span:first-child { color: var(--tone); }.card-arrow { position: absolute; right: 14px; bottom: 13px; color: #49617a; }
 @media (max-width: 1024px) { .signals-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 640px) { .signals-grid { grid-template-columns: 1fr 1fr; } .signals-heading-right .pager { display: none; } }

@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('research', ({ data }) => data.publish);
+  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const date = entry.data.updated.toISOString().slice(0, 10).replaceAll('-', '.');
+---
+
+<Base title={`${entry.data.title} — Horizon`} description={entry.data.subtitle}>
+  <article class="content-page container">
+    <header>
+      <p class="eyebrow">{entry.data.category.join(' · ')}　/　RESEARCH</p>
+      <h1>{entry.data.title}</h1>
+      <p class="subtitle">{entry.data.subtitle}</p>
+      <p class="meta">UPDATED {date}　·　{entry.data.status.toUpperCase()}　·　CONFIDENCE {entry.data.confidence.toUpperCase()}</p>
+    </header>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>
+
+<style>
+.content-page { max-width: 840px; padding-top: 88px; padding-bottom: 112px; }.eyebrow,.meta { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .07em; color: var(--accent-tech); }.content-page h1 { margin-top: 14px; font-size: clamp(2.25rem, 5vw, 4.2rem); line-height: 1.03; letter-spacing: -.055em; }.subtitle { margin-top: 14px; font-size: 1.2rem; color: var(--text-secondary); }.meta { margin-top: 27px; color: var(--text-tertiary); }.prose { margin-top: 58px; color: #34445a; font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; letter-spacing: -.02em; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }.prose :global(a) { color: var(--accent-tech); }
+</style>
