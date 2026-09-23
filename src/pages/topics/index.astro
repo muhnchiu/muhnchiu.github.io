@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadTopicRegistry } from '../../data/topics';
+
+const { topics } = await loadTopicRegistry();
+---
+
+<Base title="长期议题 — Horizon" description="持续追踪那些正在改变技术版图的关键方向。">
+  <section class="topics-index container">
+    <header class="page-heading">
+      <p class="eyebrow">RESEARCH TOPICS</p>
+      <h1>长期议题</h1>
+      <p>持续追踪那些正在改变技术版图的关键方向。</p>
+    </header>
+
+    {topics.length ? (
+      <div class="topic-grid">
+        {topics.map((topic) => (
+          <a class="topic-card" href={`/topics/${topic.slug}`}>
+            <div class="topic-card-heading">
+              <h2>{topic.name}</h2>
+              <span class={`status status-${topic.status.id}`}>{topic.status.label}</span>
+            </div>
+            {topic.description && <p class="topic-description">{topic.description}</p>}
+            <div class="topic-stats">
+              <span><b>{topic.totalResearch}</b> 篇研究</span>
+              <span><b>{topic.totalSignals}</b> 条信号</span>
+            </div>
+            <div class="activity-line">
+              <span>7 日 {topic.signals7d} 条信号</span>
+              <span>30 日 {topic.signals30d} 条信号 · {topic.research30d} 篇研究</span>
+            </div>
+            <footer>最近活跃 <time>{topic.lastActivityLabel ?? '—'}</time><span aria-hidden="true">→</span></footer>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">尚无已发布内容关联到长期议题。</div>
+    )}
+  </section>
+</Base>
+
+<style>
+.topics-index { max-width: 1080px; padding-top: 82px; padding-bottom: 112px; }
+.page-heading { padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); }
+.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; color: var(--accent-tech); }
+.page-heading h1 { margin-top: 12px; font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: -.045em; }
+.page-heading > p:last-child { margin-top: 12px; color: var(--text-secondary); }
+.topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 30px; }
+.topic-card { display: flex; flex-direction: column; min-height: 210px; padding: 23px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: linear-gradient(135deg, var(--bg-surface), #f4faff); transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition); }
+.topic-card:hover { color: inherit; border-color: var(--accent-tech); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.topic-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.topic-card h2 { font-size: 1.15rem; letter-spacing: -.02em; }
+.topic-description { margin-top: 10px; color: var(--text-secondary); font-size: .86rem; line-height: 1.6; }
+.status { flex: 0 0 auto; padding: 4px 8px; border-radius: 999px; font-family: var(--font-mono); font-size: .61rem; color: #315d88; background: #edf6ff; }
+.status-hot { color: #a33b39; background: #fff0ed; }.status-active { color: #126b65; background: #eaf8f4; }.status-quiet { color: var(--text-tertiary); background: var(--bg-base); }
+.topic-stats { display: flex; gap: 22px; margin-top: auto; padding-top: 20px; font-size: .78rem; color: var(--text-secondary); }
+.topic-stats b { color: var(--text-primary); font-size: 1rem; }
+.activity-line { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; color: var(--text-tertiary); font-size: .67rem; }
+.topic-card footer { display: flex; gap: 8px; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-subtle); color: var(--text-tertiary); font-size: .68rem; }
+.topic-card footer time { color: var(--text-secondary); font-family: var(--font-mono); }.topic-card footer span { margin-left: auto; color: var(--accent-tech); }
+.empty-state { margin-top: 28px; padding: 48px; text-align: center; color: var(--text-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+@media (max-width: 650px) { .topics-index { padding-top: 54px; }.topic-grid { grid-template-columns: 1fr; }.topic-card { min-height: 190px; } }
+</style>

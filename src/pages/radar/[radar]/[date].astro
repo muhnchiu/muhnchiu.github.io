@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
+import { getTopicLabel } from '../../../data/topics';
 
 export async function getStaticPaths() {
   const entries = await getCollection('radar', ({ data }) => data.publish);
@@ -13,6 +14,10 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const date = entry.data.date.toISOString().slice(0, 10);
+const linkedTopics = [...new Set([
+  ...entry.data.topics,
+  ...entry.data.highlights.flatMap((highlight) => highlight.topic ? [highlight.topic] : []),
+])];
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.description ?? entry.data.verdict}>
@@ -23,11 +28,12 @@ const date = entry.data.date.toISOString().slice(0, 10);
       <h1>{entry.data.title}</h1>
       <p class="description">{entry.data.description ?? entry.data.verdict}</p>
       <dl class="metrics"><div><dt>SIGNALS</dt><dd>{entry.data.signalCount}</dd></div><div><dt>HIGH SIGNALS</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>ACTION REQUIRED</dt><dd>{entry.data.actionRequired}</dd><small>CONFIDENCE {entry.data.confidence.toUpperCase()}</small></div></dl>
+      <nav class="topic-links" aria-label="关联长期议题">{linkedTopics.map((topic) => <a href={`/topics/${topic}`}>{getTopicLabel(topic)}</a>)}</nav>
     </header>
     <div class="prose"><Content /></div>
   </article>
 </Base>
 
 <style>
-.radar-report { max-width: 1000px; padding-top: 82px; padding-bottom: 112px; }.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent-tech); }.report-date { margin-top: 16px; font-family: var(--font-mono); font-size: 1rem; color: var(--text-tertiary); }.radar-report h1 { margin-top: 10px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; letter-spacing: -.045em; }.description { margin-top: 14px; color: var(--text-secondary); font-size: 1.05rem; }.metrics { display: flex; gap: 0; margin-top: 34px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }.metrics div { flex: 1; padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.metrics div:last-child { border-right: 0; }.metrics dt { font-family: var(--font-mono); font-size: .59rem; letter-spacing: .07em; color: var(--text-tertiary); }.metrics dd { margin-top: 6px; font-size: 1.65rem; font-weight: 700; }.prose { max-width: 760px; margin-top: 58px; color: #34445a; font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }@media (max-width: 560px) { .metrics { flex-direction: column; }.metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.metrics div:last-child { border-bottom: 0; } }
+.radar-report { max-width: 1000px; padding-top: 82px; padding-bottom: 112px; }.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent-tech); }.report-date { margin-top: 16px; font-family: var(--font-mono); font-size: 1rem; color: var(--text-tertiary); }.radar-report h1 { margin-top: 10px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; letter-spacing: -.045em; }.description { margin-top: 14px; color: var(--text-secondary); font-size: 1.05rem; }.metrics { display: flex; gap: 0; margin-top: 34px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }.metrics div { flex: 1; padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.metrics div:last-child { border-right: 0; }.metrics dt { font-family: var(--font-mono); font-size: .59rem; letter-spacing: .07em; color: var(--text-tertiary); }.metrics dd { margin-top: 6px; font-size: 1.65rem; font-weight: 700; }.topic-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 19px; }.topic-links a { padding: 4px 9px; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-secondary); font-size: .68rem; }.topic-links a:hover { color: var(--accent-tech); border-color: var(--accent-tech); }.prose { max-width: 760px; margin-top: 38px; color: #34445a; font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }@media (max-width: 560px) { .metrics { flex-direction: column; }.metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.metrics div:last-child { border-bottom: 0; } }
 </style>

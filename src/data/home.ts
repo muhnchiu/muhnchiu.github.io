@@ -1,10 +1,8 @@
 import { getCollection } from 'astro:content';
 import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from './radar';
+import { aggregateTopics } from './topics';
 
 const actionPriority = { action: 0, test: 1, explore: 2, watch: 3, read: 4, ignore: 5 } as const;
-
-const topicLabel = (slug: string, titles: Map<string, string>) => titles.get(slug)
-  ?? slug.split('-').map((word) => word.slice(0, 1).toUpperCase() + word.slice(1)).join(' ');
 
 export async function loadHomeData() {
   const [radarEntries, researchEntries, topicEntries] = await Promise.all([
@@ -55,22 +53,10 @@ export async function loadHomeData() {
   const featuredResearch = research.at(0);
   const recentResearch = research.slice(1, 6);
 
-  const topicTitles = new Map(topicEntries.map((entry) => [entry.id, entry.data.title]));
-  const topicStats = new Map<string, { research: number; signals: number; updated: Date }>();
-  const updateTopic = (slug: string, kind: 'research' | 'signals', amount: number, updated: Date) => {
-    const current = topicStats.get(slug) ?? { research: 0, signals: 0, updated };
-    current[kind] += amount;
-    if (updated.getTime() > current.updated.getTime()) current.updated = updated;
-    topicStats.set(slug, current);
-  };
-  research.forEach((entry) => entry.data.topics.forEach((slug) => updateTopic(slug, 'research', 1, entry.data.updated)));
-  radars.forEach((entry) => entry.data.topics.forEach((slug) => updateTopic(slug, 'signals', entry.data.signalCount, entry.data.date)));
-  const topics = [...topicStats.entries()].map(([slug, stats]) => ({
-    slug,
-    name: topicLabel(slug, topicTitles),
-    ...stats,
-    updatedLabel: displayRadarDate(stats.updated),
-  })).sort((a, b) => b.research - a.research || b.signals - a.signals || b.updated.getTime() - a.updated.getTime()).slice(0, 6);
+  const topics = aggregateTopics(radars, research, topicEntries).topics.slice(0, 6).map((topic) => ({
+    ...topic,
+    updatedLabel: topic.lastActivityLabel ?? '—',
+  }));
 
   return {
     hero: { activeRadarCount: latestRadarReports.length, latestRadarDate: latestRadarDate ? displayRadarDate(latestRadarDate) : undefined },

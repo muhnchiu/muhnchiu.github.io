@@ -1,7 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../../data/research';
+import { statusLabel, confidenceLabel, formatDate } from '../../data/research';
+import { getTopicLabel } from '../../data/topics';
 
 // Static paths from published research
 export async function getStaticPaths() {
@@ -76,7 +77,7 @@ const isArchived = entry.data.status === 'archived';
       <h1>{entry.data.title}</h1>
       <p class="subtitle">{entry.data.subtitle}</p>
       <div class="topic-tags">
-        {entry.data.topics.map((t) => <span class="topic">{topicLabel(t)}</span>)}
+        {entry.data.topics.map((t) => <a class="topic" href={`/topics/${t}`}>{getTopicLabel(t)}</a>)}
       </div>
       <div class="meta-grid">
         <div class="meta-item">
@@ -177,6 +178,7 @@ const isArchived = entry.data.status === 'archived';
 .subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; }
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
 .topic { font-size: .75rem; color: var(--text-secondary); padding: 3px 10px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 4px; }
+.topic:hover { color: var(--accent-tech); border-color: var(--accent-tech); }
 
 .meta-grid { display: flex; flex-wrap: wrap; gap: 32px; padding: 20px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
 .meta-item { display: flex; flex-direction: column; gap: 2px; }
