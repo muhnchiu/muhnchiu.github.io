@@ -174,7 +174,7 @@ const isArchived = entry.data.status === 'archived';
 .breadcrumb a:hover { color: var(--accent-tech); }
 .sep { margin: 0 8px; }
 
-.research-header h1 { font-size: clamp(1.75rem, 4vw, 2.8rem); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 12px; }
+.research-header h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.75rem, 4vw, 2.8rem); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 12px; }
 .subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; }
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
 .topic { font-size: .75rem; color: var(--text-secondary); padding: 3px 10px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 4px; }
@@ -190,7 +190,7 @@ const isArchived = entry.data.status === 'archived';
 
 .content-layout { display: grid; grid-template-columns: 1fr 220px; gap: 48px; margin-top: 48px; }
 .prose { max-width: 760px; font-size: 1rem; line-height: 1.85; color: #34445a; }
-.prose :global(h2) { margin: 48px 0 16px; font-size: 1.4rem; color: var(--text-primary); letter-spacing: -.02em; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
+.prose :global(h2) { margin: 48px 0 16px; font-family: var(--font-display); font-weight: 400; font-size: 1.4rem; color: var(--text-primary); letter-spacing: -.02em; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
 .prose :global(h3) { margin: 32px 0 12px; font-size: 1.15rem; color: var(--text-primary); }
 .prose :global(p) { margin: 14px 0; }
 .prose :global(ul), .prose :global(ol) { margin: 14px 0 14px 24px; }

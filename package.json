@@ -5,7 +5,7 @@
   "description": "Horizon — Technology Intelligence & Research",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-locales.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -13,7 +13,11 @@
     "type": "git",
     "url": "git+https://github.com/muhnchiu/muhnchiu.github.io.git"
   },
-  "keywords": ["horizon", "radar", "research"],
+  "keywords": [
+    "horizon",
+    "radar",
+    "research"
+  ],
   "author": "muhnchiu",
   "license": "MIT",
   "bugs": {
@@ -21,6 +25,12 @@
   },
   "homepage": "https://muhnchiu.github.io/",
   "dependencies": {
-    "astro": "^7.3.4"
+    "@fontsource/geist": "^5.3.0",
+    "@fontsource/geist-mono": "^5.3.0",
+    "@fontsource/iansui": "^5.3.0",
+    "@fontsource/lxgw-wenkai-tc": "^5.3.0",
+    "astro": "^7.3.4",
+    "opencc-js": "^1.4.2",
+    "parse5": "^8.0.1"
   }
 }

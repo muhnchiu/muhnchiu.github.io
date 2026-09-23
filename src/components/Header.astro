@@ -21,6 +21,11 @@ const navItems = [
       ))}
     </nav>
     <div class="header-tools" aria-label="站点工具">
+      <nav class="language-switch" aria-label="文字版本">
+        <a href="/" data-language="zh-Hant" aria-label="繁体中文"><span data-no-convert>繁</span></a>
+        <span aria-hidden="true">/</span>
+        <a href="/zh-hans/" data-language="zh-Hans" aria-label="简体中文"><span data-no-convert>简</span></a>
+      </nav>
       <button class="icon-button" type="button" aria-label="搜索">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="5.8"></circle><path d="m16 16 4 4"></path></svg>
       </button>
@@ -60,6 +65,7 @@ const navItems = [
 }
 
 .logo-text {
+  font-family: var(--font-ui);
   font-size: 1rem;
   color: var(--text-primary);
 }
@@ -86,6 +92,9 @@ const navItems = [
 }
 
 .header-tools { display: flex; align-items: center; gap: 9px; margin-left: 22px; }
+.language-switch { display: flex; align-items: center; gap: 5px; margin-right: 5px; padding-right: 12px; border-right: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: .7rem; color: var(--text-tertiary); }
+.language-switch a { color: var(--text-tertiary); }
+.language-switch a:hover, .language-switch a[aria-current="page"] { color: var(--text-primary); font-weight: 700; }
 .icon-button { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; background: transparent; border: 0; color: var(--text-primary); cursor: pointer; }
 .icon-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
 .header-slogan { padding-left: 14px; border-left: 1px solid var(--border-subtle); font-size: 0.64rem; color: var(--text-tertiary); white-space: nowrap; }
