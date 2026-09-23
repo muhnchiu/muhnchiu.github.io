@@ -72,6 +72,8 @@ const research = defineCollection({
     confidence,
     featured: z.boolean(),
     publish: z.boolean(),
+    radar: z.array(z.enum(['ai', 'dev', 'app', 'security', 'skill'])).optional(),
+    related: z.array(z.string().min(1)).optional(),
   }).strict(),
 });
 
