@@ -1,56 +1,77 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { loadTopicRegistry } from '../../data/topics';
+import { loadTopics } from '../../data/topics';
 
-const topics = await loadTopicRegistry();
+const topics = await loadTopics();
+const displayDate = (date: Date) => date.toISOString().slice(0, 10);
 ---
 
-<Base title="长期议题 — Horizon" description="持续追踪那些正在改变技术版图的关键方向。">
+<Base title="主题脉络｜Horizon" description="从每日讯号，到长期趋势。浏览已发布 Radar 与 Research 汇聚的长期研究主题。">
   <section class="topics-index container">
     <header class="page-heading">
-      <p class="eyebrow">RESEARCH TOPICS</p>
-      <h1>长期议题</h1>
-      <p>持续追踪那些正在改变技术版图的关键方向。</p>
+      <p class="eyebrow">SIGNAL → RESEARCH → KNOWLEDGE</p>
+      <h1>主题脉络</h1>
+      <p>从每日讯号，到长期趋势</p>
     </header>
 
     {topics.length ? (
       <div class="topic-grid">
         {topics.map((topic) => (
-          <a class="topic-card" href={`/topics/${topic.slug}`}>
-            <div class="topic-card-heading"><h2>{topic.label}</h2></div>
-            <code class="topic-slug">{topic.slug}</code>
-            {topic.description && <p class="topic-description">{topic.description}</p>}
-            <div class="topic-stats">
-              <span><b>{topic.researchCount}</b> 篇深度研究</span>
-              <span><b>{topic.radarSignalCount}</b> 条情报信号</span>
+          <a class="topic-card" href={`/topics/${topic.slug}/`}>
+            <div class="topic-card-heading">
+              <div>
+                {topic.category && <span class="topic-category">{topic.category}</span>}
+                <h2>{topic.name}</h2>
+              </div>
+              <span class="arrow" aria-hidden="true">↗</span>
             </div>
-            <footer>最近更新 <time>{topic.latestActivity?.toISOString().slice(0, 10) ?? '—'}</time><span aria-hidden="true">→</span></footer>
+            <code class="topic-slug">{topic.slug}</code>
+            <p class="topic-description">{topic.description}</p>
+            <div class="topic-stats">
+              <span><b>{topic.radarCount}</b> Radar</span>
+              <span><b>{topic.researchCount}</b> Research</span>
+              <span>更新 <time>{displayDate(topic.latestActivity)}</time></span>
+            </div>
+            {topic.recentContent.length > 0 && (
+              <div class="recent-content">
+                <span class="recent-label">最近关联内容</span>
+                {topic.recentContent.map((item) => (
+                  <span class="recent-item"><small>{item.type === 'research' ? 'RESEARCH' : 'RADAR'}</small><span>{item.title}</span></span>
+                ))}
+              </div>
+            )}
           </a>
         ))}
       </div>
     ) : (
-      <div class="empty-state">尚无已发布内容关联到长期议题。</div>
+      <div class="empty-state">尚无已发布内容关联到主题。</div>
     )}
   </section>
 </Base>
 
 <style>
-.topics-index { max-width: 1080px; padding-top: 82px; padding-bottom: 112px; }
-.page-heading { padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); }
+.topics-index { max-width: 1120px; padding-top: 82px; padding-bottom: 112px; }
+.page-heading { padding-bottom: 34px; border-bottom: 1px solid var(--border-subtle); }
 .eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; color: var(--accent-tech); }
-.page-heading h1 { margin-top: 12px; font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: -.045em; }
+.page-heading h1 { margin-top: 12px; font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem, 5vw, 3.5rem); letter-spacing: -.04em; }
 .page-heading > p:last-child { margin-top: 12px; color: var(--text-secondary); }
 .topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 30px; }
-.topic-card { display: flex; flex-direction: column; min-height: 190px; padding: 23px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); transition: border-color var(--transition), box-shadow var(--transition); }
-.topic-card:hover { color: inherit; border-color: var(--accent-tech); box-shadow: var(--shadow-md); }
+.topic-card { display: flex; flex-direction: column; min-height: 270px; padding: 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); transition: border-color var(--transition), box-shadow var(--transition); }
+.topic-card:hover { color: inherit; border-color: #a8c9e3; box-shadow: var(--shadow-md); }
 .topic-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.topic-card h2 { font-size: 1.15rem; letter-spacing: -.02em; }
-.topic-slug { margin-top: 5px; color: var(--text-tertiary); font-size: .66rem; }
-.topic-description { margin-top: 10px; color: var(--text-secondary); font-size: .86rem; line-height: 1.6; }
-.topic-stats { display: flex; gap: 22px; margin-top: auto; padding-top: 20px; font-size: .78rem; color: var(--text-secondary); }
-.topic-stats b { color: var(--text-primary); font-size: 1rem; }
-.topic-card footer { display: flex; gap: 8px; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-subtle); color: var(--text-tertiary); font-size: .68rem; }
-.topic-card footer time { color: var(--text-secondary); font-family: var(--font-mono); }.topic-card footer span { margin-left: auto; color: var(--accent-tech); }
+.topic-category { color: var(--accent-tech); font-family: var(--font-mono); font-size: .61rem; letter-spacing: .07em; }
+.topic-card h2 { margin-top: 4px; font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; letter-spacing: -.02em; }
+.arrow { color: #7b94ac; font-size: 1rem; }
+.topic-slug { margin-top: 4px; color: var(--text-tertiary); font-size: .67rem; }
+.topic-description { margin-top: 12px; color: var(--text-secondary); font-size: .83rem; line-height: 1.6; }
+.topic-stats { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: .71rem; }
+.topic-stats b { color: var(--text-primary); font-size: .9rem; }
+.topic-stats time { font-family: var(--font-mono); }
+.recent-content { display: grid; gap: 8px; margin-top: 18px; padding-top: 13px; border-top: 1px solid var(--border-subtle); }
+.recent-label { color: var(--text-tertiary); font-size: .64rem; }
+.recent-item { display: grid; grid-template-columns: 68px minmax(0, 1fr); gap: 9px; align-items: baseline; font-size: .74rem; }
+.recent-item small { color: #6f89a0; font-family: var(--font-mono); font-size: .57rem; }
+.recent-item > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty-state { margin-top: 28px; padding: 48px; text-align: center; color: var(--text-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
-@media (max-width: 650px) { .topics-index { padding-top: 54px; }.topic-grid { grid-template-columns: 1fr; }.topic-card { min-height: 190px; } }
+@media (max-width: 700px) { .topics-index { padding-top: 54px; }.topic-grid { grid-template-columns: 1fr; }.topic-card { min-height: 0; } }
 </style>

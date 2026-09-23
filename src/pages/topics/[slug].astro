@@ -1,73 +1,77 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { loadTopicRegistry } from '../../data/topics';
-import { confidenceLabel, formatDate, statusLabel } from '../../data/research';
+import { loadTopics } from '../../data/topics';
 
 export async function getStaticPaths() {
-  const topics = await loadTopicRegistry();
+  const topics = await loadTopics();
   return topics.map((topic) => ({ params: { slug: topic.slug }, props: { topic } }));
 }
 
 const { topic } = Astro.props;
-const description = topic.description ?? `Horizon 关于 ${topic.label} 的长期技术信号与研究记录。`;
-const actionLabels: Record<string, string> = {
-  action: '立即行动', test: '建议测试', explore: '探索', watch: '持续观察', read: '阅读', ignore: '忽略',
-};
-const signalLabels: Record<string, string> = { critical: '严重', high: '高', medium: '中', low: '低' };
+const displayDate = (date: Date) => date.toISOString().slice(0, 10);
 ---
 
-<Base title={`${topic.label} — Horizon 长期议题`} description={description}>
+<Base title={`${topic.name}｜Horizon 主题脉络`} description={topic.description}>
   <article class="topic-detail container">
     <header class="topic-hero">
-      <a class="back-link" href="/topics">← 长期议题</a>
-      <p class="eyebrow">TOPIC FILE</p>
-      <h1>{topic.label}</h1>
-      <code class="slug">{topic.slug.toUpperCase()}</code>
-      {topic.description && <p class="description">{topic.description}</p>}
+      <a class="back-link" href="/topics/">← 主题脉络</a>
+      <p class="eyebrow">TOPIC FILE {topic.category && ` / ${topic.category}`}</p>
+      <h1>{topic.name}</h1>
+      <code class="slug">{topic.slug}</code>
+      <p class="description">{topic.description}</p>
       <div class="overview">
-        <div><b>{topic.researchCount}</b><span>深度研究</span></div>
-        <div><b>{topic.radarSignalCount}</b><span>Radar Signals</span></div>
-        <div><b>{topic.latestActivity?.toISOString().slice(0, 10) ?? '—'}</b><span>最近更新</span></div>
+        <div><b>{topic.radarCount}</b><span>Radar Signals</span></div>
+        <div><b>{topic.researchCount}</b><span>Research</span></div>
+        <div><b>{displayDate(topic.latestActivity)}</b><span>Last Updated</span></div>
       </div>
     </header>
 
-    {topic.relatedResearch.length > 0 && (
-      <section class="content-section">
-        <header class="section-heading"><div><p class="eyebrow">RESEARCH</p><h2>深度研究</h2></div><span>{topic.researchCount} 篇</span></header>
-        <div class="research-list">
+    <section class="content-section" aria-labelledby="topic-research-heading">
+      <header class="section-heading">
+        <div><p class="eyebrow">RESEARCH / LONG-TERM VIEW</p><h2 id="topic-research-heading">研究专题</h2></div>
+        <span>{topic.researchCount} 篇</span>
+      </header>
+      {topic.relatedResearch.length ? (
+        <div class="content-list">
           {topic.relatedResearch.map((entry) => (
-            <a class="research-row" href={`/research/${entry.data.slug}`}>
-              <div class="research-copy"><h3>{entry.data.title}</h3><p>{entry.data.subtitle}</p></div>
-              <div class="research-meta"><time>{formatDate(entry.data.updated)}</time><span>{statusLabel(entry.data.status)}</span><span>{confidenceLabel(entry.data.confidence)}</span></div>
+            <a class="content-row" href={`/research/${entry.data.slug}/`}>
+              <div class="row-meta"><span>RESEARCH</span><time>{displayDate(entry.data.updated)}</time></div>
+              <div class="row-copy"><h3>{entry.data.title}</h3><p>{entry.data.subtitle}</p><small>{entry.data.category.join(' · ')} · {entry.data.source}</small></div>
               <span class="arrow" aria-hidden="true">→</span>
             </a>
           ))}
         </div>
-      </section>
-    )}
+      ) : (
+        <p class="section-empty">这个主题尚无已发布研究，先从每日情报观察信号。</p>
+      )}
+    </section>
 
-    {topic.relatedRadarSignals.length > 0 && (
-      <section class="content-section">
-        <header class="section-heading"><div><p class="eyebrow">RADAR</p><h2>最新信号</h2></div><span>{topic.radarSignalCount} 条</span></header>
-        <div class="signal-list">
-          {topic.relatedRadarSignals.map((signal) => (
-            <a class="signal-row" href={signal.href}>
-              <time>{signal.date.toISOString().slice(0, 10)}</time>
-              <span class="radar-name">{signal.radarLabel}</span>
-              <div class="signal-copy"><h3>{signal.title}</h3><span class="signal-meta"><b class={`level level-${signal.signal}`}>{signalLabels[signal.signal]}</b><span>{actionLabels[signal.action] ?? signal.action}</span></span></div>
+    <section class="content-section" aria-labelledby="topic-radar-heading">
+      <header class="section-heading">
+        <div><p class="eyebrow">RADAR / DAILY SIGNALS</p><h2 id="topic-radar-heading">每日情报</h2></div>
+        <span>{topic.radarCount} 期</span>
+      </header>
+      {topic.relatedRadarReports.length ? (
+        <div class="content-list">
+          {topic.relatedRadarReports.map((report) => (
+            <a class="content-row" href={report.href}>
+              <div class="row-meta"><span>RADAR</span><time>{displayDate(report.date)}</time></div>
+              <div class="row-copy"><h3>{report.title}</h3><p>{report.verdict}</p><small>{report.radarLabel}{report.matchedHighlights.length > 0 && ` · ${report.matchedHighlights.length} 条相关重点信号`}</small></div>
               <span class="arrow" aria-hidden="true">→</span>
             </a>
           ))}
         </div>
-      </section>
-    )}
+      ) : (
+        <p class="section-empty">这个主题尚无已发布 Radar 日报。</p>
+      )}
+    </section>
 
     {topic.relatedTopics.length > 0 && (
-      <section class="content-section related-section">
-        <header class="section-heading"><div><p class="eyebrow">RELATED TOPICS</p><h2>相关主题</h2></div></header>
+      <section class="content-section related-section" aria-labelledby="related-topics-heading">
+        <header class="section-heading"><div><p class="eyebrow">KNOWLEDGE / CONNECTIONS</p><h2 id="related-topics-heading">相关主题</h2></div></header>
         <div class="related-list">
           {topic.relatedTopics.map((related) => (
-            <a href={`/topics/${related.slug}`}><span>{related.label}</span><code>{related.slug}</code><small>共同出现 {related.coOccurrenceCount} 次　→</small></a>
+            <a href={`/topics/${related.slug}/`}><span>{related.name}</span><code>{related.slug}</code><small>共同出现 {related.coOccurrenceCount} 次　→</small></a>
           ))}
         </div>
       </section>
@@ -81,17 +85,20 @@ const signalLabels: Record<string, string> = { critical: '严重', high: '高', 
 .topic-hero { padding: 28px 0 32px; border-bottom: 1px solid var(--border-subtle); }
 .eyebrow { font-family: var(--font-mono); font-size: .63rem; letter-spacing: .09em; color: var(--accent-tech); }
 .topic-hero > .eyebrow { margin-top: 22px; }
-.topic-hero h1 { margin-top: 8px; font-size: clamp(2.25rem, 5vw, 3.8rem); line-height: 1.08; letter-spacing: -.045em; }
+.topic-hero h1 { margin-top: 8px; font-family: var(--font-display); font-weight: 400; font-size: clamp(2.25rem, 5vw, 3.8rem); line-height: 1.08; letter-spacing: -.04em; }
 .slug { display: inline-block; margin-top: 8px; color: var(--text-tertiary); font-size: .7rem; }
 .description { max-width: 700px; margin-top: 16px; color: var(--text-secondary); font-size: .95rem; line-height: 1.7; }
 .overview { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 28px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .overview div { padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.overview div:last-child { border-right: 0; }
 .overview b { display: block; font-family: var(--font-mono); font-size: 1.45rem; }.overview span { display: block; margin-top: 5px; color: var(--text-tertiary); font-size: .68rem; }
-.content-section { padding-top: 42px; }.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 13px; }.section-heading h2 { margin-top: 5px; font-size: 1.2rem; }.section-heading > span { color: var(--text-tertiary); font-size: .7rem; }
-.research-list,.signal-list,.related-list { border-top: 1px solid var(--border-subtle); }
-.research-row { display: grid; grid-template-columns: minmax(0, 1fr) 210px 18px; gap: 20px; align-items: center; padding: 18px 8px; border-bottom: 1px solid var(--border-subtle); }.research-row:hover,.signal-row:hover { color: inherit; background: var(--bg-surface); }
-.research-copy h3,.signal-copy h3 { font-size: .9rem; line-height: 1.45; font-weight: 600; }.research-copy p { margin-top: 5px; color: var(--text-secondary); font-size: .76rem; line-height: 1.5; }.research-meta { display: flex; flex-wrap: wrap; gap: 5px 10px; color: var(--text-tertiary); font-size: .65rem; }.research-meta time { font-family: var(--font-mono); }.arrow { color: var(--text-tertiary); text-align: right; }
-.signal-row { display: grid; grid-template-columns: 105px 130px minmax(0, 1fr) 18px; gap: 14px; align-items: center; padding: 15px 8px; border-bottom: 1px solid var(--border-subtle); }.signal-row time { font: .68rem var(--font-mono); color: var(--text-tertiary); }.radar-name { font: .62rem var(--font-mono); color: var(--accent-tech); }.signal-meta { display: flex; gap: 12px; margin-top: 5px; color: var(--text-tertiary); font-size: .66rem; }.signal-meta b { font-weight: 500; }.level-critical,.level-high { color: #b33b3b; }.level-medium { color: #a16b19; }.level-low { color: var(--text-tertiary); }
+.content-section { padding-top: 45px; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }.section-heading h2 { margin-top: 5px; font-family: var(--font-display); font-weight: 400; font-size: 1.38rem; }.section-heading > span { color: var(--text-tertiary); font-size: .7rem; }
+.content-list,.related-list { border-top: 1px solid var(--border-subtle); }
+.content-row { display: grid; grid-template-columns: 128px minmax(0, 1fr) 18px; gap: 20px; align-items: start; padding: 19px 8px; border-bottom: 1px solid var(--border-subtle); }.content-row:hover { color: inherit; background: var(--bg-surface); }
+.row-meta { display: flex; flex-direction: column; gap: 7px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .65rem; }.row-meta span { color: var(--accent-tech); letter-spacing: .06em; }
+.row-copy h3 { font-size: .93rem; font-weight: 600; line-height: 1.45; }.row-copy p { margin-top: 6px; color: var(--text-secondary); font-size: .8rem; line-height: 1.55; }.row-copy small { display: block; margin-top: 8px; color: var(--text-tertiary); font-size: .68rem; }
+.arrow { color: var(--text-tertiary); text-align: right; }.section-empty { padding: 23px 8px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); font-size: .8rem; }
 .related-list a { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: center; padding: 13px 8px; border-bottom: 1px solid var(--border-subtle); }.related-list code,.related-list small { color: var(--text-tertiary); font-size: .65rem; }.related-list small { text-align: right; }
-@media (max-width: 720px) { .topic-detail { padding-top: 38px; }.overview div { padding: 14px 12px; }.overview b { font-size: 1.1rem; }.research-row { grid-template-columns: 1fr 18px; gap: 8px; }.research-meta { grid-column: 1; grid-row: 2; }.research-row .arrow { grid-column: 2; grid-row: 1 / span 2; }.signal-row { grid-template-columns: 1fr 18px; gap: 4px 8px; }.signal-row time,.radar-name,.signal-copy { grid-column: 1; }.signal-row time { grid-row: 1; }.radar-name { grid-row: 2; }.signal-copy { grid-row: 3; }.signal-row .arrow { grid-column: 2; grid-row: 1 / span 3; }.related-list a { grid-template-columns: 1fr auto; }.related-list code { grid-column: 1; }.related-list small { grid-column: 2; grid-row: 1 / span 2; } }
+@media (max-width: 720px) { .topic-detail { padding-top: 38px; }.overview div { padding: 14px 12px; }.overview b { font-size: 1.1rem; }.content-row { grid-template-columns: minmax(0, 1fr) 18px; gap: 9px; }.row-meta { grid-column: 1; flex-direction: row; gap: 12px; }.row-copy { grid-column: 1; }.content-row .arrow { grid-column: 2; grid-row: 1 / span 2; }.related-list a { grid-template-columns: 1fr auto; }.related-list code { grid-column: 1; }.related-list small { grid-column: 2; grid-row: 1 / span 2; } }
+@media (max-width: 460px) { .overview { grid-template-columns: 1fr; }.overview div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.overview div:last-child { border-bottom: 0; } }
 </style>

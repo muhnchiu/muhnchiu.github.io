@@ -62,6 +62,7 @@ const createdStr = formatDate(entry.data.created);
 const updatedStr = formatDate(entry.data.updated);
 const isUpdated = entry.data.updated.getTime() !== entry.data.created.getTime();
 const isArchived = entry.data.status === 'archived';
+const topicSlugs = [...new Set(entry.data.topics)];
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.subtitle} type="article">
@@ -74,9 +75,11 @@ const isArchived = entry.data.status === 'archived';
       </p>
       <h1>{entry.data.title}</h1>
       <p class="subtitle">{entry.data.subtitle}</p>
-      <div class="topic-tags">
-        {entry.data.topics.map((t) => <a class="topic" href={`/topics/${t}`}>{getTopicLabel(t)}</a>)}
-      </div>
+      {topicSlugs.length > 0 && (
+        <nav class="topic-tags" aria-label="主题脉络">
+          {topicSlugs.map((slug) => <a class="topic" href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
+        </nav>
+      )}
       <div class="meta-grid">
         <div class="meta-item">
           <span class="meta-key">创建</span>

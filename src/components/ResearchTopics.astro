@@ -1,9 +1,52 @@
 ---
-const { topics } = Astro.props;
-const icons = ['▱', '⚙', '</>', '⌁', '♢', '⌕'];
-const accents = ['blue', 'green', 'blue', 'purple', 'red', 'blue'];
+import type { TopicAggregate } from '../data/topics';
+
+const { topics } = Astro.props as { topics: Array<TopicAggregate & { updatedLabel: string }> };
 ---
-<section class="section topics-section"><div class="container"><div class="section-header"><div><h2>长期议题</h2><p class="section-sub">持续追踪那些正在改变技术版图的关键方向。</p></div><a class="all-link" href="/topics">查看全部议题　→</a></div>{topics.length ? <div class="topics-grid">{topics.map((topic, index) => <a href={`/topics/${topic.slug}`} class={`topic-card ${accents[index % accents.length]}`}><div><span class="topic-icon">{icons[index % icons.length]}</span><h3>{topic.label}</h3></div><p><b>{topic.researchCount}</b> 篇深度研究<br /><b>{topic.radarSignalCount}</b> 条情报信号</p><span class="topic-meta"><small>{topic.slug}</small><small>最近更新 {topic.updatedLabel}</small></span></a>)}</div> : <div class="topics-empty">暂无足够的议题数据。</div>}</div></section>
+
+<section class="section topics-section" aria-labelledby="home-topics-heading">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 id="home-topics-heading">主题脉络</h2>
+        <p class="section-sub">从每日讯号，到长期趋势。</p>
+      </div>
+      <a class="all-link" href="/topics/">查看全部主题　→</a>
+    </div>
+    {topics.length ? (
+      <div class="topics-grid">
+        {topics.map((topic, index) => (
+          <a class="topic-card" href={`/topics/${topic.slug}/`}>
+            <span class="topic-kicker">{String(index + 1).padStart(2, '0')} / TOPIC</span>
+            <h3>{topic.name}</h3>
+            <code>{topic.slug}</code>
+            <p><b>{topic.radarCount}</b> Radar <span aria-hidden="true">·</span> <b>{topic.researchCount}</b> Research</p>
+            <span class="topic-updated">最近更新 <time>{topic.updatedLabel}</time></span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="topics-empty">暂无已发布内容关联到主题。</p>
+    )}
+  </div>
+</section>
+
 <style>
-.topics-section { padding-top: 0; padding-bottom: 52px; }.all-link { font-size: .72rem; color: #315d88; }.topics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }.topic-card { min-height: 132px; padding: 14px; border: 1px solid #dce8f1; border-radius: 6px; background: linear-gradient(135deg, #fff, var(--topic-tint)); }.topic-card:hover { color: inherit; border-color: var(--topic); box-shadow: var(--shadow-md); transform: translateY(-2px); }.topic-card.blue { --topic: #1688ef; --topic-tint: #eef9ff; }.topic-card.green { --topic: #139566; --topic-tint: #edfbf5; }.topic-card.purple { --topic: #6156ce; --topic-tint: #f4f2ff; }.topic-card.red { --topic: #d9383e; --topic-tint: #fff3f3; }.topic-card > div { display: flex; align-items: center; gap: 9px; }.topic-icon { display: grid; place-items: center; width: 19px; height: 19px; color: var(--topic); font-family: var(--font-mono); font-size: .8rem; }.topic-card h3 { font-size: .65rem; font-weight: 700; }.topic-card p { margin: 15px 0 11px 28px; font-size: .61rem; line-height: 1.5; color: #66798e; }.topic-card p b { color: #263d57; }.topic-meta { display: flex; flex-direction: column; gap: 4px; font-size: .56rem; color: #74899e; }.topic-meta i { font-style: normal; color: var(--topic); }.topic-meta small { font-size: inherit; }.topics-empty { padding: 35px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: .86rem; }@media (max-width: 1024px) { .topics-grid { grid-template-columns: repeat(3, 1fr); } }@media (max-width: 520px) { .topics-grid { grid-template-columns: repeat(2, 1fr); } }
+.topics-section { padding-top: 0; padding-bottom: 52px; }
+.section-header { margin-bottom: 16px; }
+.all-link { font-size: .72rem; color: #315d88; }
+.topics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.topic-card { display: flex; flex-direction: column; min-height: 155px; padding: 17px 18px; border: 1px solid #dce8f1; border-radius: 6px; background: #fff; transition: border-color var(--transition), box-shadow var(--transition); }
+.topic-card:hover { color: inherit; border-color: #a8c9e3; box-shadow: var(--shadow-md); }
+.topic-kicker { font-family: var(--font-mono); font-size: .57rem; letter-spacing: .08em; color: #7890a6; }
+.topic-card h3 { margin-top: 9px; font-family: var(--font-display); font-size: 1.06rem; font-weight: 400; line-height: 1.25; }
+.topic-card code { margin-top: 4px; color: #7890a6; font-size: .61rem; }
+.topic-card p { margin-top: 13px; font-size: .69rem; color: #52647d; }
+.topic-card p b { color: #263d57; }
+.topic-card p span { margin: 0 5px; color: #a3b2c1; }
+.topic-updated { margin-top: auto; padding-top: 12px; font-size: .61rem; color: #8292a4; }
+.topic-updated time { margin-left: 4px; font-family: var(--font-mono); color: #5a6f85; }
+.topics-empty { padding: 30px 0; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: .86rem; }
+@media (max-width: 900px) { .topics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .topics-grid { grid-template-columns: 1fr; } }
 </style>

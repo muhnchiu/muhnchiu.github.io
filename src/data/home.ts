@@ -1,14 +1,13 @@
 import { getCollection } from 'astro:content';
 import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from './radar';
-import { aggregateTopics } from './topics';
+import { aggregateTopics, mostActiveTopics } from './topics';
 
 const actionPriority = { action: 0, test: 1, explore: 2, watch: 3, read: 4, ignore: 5 } as const;
 
 export async function loadHomeData() {
-  const [radarEntries, researchEntries, topicEntries] = await Promise.all([
+  const [radarEntries, researchEntries] = await Promise.all([
     getCollection('radar', ({ data }) => data.publish),
     getCollection('research', ({ data }) => data.publish),
-    getCollection('topics'),
   ]);
   const radars = radarEntries.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
   const latestRadarDate = radars.at(0)?.data.date;
@@ -53,7 +52,7 @@ export async function loadHomeData() {
   const featuredResearch = research.at(0);
   const recentResearch = research.slice(1, 6);
 
-  const topics = aggregateTopics(radars, research, topicEntries).slice(0, 6).map((topic) => ({
+  const topics = mostActiveTopics(aggregateTopics(radars, research), 6).map((topic) => ({
     ...topic,
     updatedLabel: topic.latestActivity?.toISOString().slice(0, 10) ?? '—',
   }));
