@@ -25,6 +25,8 @@ const radar = defineCollection({
       signal: signalLevel,
       action: signalAction,
       topic: z.string().min(1).optional(),
+      sourceLevel: z.enum(['official', 'ecosystem', 'community', 'media', 'research']),
+      sourceUrl: z.string().url().optional(),
     }).strict()),
     topics: z.array(z.string().min(1)).min(1),
     confidence,
