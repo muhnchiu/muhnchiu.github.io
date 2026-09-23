@@ -1,29 +1,215 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../../data/research';
 
+// Static paths from published research
 export async function getStaticPaths() {
   const entries = await getCollection('research', ({ data }) => data.publish);
   return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
-const date = entry.data.updated.toISOString().slice(0, 10).replaceAll('-', '.');
+const { Content, headings } = await render(entry);
+
+// Build TOC from H2s
+const tocItems = (headings as any[]).filter((h) => h.depth === 2 || h.depth === 3);
+
+// Related Research: match by topics overlap
+const allResearch = await getCollection('research', ({ data }) => data.publish);
+const related = allResearch
+  .filter((e) => e.data.slug !== entry.data.slug)
+  .map((e) => {
+    const overlap = e.data.topics.filter((t) => entry.data.topics.includes(t)).length;
+    const catOverlap = e.data.category.filter((c) => entry.data.category.includes(c)).length;
+    const timeDiff = Math.abs(e.data.updated.getTime() - entry.data.updated.getTime());
+    const score = overlap * 10 + catOverlap * 3 - timeDiff / (1000 * 60 * 60 * 24);
+    return { entry: e, overlap, score };
+  })
+  .filter((r) => r.overlap > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3);
+
+// Related Signals: match Radar highlights by topic
+const radarEntries = await getCollection('radar', ({ data }) => data.publish);
+const researchTopics = entry.data.topics;
+const relatedSignals = radarEntries
+  .flatMap((r) => r.data.highlights.map((h) => ({ ...h, radar: r.data.radar, date: r.data.date, radarId: r.data.radar })))
+  .filter((h) => h.topic && researchTopics.includes(h.topic))
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .slice(0, 5);
+
+// Parse source for Radar link
+const sourceMatch = entry.data.source?.match(/(\w+)\s+Radar\s+(\d{4}-\d{2}-\d{2})/i);
+const radarLink = sourceMatch ? `/radar/${sourceMatch[1].toLowerCase()}/${sourceMatch[2]}` : null;
+
+const createdStr = formatDate(entry.data.created);
+const updatedStr = formatDate(entry.data.updated);
+const isUpdated = entry.data.updated.getTime() !== entry.data.created.getTime();
+const isArchived = entry.data.status === 'archived';
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.subtitle}>
-  <article class="content-page container">
-    <header>
-      <p class="eyebrow">{entry.data.category.join(' · ')}　/　RESEARCH</p>
+  <article class="research-detail container">
+    <header class="research-header">
+      <p class="breadcrumb">
+        <a href="/research">深度研究</a>
+        <span class="sep">/</span>
+        <span>{entry.data.category.join(' · ')}</span>
+      </p>
       <h1>{entry.data.title}</h1>
       <p class="subtitle">{entry.data.subtitle}</p>
-      <p class="meta">UPDATED {date}　·　{entry.data.status.toUpperCase()}　·　CONFIDENCE {entry.data.confidence.toUpperCase()}</p>
+      <div class="topic-tags">
+        {entry.data.topics.map((t) => <span class="topic">{topicLabel(t)}</span>)}
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-key">创建</span>
+          <span class="meta-val">{createdStr}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">更新</span>
+          <span class="meta-val">{isUpdated ? updatedStr : createdStr}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">状态</span>
+          <span class="meta-val">{statusLabel(entry.data.status)}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">置信度</span>
+          <span class="meta-val">{confidenceLabel(entry.data.confidence)}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-key">来源</span>
+          <span class="meta-val">{radarLink ? <a href={radarLink}>{entry.data.source}</a> : entry.data.source}</span>
+        </div>
+      </div>
     </header>
-    <div class="prose"><Content /></div>
+
+    {isArchived && (
+      <div class="archived-banner">
+        本研究已停止持续更新，内容保留作为历史参考。
+      </div>
+    )}
+
+    <div class="content-layout">
+      <div class="prose">
+        <Content />
+      </div>
+      {tocItems.length > 0 && (
+        <aside class="toc">
+          <p class="toc-label">文章目录</p>
+          <nav>
+            {tocItems.map((h) => (
+              <a href={`#${h.slug}`} class={`toc-item toc-h${h.depth}`}>{h.text}</a>
+            ))}
+          </nav>
+        </aside>
+      )}
+    </div>
+
+    {related.length > 0 && (
+      <section class="related-section">
+        <p class="section-label">相关研究</p>
+        <div class="related-grid">
+          {related.map((r) => (
+            <a href={`/research/${r.entry.data.slug}`} class="related-card">
+              <span class="related-topics">{r.entry.data.topics.slice(0, 2).map((t) => topicLabel(t)).join(' · ')}</span>
+              <h3>{r.entry.data.title}</h3>
+              <span class="related-date">{formatDate(r.entry.data.updated)}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {relatedSignals.length > 0 && (
+      <section class="signals-section">
+        <p class="section-label">相关信号</p>
+        <div class="signals-list">
+          {relatedSignals.map((s) => (
+            <a href={`/radar/${s.radarId}/${formatDate(s.date)}`} class="signal-item">
+              <span class="signal-date">{formatDate(s.date)}</span>
+              <span class="signal-radar">{s.radar}</span>
+              <span class="signal-title">{s.title}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </article>
 </Base>
 
 <style>
-.content-page { max-width: 840px; padding-top: 88px; padding-bottom: 112px; }.eyebrow,.meta { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .07em; color: var(--accent-tech); }.content-page h1 { margin-top: 14px; font-size: clamp(2.25rem, 5vw, 4.2rem); line-height: 1.03; letter-spacing: -.055em; }.subtitle { margin-top: 14px; font-size: 1.2rem; color: var(--text-secondary); }.meta { margin-top: 27px; color: var(--text-tertiary); }.prose { margin-top: 58px; color: #34445a; font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; letter-spacing: -.02em; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }.prose :global(a) { color: var(--accent-tech); }
+.research-detail { max-width: 1200px; padding-top: 64px; padding-bottom: 96px; }
+.breadcrumb { font-size: .82rem; color: var(--text-tertiary); margin-bottom: 16px; }
+.breadcrumb a { color: var(--text-secondary); }
+.breadcrumb a:hover { color: var(--accent-tech); }
+.sep { margin: 0 8px; }
+
+.research-header h1 { font-size: clamp(1.75rem, 4vw, 2.8rem); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 12px; }
+.subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; }
+.topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.topic { font-size: .75rem; color: var(--text-secondary); padding: 3px 10px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 4px; }
+
+.meta-grid { display: flex; flex-wrap: wrap; gap: 32px; padding: 20px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.meta-item { display: flex; flex-direction: column; gap: 2px; }
+.meta-key { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .06em; color: var(--text-tertiary); text-transform: uppercase; }
+.meta-val { font-size: .85rem; color: var(--text-primary); }
+.meta-val a { color: var(--accent-tech); }
+
+.archived-banner { margin: 24px 0; padding: 16px 20px; background: rgba(245, 158, 11, .06); border: 1px solid rgba(245, 158, 11, .2); border-radius: var(--radius-sm); font-size: .88rem; color: #92400e; }
+
+.content-layout { display: grid; grid-template-columns: 1fr 220px; gap: 48px; margin-top: 48px; }
+.prose { max-width: 760px; font-size: 1rem; line-height: 1.85; color: #34445a; }
+.prose :global(h2) { margin: 48px 0 16px; font-size: 1.4rem; color: var(--text-primary); letter-spacing: -.02em; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
+.prose :global(h3) { margin: 32px 0 12px; font-size: 1.15rem; color: var(--text-primary); }
+.prose :global(p) { margin: 14px 0; }
+.prose :global(ul), .prose :global(ol) { margin: 14px 0 14px 24px; }
+.prose :global(li) { margin: 6px 0; }
+.prose :global(a) { color: var(--accent-tech); text-decoration: none; border-bottom: 1px solid var(--accent-tech-border); }
+.prose :global(a:hover) { border-bottom-color: var(--accent-tech); }
+.prose :global(blockquote) { margin: 20px 0; padding: 12px 20px; border-left: 3px solid var(--accent-tech); background: var(--bg-base); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--text-secondary); }
+.prose :global(table) { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: .88rem; }
+.prose :global(th) { text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--border-default); font-weight: 600; color: var(--text-primary); }
+.prose :global(td) { padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
+.prose :global(code) { font-family: var(--font-mono); font-size: .85em; padding: 2px 6px; background: var(--bg-base); border-radius: 3px; color: var(--accent-tech); }
+.prose :global(pre) { margin: 20px 0; padding: 16px 20px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); overflow-x: auto; font-size: .85rem; line-height: 1.6; }
+.prose :global(pre code) { padding: 0; background: none; color: var(--text-primary); }
+.prose :global(hr) { border: none; border-top: 1px solid var(--border-subtle); margin: 40px 0; }
+.prose :global(img) { max-width: 100%; height: auto; border-radius: var(--radius-sm); margin: 20px 0; }
+
+.toc { position: sticky; top: 88px; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; }
+.toc-label { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 12px; }
+.toc-item { display: block; font-size: .82rem; color: var(--text-tertiary); padding: 4px 0; border-left: 2px solid var(--border-subtle); padding-left: 12px; transition: color var(--transition), border-color var(--transition); }
+.toc-item:hover { color: var(--accent-tech); border-left-color: var(--accent-tech); }
+.toc-h3 { padding-left: 24px; font-size: .78rem; }
+
+@media (max-width: 1024px) {
+  .content-layout { grid-template-columns: 1fr; }
+  .toc { display: none; }
+}
+
+.related-section { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
+.section-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 20px; }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.related-card { display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); transition: border-color var(--transition), transform var(--transition); }
+.related-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+.related-topics { font-size: .72rem; color: var(--text-tertiary); }
+.related-card h3 { font-size: .95rem; font-weight: 500; line-height: 1.3; }
+.related-date { font-size: .72rem; color: var(--text-tertiary); margin-top: auto; }
+
+.signals-section { margin-top: 40px; }
+.signals-list { display: flex; flex-direction: column; gap: 0; }
+.signal-item { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: .85rem; }
+.signal-item:last-child { border-bottom: none; }
+.signal-date { font-family: var(--font-mono); font-size: .75rem; color: var(--text-tertiary); min-width: 50px; }
+.signal-radar { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .06em; color: var(--accent-tech); text-transform: uppercase; min-width: 40px; }
+.signal-title { color: var(--text-secondary); }
+
+@media (max-width: 768px) {
+  .related-grid { grid-template-columns: 1fr; }
+  .meta-grid { flex-direction: column; gap: 12px; }
+  .prose { font-size: .95rem; }
+}
 </style>

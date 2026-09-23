@@ -1,0 +1,131 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../../data/research';
+
+const all = (await getCollection('research', ({ data }) => data.publish))
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return b.data.updated.getTime() - a.data.updated.getTime();
+  });
+
+const featured = all.filter((e) => e.data.featured).slice(0, 3);
+const rest = all.filter((e) => !e.data.featured);
+
+// Extract unique categories
+const categories = [...new Set(all.flatMap((e) => e.data.category))].sort();
+
+// Stats
+const totalArticles = all.length;
+const totalTopics = [...new Set(all.flatMap((e) => e.data.topics))].length;
+const evolvingCount = all.filter((e) => e.data.status === 'evolving').length;
+const lastUpdate = all[0]?.data.updated;
+
+function entryCard(entry: typeof all[number]) {
+  return (`<a href="/research/${entry.data.slug}" class="research-card" data-status={entry.data.status}>
+      <div class="card-cats">
+        ${entry.data.category.map((c) => `<span class="cat">${c}</span>`).join('')}
+      </div>
+      <h3 class="card-title">${entry.data.title}</h3>
+      <p class="card-sub">${entry.data.subtitle}</p>
+      <div class="card-topics">
+        ${entry.data.topics.slice(0, 4).map((t) => `<span class="topic">${topicLabel(t)}</span>`).join('')}
+      </div>
+      <div class="card-meta">
+        <span class="meta-date">${formatDate(entry.data.created)}</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-status">${statusLabel(entry.data.status)}</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-conf">${confidenceLabel(entry.data.confidence)}</span>
+      </div>
+      <span class="card-arrow">阅读研究 →</span>
+    </a>`);
+}
+---
+
+<Base title="深度研究 — Horizon" description="从每日信号出发，追踪技术背后的长期变量。">
+  <section class="research-index container">
+    <header class="research-hero">
+      <p class="eyebrow">RESEARCH ARCHIVE</p>
+      <h1>深度研究</h1>
+      <p class="intro">从每日信号出发，追踪技术背后的长期变量。</p>
+    </header>
+
+    <div class="stats-bar">
+      <div class="stat"><b>{String(totalArticles).padStart(2, '0')}</b><span>研究文章</span></div>
+      <div class="stat"><b>{String(totalTopics).padStart(2, '0')}</b><span>长期议题</span></div>
+      <div class="stat"><b>{String(evolvingCount).padStart(2, '0')}</b><span>持续演进</span></div>
+      <div class="stat"><b>{lastUpdate ? formatDate(lastUpdate) : '—'}</b><span>最近更新</span></div>
+    </div>
+
+    {categories.length > 0 && (
+      <nav class="filter-bar">
+        <span class="filter-label">分类：</span>
+        {categories.map((c) => <span class="filter-cat">{c}</span>)}
+      </nav>
+    )}
+
+    {featured.length > 0 && (
+      <section class="featured-section">
+        <p class="section-label">FEATURED</p>
+        <div class="cards-grid" set:html={featured.map(entryCard).join('')} />
+      </section>
+    )}
+
+    {rest.length > 0 && (
+      <section class="rest-section">
+        <p class="section-label">ALL RESEARCH</p>
+        <div class="cards-grid" set:html={rest.map(entryCard).join('')} />
+      </section>
+    )}
+
+    {all.length === 0 && (
+      <div class="empty-state">
+        <p>暂无公开研究</p>
+        <p class="empty-sub">每日深度研究正在持续积累中。</p>
+      </div>
+    )}
+  </section>
+</Base>
+
+<style>
+.research-index { padding-top: 88px; padding-bottom: 112px; }
+.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--text-tertiary); }
+.research-hero h1 { margin-top: 14px; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.03em; }
+.intro { margin-top: 10px; color: var(--text-secondary); font-size: 1.05rem; }
+
+.stats-bar { display: flex; gap: 48px; margin: 48px 0; padding: 28px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat b { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+.stat span { font-size: .72rem; color: var(--text-tertiary); }
+
+.filter-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
+.filter-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; color: var(--text-tertiary); }
+.filter-cat { font-size: .82rem; color: var(--text-secondary); padding: 4px 12px; border: 1px solid var(--border-subtle); border-radius: 20px; }
+
+.section-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 20px; }
+
+.cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+@media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } }
+
+.research-card { display: flex; flex-direction: column; gap: 10px; padding: 24px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); }
+.research-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.research-card[data-status="archived"] { opacity: .65; }
+
+.card-cats { display: flex; gap: 6px; }
+.cat { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .06em; color: var(--accent-tech); text-transform: uppercase; }
+.card-title { font-size: 1.15rem; font-weight: 600; line-height: 1.3; }
+.card-sub { font-size: .88rem; color: var(--text-secondary); line-height: 1.5; }
+.card-topics { display: flex; flex-wrap: wrap; gap: 6px; }
+.topic { font-size: .72rem; color: var(--text-tertiary); padding: 2px 8px; background: var(--bg-base); border-radius: 4px; }
+.card-meta { display: flex; align-items: center; gap: 6px; font-size: .72rem; color: var(--text-tertiary); }
+.meta-sep { color: var(--border-default); }
+.card-arrow { font-size: .82rem; color: var(--accent-tech); font-weight: 500; margin-top: 4px; }
+
+.empty-state { text-align: center; padding: 80px 0; }
+.empty-state p { font-size: 1.1rem; color: var(--text-secondary); }
+.empty-sub { margin-top: 8px; font-size: .88rem; color: var(--text-tertiary); }
+
+.featured-section { margin-bottom: 56px; }
+</style>
