@@ -1,7 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
+import RelationSection from '../../../components/RelationSection.astro';
 import { getTopicLabel, topicSlugsForRadar } from '../../../data/topics';
+import { getRelatedResearch, loadRelationContext } from '../../../lib/relations';
 
 export async function getStaticPaths() {
   const entries = await getCollection('radar', ({ data }) => data.publish);
@@ -15,6 +17,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const date = entry.data.date.toISOString().slice(0, 10);
 const topicSlugs = topicSlugsForRadar(entry);
+const relatedResearch = getRelatedResearch(entry, await loadRelationContext());
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.description ?? entry.data.verdict}>
@@ -33,6 +36,7 @@ const topicSlugs = topicSlugsForRadar(entry);
     </header>
     {entry.data.highlights.length > 0 && <section class="highlight-list" aria-label="重点信号"><h2>重点信号</h2>{entry.data.highlights.map((highlight) => <article class="highlight-row"><div><span class="highlight-level">{highlight.signal.toUpperCase()}</span><span class="highlight-action">{highlight.action}</span></div><h3>{highlight.title}</h3>{highlight.topic && <a class="highlight-topic" href={`/topics/${highlight.topic}`}>{getTopicLabel(highlight.topic)}　→</a>}</article>)}</section>}
     <div class="prose"><Content /></div>
+    <RelationSection id="extended-research" eyebrow="RESEARCH TRAIL / CONTEXT" title="延伸研究" items={relatedResearch} />
   </article>
 </Base>
 

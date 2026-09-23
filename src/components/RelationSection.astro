@@ -1,0 +1,57 @@
+---
+import { getTopicLabel } from '../data/topics';
+import type { IntelligenceRelation } from '../lib/relations';
+
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  items: IntelligenceRelation[];
+}
+
+const { id, eyebrow, title, items } = Astro.props;
+const displayDate = (date: Date) => date.toISOString().slice(0, 10).replaceAll('-', '.');
+---
+
+{items.length > 0 && (
+  <section class="relation-section" data-relation-section={id} aria-labelledby={id}>
+    <header class="relation-heading">
+      <p>{eyebrow}</p>
+      <h2 id={id}>{title}</h2>
+    </header>
+    <div class="relation-list">
+      {items.map((item) => (
+        <div class="relation-row">
+          <a class="relation-main" href={item.href}>
+            <span class="relation-meta"><time>{displayDate(item.date)}</time><span>{item.kind === 'radar' ? '情报' : '研究'}</span><span>{item.source}</span></span>
+            <span class="relation-title">{item.title}</span>
+            <span class="relation-summary">{item.summary}</span>
+            <span class="relation-action">{item.kind === 'radar' ? '查看当日情报' : '阅读研究'} →</span>
+          </a>
+          <div class="relation-topics"><span>共同主题</span>{item.sharedTopics.map((slug) => <a href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+.relation-section { margin-top: 56px; padding-top: 34px; border-top: 1px solid var(--border-subtle); }
+.relation-heading p { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .09em; color: var(--accent-tech); }
+.relation-heading h2 { margin-top: 6px; font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; }
+.relation-list { margin-top: 17px; border-top: 1px solid var(--border-subtle); }
+.relation-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 240px); gap: 24px; padding: 20px 4px; border-bottom: 1px solid var(--border-subtle); }
+.relation-main { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.relation-main:hover { color: inherit; }
+.relation-main:hover .relation-title, .relation-main:hover .relation-action { color: var(--accent-tech); }
+.relation-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .64rem; }
+.relation-meta span:nth-child(2) { color: var(--accent-tech); }
+.relation-title { margin-top: 10px; font-size: .97rem; font-weight: 600; line-height: 1.45; transition: color var(--transition); }
+.relation-summary { margin-top: 6px; color: var(--text-secondary); font-size: .8rem; line-height: 1.6; }
+.relation-action { margin-top: 12px; color: var(--text-tertiary); font-size: .72rem; transition: color var(--transition); }
+.relation-topics { display: flex; flex-wrap: wrap; align-content: start; gap: 7px; padding-top: 2px; }
+.relation-topics > span { flex-basis: 100%; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .62rem; }
+.relation-topics a { padding: 3px 8px; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-secondary); font-size: .69rem; }
+.relation-topics a:hover { border-color: var(--accent-tech-border); color: var(--accent-tech); }
+@media (max-width: 700px) { .relation-row { grid-template-columns: 1fr; gap: 14px; }.relation-topics > span { flex-basis: auto; align-self: center; } }
+</style>

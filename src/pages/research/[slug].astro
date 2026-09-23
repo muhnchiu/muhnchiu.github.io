@@ -1,9 +1,10 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import RelationSection from '../../components/RelationSection.astro';
 import { statusLabel, confidenceLabel, formatDate } from '../../data/research';
 import { getTopicLabel } from '../../data/topics';
-import { formatRadarDate, radarCatalog, signalPriority } from '../../data/radar';
+import { getDeclaredSourceRadarHref, getRelatedRadars, getRelatedResearchByTopics, loadRelationContext } from '../../lib/relations';
 
 // Static paths from published research
 export async function getStaticPaths() {
@@ -17,46 +18,10 @@ const { Content, headings } = await render(entry);
 // Build TOC from H2s
 const tocItems = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 
-// Related Research: shared Topic count, then most recently updated.
-const allResearch = await getCollection('research', ({ data }) => data.publish);
-const related = allResearch
-  .filter((e) => e.data.slug !== entry.data.slug)
-  .map((e) => {
-    const sharedTopicCount = new Set(e.data.topics.filter((topic) => entry.data.topics.includes(topic))).size;
-    return { entry: e, sharedTopicCount };
-  })
-  .filter((r) => r.sharedTopicCount > 0)
-  .sort((a, b) => b.sharedTopicCount - a.sharedTopicCount
-    || b.entry.data.updated.getTime() - a.entry.data.updated.getTime()
-    || b.entry.data.created.getTime() - a.entry.data.created.getTime())
-  .slice(0, 3);
-
-// Related Intelligence uses only explicitly tagged highlights.
-const radarEntries = await getCollection('radar', ({ data }) => data.publish);
-const researchTopics = entry.data.topics;
-const relatedSignals = radarEntries.flatMap((radarEntry) => radarEntry.data.highlights
-  .filter((highlight) => highlight.topic && researchTopics.includes(highlight.topic))
-  .map((highlight) => ({ ...highlight, radar: radarEntry.data.radar, date: radarEntry.data.date })))
-  .filter((highlight, index, all) => all.findIndex((other) =>
-    other.radar === highlight.radar
-      && formatRadarDate(other.date) === formatRadarDate(highlight.date)
-      && other.title.trim().toLocaleLowerCase() === highlight.title.trim().toLocaleLowerCase(),
-  ) === index)
-  .sort((a, b) => b.date.getTime() - a.date.getTime()
-    || signalPriority[a.signal] - signalPriority[b.signal]
-    || a.title.localeCompare(b.title))
-  .slice(0, 5);
-const actionLabels: Record<string, string> = { action: '立即行动', test: '建议测试', explore: '探索', watch: '持续观察', read: '阅读', ignore: '忽略' };
-const signalLabels: Record<string, string> = { critical: '严重', high: '高', medium: '中', low: '低' };
-
-// Link only when the referenced published Radar report exists.
-const sourceMatch = entry.data.source?.match(/(\w+)\s+Radar\s+(\d{4}-\d{2}-\d{2})/i);
-const sourceRadarId = sourceMatch?.[1].toLowerCase();
-const sourceRadarDate = sourceMatch?.[2];
-const sourceRadarExists = sourceRadarId && sourceRadarDate && radarEntries.some((radarEntry) =>
-  radarEntry.data.radar === sourceRadarId && radarEntry.data.date.toISOString().slice(0, 10) === sourceRadarDate,
-);
-const radarLink = sourceRadarExists ? `/radar/${sourceRadarId}/${sourceRadarDate}` : null;
+const relations = await loadRelationContext();
+const relatedRadars = getRelatedRadars(entry, relations);
+const relatedResearch = getRelatedResearchByTopics(entry, relations);
+const sourceRadarHref = getDeclaredSourceRadarHref(entry, relations);
 
 const createdStr = formatDate(entry.data.created);
 const updatedStr = formatDate(entry.data.updated);
@@ -99,7 +64,7 @@ const topicSlugs = [...new Set(entry.data.topics)];
         </div>
         <div class="meta-item">
           <span class="meta-key">来源</span>
-          <span class="meta-val">{radarLink ? <a href={radarLink}>{entry.data.source}</a> : entry.data.source}</span>
+          <span class="meta-val">{sourceRadarHref ? <a href={sourceRadarHref}>{entry.data.source}</a> : entry.data.source}</span>
         </div>
       </div>
     </header>
@@ -136,37 +101,8 @@ const topicSlugs = [...new Set(entry.data.topics)];
       )}
     </div>
 
-    {related.length > 0 && (
-      <section class="related-section">
-        <p class="section-label">相关研究</p>
-        <div class="related-grid">
-          {related.map((r) => (
-            <a href={`/research/${r.entry.data.slug}`} class="related-card">
-              <span class="related-topics">{r.entry.data.topics.slice(0, 2).map((t) => getTopicLabel(t)).join(' · ')}</span>
-              <h3>{r.entry.data.title}</h3>
-              <span class="related-date">{formatDate(r.entry.data.updated)}</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {relatedSignals.length > 0 && (
-      <section class="signals-section">
-        <p class="section-label">相关信号</p>
-        <div class="signals-list">
-          {relatedSignals.map((s) => (
-            <a href={`/radar/${s.radar}/${formatRadarDate(s.date)}`} class="signal-item">
-              <span class="signal-date">{formatDate(s.date)}</span>
-              <span class="signal-radar">{radarCatalog.find((radar) => radar.id === s.radar)?.name ?? s.radar} Radar</span>
-              <span class="signal-level">{signalLabels[s.signal]}</span>
-              <span class="signal-title">{s.title}</span>
-              <span class="signal-action">{actionLabels[s.action] ?? s.action}</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
+    <RelationSection id="intelligence-sources" eyebrow="EVIDENCE / RADAR" title="情报来源" items={relatedRadars} />
+    <RelationSection id="related-research" eyebrow="CONTEXT / RESEARCH TRAIL" title="延伸脉络" items={relatedResearch} />
   </article>
 </Base>
 
@@ -229,33 +165,8 @@ const topicSlugs = [...new Set(entry.data.topics)];
 .toc-mobile[open] { padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); }
 .toc-mobile .toc-item { color: var(--text-secondary); }
 
-.related-section { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--border-subtle); }
-.section-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 20px; }
-.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.related-card { display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); transition: border-color var(--transition), transform var(--transition); }
-.related-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
-.related-topics { font-size: .72rem; color: var(--text-tertiary); }
-.related-card h3 { font-size: .95rem; font-weight: 500; line-height: 1.3; }
-.related-date { font-size: .72rem; color: var(--text-tertiary); margin-top: auto; }
-
-.signals-section { margin-top: 40px; }
-.signals-list { display: flex; flex-direction: column; gap: 0; }
-.signal-item { display: grid; grid-template-columns: 72px 104px 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: .85rem; }
-.signal-item:last-child { border-bottom: none; }
-.signal-date { font-family: var(--font-mono); font-size: .75rem; color: var(--text-tertiary); min-width: 50px; }
-.signal-radar { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .06em; color: var(--accent-tech); text-transform: uppercase; min-width: 40px; }
-.signal-title { color: var(--text-secondary); }
-.signal-level { min-width: 32px; color: var(--accent-tech); font-size: .72rem; }.signal-action { color: var(--text-tertiary); font-size: .72rem; }
-
 @media (max-width: 768px) {
-  .related-grid { grid-template-columns: 1fr; }
   .meta-grid { flex-direction: column; gap: 12px; }
   .prose { font-size: .95rem; }
-  .signal-item { grid-template-columns: 1fr auto; gap: 6px 12px; }
-  .signal-date { grid-column: 1; grid-row: 1; }
-  .signal-radar { grid-column: 2; grid-row: 1; text-align: right; }
-  .signal-level { grid-column: 1; grid-row: 2; }
-  .signal-title { grid-column: 1 / -1; grid-row: 3; }
-  .signal-action { grid-column: 2; grid-row: 2; text-align: right; }
 }
 </style>
