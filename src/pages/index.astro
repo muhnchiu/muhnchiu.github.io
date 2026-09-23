@@ -6,16 +6,19 @@ import TodayBrief from '../components/TodayBrief.astro';
 import LatestResearch from '../components/LatestResearch.astro';
 import ResearchTopics from '../components/ResearchTopics.astro';
 import StackPreview from '../components/StackPreview.astro';
+import { loadHomeData } from '../data/home';
+
+const home = await loadHomeData();
 ---
 
 <Base
   title="Horizon — Technology Intelligence & Research"
   description="扫描变化，理解技术，沉淀判断。AI · Developer · Security · Software · Agent Skills"
 >
-  <Hero />
-  <TodaySignals />
-  <TodayBrief />
-  <LatestResearch />
-  <ResearchTopics />
+  <Hero status={home.hero} />
+  <TodaySignals radars={home.radarCards} date={home.latestRadarDate} />
+  <TodayBrief briefs={home.briefs} />
+  <LatestResearch featured={home.featuredResearch} recent={home.recentResearch} />
+  <ResearchTopics topics={home.topics} />
   <StackPreview />
 </Base>

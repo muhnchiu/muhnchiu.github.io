@@ -1,35 +1,21 @@
 ---
-import { briefs } from '../data/home';
+const { briefs } = Astro.props;
 ---
 
 <section class="section brief-section">
   <div class="container">
-    <div class="section-header"><div><h2>TODAY’S BRIEF</h2><p class="section-sub">基于今日雷达结果的关键信号与行动建议。</p></div><a href="/radar" class="all-link">View all signals　→</a></div>
+    <div class="section-header"><div><h2>今日判断</h2><p class="section-sub">基于今日雷达信号，提炼最值得关注的变化与行动建议。</p></div><a href="/radar" class="all-link">查看全部信号　→</a></div>
     <div class="briefs">
-      {briefs.map((b, index) => (
+      {briefs.length ? briefs.map((brief, index) => (
         <article class="brief-item">
-          <span class="brief-num">{String(index + 1).padStart(2, '0')}</span>
-          <span class={`brief-action ${b.action.toLowerCase()}`}>{b.action}</span>
-          <span class="brief-tag">{b.tag}</span>
-          <div class="brief-content"><h3>{b.title}</h3><p>{b.summary}</p></div>
-          <time>{b.time}</time><span class="brief-arrow">→</span>
+          <span class="brief-num">{String(index + 1).padStart(2, '0')}</span><span class={`brief-action ${brief.action}`}>{brief.action.toUpperCase()}</span><span class="brief-tag">{brief.radarName.toUpperCase()} / {brief.type.toUpperCase()}</span>
+          <div class="brief-content"><h3>{brief.title}</h3><p>{brief.topic ? `关注方向：${brief.topic}` : `来源：${brief.radarName} Radar`}</p></div><time>{brief.dateLabel}</time><a href={brief.href} class="brief-arrow" aria-label={`查看 ${brief.title}`}>→</a>
         </article>
-      ))}
+      )) : <p class="empty">今日暂无需要特别关注的高优先级信号。</p>}
     </div>
   </div>
 </section>
 
 <style>
-.brief-section { padding-top: 0; padding-bottom: 56px; }
-.all-link { font-size: .72rem; color: #315d88; }
-.briefs { border-top: 1px solid var(--border-subtle); }
-.brief-item { display: grid; grid-template-columns: 32px 96px 158px minmax(0, 1fr) 52px 16px; align-items: center; gap: 11px; min-height: 72px; border-bottom: 1px solid var(--border-subtle); transition: background var(--transition), padding var(--transition); }
-.brief-item:hover { padding: 0 8px; background: rgba(237,247,255,.42); }
-.brief-num { font-family: var(--font-mono); font-size: .86rem; color: #405976; }
-.brief-action { display: inline-flex; justify-content: center; width: fit-content; min-width: 57px; padding: 4px 8px; border-radius: 5px; font-family: var(--font-mono); font-size: .64rem; letter-spacing: .05em; font-weight: 600; }
-.brief-action.action { color: #b91c25; background: #ffe4e5; }.brief-action.test { color: #1762ae; background: #e0efff; }.brief-action.watch { color: #168153; background: #e0f7e9; }.brief-action.read { color: #566275; background: #eef1f5; }
-.brief-tag { font-family: var(--font-mono); font-size: .61rem; letter-spacing: .03em; color: #647891; }
-.brief-content h3 { font-size: .84rem; font-weight: 720; line-height: 1.35; }.brief-content p { margin-top: 3px; font-size: .76rem; color: #51677f; line-height: 1.4; }
-time { font-family: var(--font-mono); font-size: .61rem; color: #687e96; white-space: nowrap; }.brief-arrow { color: #405f80; }
-@media (max-width: 720px) { .brief-item { grid-template-columns: 28px 65px 1fr 14px; gap: 8px; padding: 10px 0; } .brief-tag, time { display: none; } .brief-content p { font-size: .65rem; } }
+.brief-section { padding-top: 0; padding-bottom: 56px; }.all-link { font-size: .72rem; color: #315d88; }.briefs { border-top: 1px solid var(--border-subtle); }.brief-item { display: grid; grid-template-columns: 32px 96px 158px minmax(0, 1fr) 78px 16px; align-items: center; gap: 11px; min-height: 72px; border-bottom: 1px solid var(--border-subtle); transition: background var(--transition), padding var(--transition); }.brief-item:hover { padding: 0 8px; background: rgba(237,247,255,.42); }.brief-num { font-family: var(--font-mono); font-size: .86rem; color: #405976; }.brief-action { display: inline-flex; justify-content: center; width: fit-content; min-width: 57px; padding: 4px 8px; border-radius: 5px; font-family: var(--font-mono); font-size: .64rem; letter-spacing: .05em; font-weight: 600; }.brief-action.action { color: #b91c25; background: #ffe4e5; }.brief-action.test { color: #1762ae; background: #e0efff; }.brief-action.watch { color: #168153; background: #e0f7e9; }.brief-action.read,.brief-action.explore,.brief-action.ignore { color: #566275; background: #eef1f5; }.brief-tag { font-family: var(--font-mono); font-size: .61rem; letter-spacing: .03em; color: #647891; }.brief-content h3 { font-size: .84rem; font-weight: 720; line-height: 1.35; }.brief-content p { margin-top: 3px; font-size: .76rem; color: #51677f; line-height: 1.4; }time { font-family: var(--font-mono); font-size: .61rem; color: #687e96; white-space: nowrap; }.brief-arrow { color: #405f80; }.empty { padding: 28px 0; color: var(--text-secondary); font-size: .86rem; }@media (max-width: 720px) { .brief-item { grid-template-columns: 28px 65px 1fr 14px; gap: 8px; padding: 10px 0; }.brief-tag,time { display: none; }.brief-content p { font-size: .65rem; } }
 </style>

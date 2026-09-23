@@ -1,6 +1,6 @@
 ---
 // Hero — the site’s operating-system-like introduction
-import { homeSnapshot } from '../data/home';
+const { status } = Astro.props;
 ---
 <section class="hero">
   <div class="hero-atmosphere" aria-hidden="true">
@@ -11,21 +11,21 @@ import { homeSnapshot } from '../data/home';
   </div>
   <div class="container hero-inner">
     <div class="hero-copy">
-      <span class="hero-label mono-label">TECHNOLOGY INTELLIGENCE</span>
+      <span class="hero-label mono-label">技术情报 · 独立研究</span>
       <h1 class="hero-title">HORIZON</h1>
-      <p class="hero-tagline">扫描变化，理解技术，沉淀判断。</p>
-      <p class="hero-tags">AI <i>•</i> Developer <i>•</i> Security <i>•</i> Software <i>•</i> Agent Skills</p>
+      <p class="hero-tagline">追踪技术变化，辨识趋势信号，沉淀长期判断。</p>
+      <p class="hero-tags">AI <i>•</i> 开发工具 <i>•</i> 安全 <i>•</i> 软件 <i>•</i> Agent Skills</p>
       <div class="hero-cta">
-        <a href="#signals" class="btn btn-primary">Explore Radar <span>→</span></a>
-        <a href="#research" class="btn btn-secondary">Read Research</a>
+        <a href="#signals" class="btn btn-primary">查看今日雷达 <span>→</span></a>
+        <a href="#research" class="btn btn-secondary">进入深度研究</a>
       </div>
     </div>
     <div class="hero-aside">
-      <p class="hero-manifesto">A CLEARER<br />TOMORROW<br />THROUGH<br />DEEPER INSIGHT.</p>
+      <p class="hero-manifesto">从噪声中识别<br />信号，在变化中<br />形成长期判断。</p>
       <div class="system-status">
-        <span class="status-label mono-label">SYSTEM STATUS</span>
-        <div class="status-row"><span class="status-dot"></span><span class="status-text">5 RADARS ACTIVE</span></div>
-        <div class="status-scan">LAST SCAN&nbsp;&nbsp;{homeSnapshot.lastScan}</div>
+        <span class="status-label mono-label">情报系统</span>
+        <div class="status-row"><span class="status-dot"></span><span class="status-text">{status.activeRadarCount ? `${status.activeRadarCount} 个雷达运行中` : '今日雷达尚未完成更新'}</span></div>
+        <div class="status-scan">最近扫描&nbsp;&nbsp;{status.latestRadarDate ?? '暂无公开日报'}</div>
       </div>
     </div>
   </div>

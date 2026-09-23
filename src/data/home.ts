@@ -1,28 +1,84 @@
-export const homeSnapshot = {
-  latestRadarDate: '2026.09.23',
-  lastScan: '2026.09.23 09:15 CST',
-};
+import { getCollection } from 'astro:content';
+import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from './radar';
 
-export const radars = [
-  { name: 'AI', icon: '✦', signals: 3, states: ['2 TEST', '1 WATCH'], href: '/radar/ai', accent: 'blue' },
-  { name: 'DEVELOPER', icon: '</>', signals: 4, states: ['1 TEST', '2 WATCH', '1 READ'], href: '/radar/dev', accent: 'green' },
-  { name: 'SECURITY', icon: '♢', signals: 2, states: ['1 ACTION', '1 WATCH'], href: '/radar/security', accent: 'red' },
-  { name: 'APP / SOFTWARE', icon: '◇', signals: 5, states: ['2 TEST', '2 WATCH', '1 READ'], href: '/radar/app', accent: 'purple' },
-  { name: 'AGENT SKILLS', icon: '⌘', signals: 6, states: ['3 EXPLORE', '2 WATCH', '1 READ'], href: '/radar/skill', accent: 'orange' },
-];
+const actionPriority = { action: 0, test: 1, explore: 2, watch: 3, read: 4, ignore: 5 } as const;
 
-export const briefs = [
-  { tag: 'SECURITY / VULNERABILITY', action: 'ACTION', title: 'CVE-2024-XXXXX：影响主流开源组件的高危漏洞', summary: '存在被利用风险，建议尽快评估并安排补丁。', time: '2h ago' },
-  { tag: 'AI / MODEL', action: 'TEST', title: 'Claude 3.5 Sonnet 新能力更新', summary: '在工具调用和代码能力上有明显提升，值得进入测试列表。', time: '4h ago' },
-  { tag: 'DEVELOPER / TOOL', action: 'WATCH', title: 'VS Code Insiders 推出 AI 原生工作区', summary: '新的 Agent 模式正在逐步开放，建议持续关注。', time: '6h ago' },
-  { tag: 'AI / RESEARCH', action: 'READ', title: 'OpenAI 发布长上下文评测基准', summary: '为长上下文能力提供了更系统的评估方法，有助于理解模型边界。', time: '8h ago' },
-  { tag: 'APP / SOFTWARE', action: 'READ', title: 'Notion 推出新一代 AI 知识管理功能', summary: '在企业知识协作方向迈出重要一步，值得关注其后续发展。', time: '10h ago' },
-];
+const topicLabel = (slug: string, titles: Map<string, string>) => titles.get(slug)
+  ?? slug.split('-').map((word) => word.slice(0, 1).toUpperCase() + word.slice(1)).join(' ');
 
-export const recentResearch = [
-  ['09.22', 'Agent Skills 正在成为新的 AI 能力封装层', 'AGENT　 SKILL　 EVOLVING'],
-  ['09.21', 'Local LLM 在企业场景的实际应用探索', 'LOCAL AI　 DEPLOYMENT'],
-  ['09.20', 'MCP：AI 应用的通用连接层', 'MCP　 STANDARD'],
-  ['09.19', '开发者效率工具的新范式', 'DEVELOPER　 PRODUCTIVITY'],
-  ['09.18', 'AI 安全：从模型对齐到应用防护', 'SECURITY　 SAFETY'],
-] as const;
+export async function loadHomeData() {
+  const [radarEntries, researchEntries, topicEntries] = await Promise.all([
+    getCollection('radar', ({ data }) => data.publish),
+    getCollection('research', ({ data }) => data.publish),
+    getCollection('topics'),
+  ]);
+  const radars = radarEntries.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  const latestRadarDate = radars.at(0)?.data.date;
+  const latestRadarKey = latestRadarDate && formatRadarDate(latestRadarDate);
+  const latestRadarReports = latestRadarKey
+    ? radars.filter((entry) => formatRadarDate(entry.data.date) === latestRadarKey)
+    : [];
+  const radarCards = radarCatalog.map((radar, index) => {
+    const report = latestRadarReports.find((entry) => entry.data.radar === radar.id);
+    return {
+      ...radar,
+      accent: ['blue', 'green', 'red', 'purple', 'orange'][index],
+      signalCount: report?.data.signalCount,
+      highSignalCount: report?.data.highSignalCount,
+      actionRequired: report?.data.actionRequired,
+    };
+  });
+
+  const seenHighlights = new Set<string>();
+  const briefs = latestRadarReports.flatMap((report) => report.data.highlights.map((highlight) => ({
+    ...highlight,
+    radar: report.data.radar,
+    date: report.data.date,
+  }))).sort((a, b) => signalPriority[a.signal] - signalPriority[b.signal]
+    || actionPriority[a.action] - actionPriority[b.action]
+    || b.date.getTime() - a.date.getTime())
+    .filter((highlight) => {
+      const key = highlight.title.trim().toLocaleLowerCase();
+      if (seenHighlights.has(key)) return false;
+      seenHighlights.add(key);
+      return true;
+    }).slice(0, 5).map((highlight) => ({
+      ...highlight,
+      radarName: radarCatalog.find((radar) => radar.id === highlight.radar)?.name ?? highlight.radar,
+      dateLabel: displayRadarDate(highlight.date),
+      href: `/radar/${highlight.radar}/${formatRadarDate(highlight.date)}`,
+    }));
+
+  const research = researchEntries.sort((a, b) => Number(b.data.featured) - Number(a.data.featured)
+    || b.data.updated.getTime() - a.data.updated.getTime()
+    || b.data.created.getTime() - a.data.created.getTime());
+  const featuredResearch = research.at(0);
+  const recentResearch = research.slice(1, 6);
+
+  const topicTitles = new Map(topicEntries.map((entry) => [entry.id, entry.data.title]));
+  const topicStats = new Map<string, { research: number; signals: number; updated: Date }>();
+  const updateTopic = (slug: string, kind: 'research' | 'signals', amount: number, updated: Date) => {
+    const current = topicStats.get(slug) ?? { research: 0, signals: 0, updated };
+    current[kind] += amount;
+    if (updated.getTime() > current.updated.getTime()) current.updated = updated;
+    topicStats.set(slug, current);
+  };
+  research.forEach((entry) => entry.data.topics.forEach((slug) => updateTopic(slug, 'research', 1, entry.data.updated)));
+  radars.forEach((entry) => entry.data.topics.forEach((slug) => updateTopic(slug, 'signals', entry.data.signalCount, entry.data.date)));
+  const topics = [...topicStats.entries()].map(([slug, stats]) => ({
+    slug,
+    name: topicLabel(slug, topicTitles),
+    ...stats,
+    updatedLabel: displayRadarDate(stats.updated),
+  })).sort((a, b) => b.research - a.research || b.signals - a.signals || b.updated.getTime() - a.updated.getTime()).slice(0, 6);
+
+  return {
+    hero: { activeRadarCount: latestRadarReports.length, latestRadarDate: latestRadarDate ? displayRadarDate(latestRadarDate) : undefined },
+    radarCards,
+    briefs,
+    featuredResearch,
+    recentResearch,
+    topics,
+    latestRadarDate: latestRadarDate ? displayRadarDate(latestRadarDate) : undefined,
+  };
+}
