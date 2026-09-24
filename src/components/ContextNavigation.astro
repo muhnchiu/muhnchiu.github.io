@@ -1,0 +1,90 @@
+---
+import { getTopicLabel } from '../data/topics';
+import type { IntelligenceRelation } from '../lib/relations';
+
+interface Props {
+  kind: 'radar' | 'research';
+  topics: string[];
+  radars?: IntelligenceRelation[];
+  research: IntelligenceRelation[];
+}
+
+const { kind, topics, radars = [], research } = Astro.props;
+const isResearch = kind === 'research';
+const dateLabel = (date: Date) => date.toISOString().slice(5, 10).replace('-', '.');
+---
+
+<section class="context-navigation" aria-labelledby="context-heading">
+  <header class="context-heading">
+    <p class="eyebrow">{isResearch ? 'CONTEXT / RELATED SIGNALS' : 'FOLLOW THE SIGNAL'}</p>
+    <h2 id="context-heading">{isResearch ? '相关脉络' : '继续追踪'}</h2>
+  </header>
+
+  <div class="context-group">
+    <h3>{isResearch ? '相关议题' : '关联议题'}</h3>
+    {topics.length ? (
+      <div class="topic-links">
+        {topics.map((slug) => <a href={`/topics/${slug}/`}>{getTopicLabel(slug)} <span aria-hidden="true">↗</span></a>)}
+      </div>
+    ) : <p class="empty">暂无已建立的长期议题。</p>}
+  </div>
+
+  {isResearch && (
+    <div class="context-group">
+      <h3>相关雷达</h3>
+      {radars.length ? (
+        <div class="relation-list">
+          {radars.map((item) => <a class="relation" href={item.href}>
+            <span class="meta"><time datetime={item.date.toISOString().slice(0, 10)}>{dateLabel(item.date)}</time><span>{item.source}</span></span>
+            <strong>{item.summary || item.title}</strong>
+            {item.summary && <small class="source-title">{item.title}</small>}
+            <small class="reason">共同关注：{item.sharedTopics.map(getTopicLabel).join(' / ')}</small>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>)}
+        </div>
+      ) : <p class="empty">暂无更多相关信号。</p>}
+    </div>
+  )}
+
+  <div class="context-group">
+    <h3>{isResearch ? '延伸研究' : '相关研究'}</h3>
+    {research.length ? (
+      <div class="relation-list">
+        {research.map((item) => <a class="relation" href={item.href}>
+          <span class="meta"><time datetime={item.date.toISOString().slice(0, 10)}>{dateLabel(item.date)}</time><span>RESEARCH</span></span>
+          <strong>{item.title}</strong>
+          <small class="summary">{item.summary}</small>
+          <small class="reason">共同关注：{item.sharedTopics.map(getTopicLabel).join(' / ')}</small>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>)}
+      </div>
+    ) : <p class="empty">{isResearch ? '尚未形成相关深度研究。' : '这个信号尚未进入深度研究。'}</p>}
+  </div>
+</section>
+
+<style>
+.context-navigation { margin-top: 68px; padding-top: 32px; border-top: 1px solid var(--border-subtle); }
+.eyebrow { color: var(--accent-text); font: .64rem var(--font-mono); letter-spacing: .1em; }
+.context-heading h2 { margin-top: 7px; font-family: var(--font-display); font-size: clamp(1.55rem, 3vw, 2rem); font-weight: 400; }
+.context-group { margin-top: 32px; }
+.context-group h3 { margin-bottom: 12px; color: var(--text-secondary); font-size: .82rem; font-weight: 600; }
+.topic-links { display: flex; flex-wrap: wrap; gap: 9px 22px; padding: 14px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.topic-links a { color: var(--text-primary); font-size: .9rem; }
+.topic-links a:hover { color: var(--accent-text); }
+.topic-links span { margin-left: 3px; color: var(--accent-text); font-size: .72rem; }
+.relation-list { border-top: 1px solid var(--border-subtle); }
+.relation { position: relative; display: grid; grid-template-columns: 145px minmax(0, 1fr) 18px; column-gap: 22px; padding: 17px 2px; border-bottom: 1px solid var(--border-subtle); }
+.relation:hover strong, .relation:hover .arrow { color: var(--accent-text); }
+.relation .meta { grid-row: 1 / span 4; display: flex; flex-direction: column; gap: 5px; color: var(--text-tertiary); font: .67rem var(--font-mono); }
+.relation strong { grid-column: 2; min-width: 0; font-size: .93rem; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.relation small { grid-column: 2; min-width: 0; margin-top: 5px; color: var(--text-secondary); font-size: .76rem; line-height: 1.5; overflow-wrap: anywhere; }
+.relation .reason { color: var(--text-tertiary); font-size: .69rem; }
+.relation .arrow { grid-column: 3; grid-row: 1; color: var(--text-tertiary); }
+.empty { padding: 17px 2px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); font-size: .8rem; }
+@media (max-width: 620px) {
+  .relation { grid-template-columns: minmax(0, 1fr) 18px; gap: 0 10px; }
+  .relation .meta { grid-column: 1; grid-row: 1; flex-direction: row; gap: 12px; margin-bottom: 8px; }
+  .relation strong, .relation small { grid-column: 1; }
+  .relation .arrow { grid-column: 2; }
+}
+</style>

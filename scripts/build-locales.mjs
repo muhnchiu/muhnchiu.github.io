@@ -66,7 +66,9 @@ function convertPreservingTerms(value) {
     preserved.push(term);
     text = text.replaceAll(term, token);
   }
-  return toTraditional(text).replace(/\uE000(\d+)\uE001/g, (_, index) => preserved[Number(index)]);
+  return toTraditional(text)
+    .replaceAll('搜索', '搜尋')
+    .replace(/\uE000(\d+)\uE001/g, (_, index) => preserved[Number(index)]);
 }
 
 function convertVisibleText(node, inheritedSkip = false) {

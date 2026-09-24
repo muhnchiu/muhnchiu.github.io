@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { formatRadarDate } from '../data/radar';
-import { getCanonicalTopicSlugs, isCanonicalTopic, topicSlugsForRadar } from '../data/topics';
+import { getCanonicalTopicSlugs, getTopicDefinition, isCanonicalTopic, topicSlugsForRadar } from '../data/topics';
 
 type RadarEntry = CollectionEntry<'radar'>;
 type ResearchEntry = CollectionEntry<'research'>;
@@ -20,6 +20,14 @@ export interface IntelligenceRelation {
   sharedTopics: string[];
 }
 
+export interface TopicFlowStep {
+  stage: string;
+  date?: Date;
+  title: string;
+  href?: string;
+  source?: string;
+}
+
 const radarName: Record<RadarEntry['data']['radar'], string> = {
   ai: 'AI Radar',
   dev: 'Developer Radar',
@@ -35,6 +43,16 @@ const overlap = (left: string[], right: string[]) => {
   return getCanonicalTopicSlugs(left).filter((topic) => rightSet.has(topic));
 };
 const radarKey = (entry: RadarEntry) => `${entry.data.radar}/${formatRadarDate(entry.data.date)}`;
+const signalWeight = { critical: 4, high: 3, medium: 2, low: 1 } as const;
+const matchingSignalWeight = (entry: RadarEntry, topics: string[]) => Math.max(0,
+  ...entry.data.highlights
+    .filter((highlight) => highlight.topic && topics.includes(highlight.topic))
+    .map((highlight) => signalWeight[highlight.signal]));
+
+export function getRelatedTopics(entry: RadarEntry | ResearchEntry, limit = 3): string[] {
+  return getCanonicalTopicSlugs(entry.collection === 'radar' ? topicSlugsForRadar(entry) : entry.data.topics)
+    .slice(0, limit);
+}
 
 export async function loadRelationContext(): Promise<RelationContext> {
   const [radars, research] = await Promise.all([
@@ -72,7 +90,7 @@ function researchRelation(entry: ResearchEntry, sharedTopics: string[]): Intelli
   };
 }
 
-export function getRelatedRadars(entry: ResearchEntry, context: RelationContext, limit = 3): IntelligenceRelation[] {
+export function getRelatedRadars(entry: ResearchEntry, context: RelationContext, limit = 5): IntelligenceRelation[] {
   if (!entry.data.publish) return [];
   const candidates = new Map<string, { entry: RadarEntry; sharedTopics: string[] }>();
   for (const radar of context.radars.filter(({ data }) => data.publish)) {
@@ -80,9 +98,8 @@ export function getRelatedRadars(entry: ResearchEntry, context: RelationContext,
     if (sharedTopics.length) candidates.set(radarKey(radar), { entry: radar, sharedTopics });
   }
   return [...candidates.values()]
-    .sort((a, b) => Number(dayKey(b.entry.data.date) === dayKey(entry.data.created))
-      - Number(dayKey(a.entry.data.date) === dayKey(entry.data.created))
-      || b.sharedTopics.length - a.sharedTopics.length
+    .sort((a, b) => b.sharedTopics.length - a.sharedTopics.length
+      || matchingSignalWeight(b.entry, b.sharedTopics) - matchingSignalWeight(a.entry, a.sharedTopics)
       || distance(a.entry.data.date, entry.data.created) - distance(b.entry.data.date, entry.data.created)
       || b.entry.data.date.getTime() - a.entry.data.date.getTime()
       || radarKey(a.entry).localeCompare(radarKey(b.entry)))
@@ -110,6 +127,7 @@ export function getRelatedResearch(entry: RadarEntry, context: RelationContext, 
   }
   return [...candidates.values()]
     .sort((a, b) => b.sharedTopics.length - a.sharedTopics.length
+      || Number(b.entry.data.featured) - Number(a.entry.data.featured)
       || distance(a.entry.data.created, entry.data.date) - distance(b.entry.data.created, entry.data.date)
       || b.entry.data.created.getTime() - a.entry.data.created.getTime()
       || a.entry.data.slug.localeCompare(b.entry.data.slug))
@@ -126,10 +144,42 @@ export function getRelatedResearchByTopics(entry: ResearchEntry, context: Relati
   }
   return [...candidates.values()]
     .sort((a, b) => b.sharedTopics.length - a.sharedTopics.length
+      || Number(b.entry.data.featured) - Number(a.entry.data.featured)
       || b.entry.data.updated.getTime() - a.entry.data.updated.getTime()
       || a.entry.data.slug.localeCompare(b.entry.data.slug))
     .slice(0, limit)
     .map(({ entry: research, sharedTopics }) => researchRelation(research, sharedTopics));
+}
+
+export function getTopicFlow(topic: string, context: RelationContext): TopicFlowStep[] {
+  if (!isCanonicalTopic(topic)) return [];
+  const radars = context.radars.filter((entry) => entry.data.publish && getRelatedTopics(entry, Infinity).includes(topic))
+    .sort((a, b) => a.data.date.getTime() - b.data.date.getTime() || radarKey(a).localeCompare(radarKey(b)));
+  const research = context.research.filter((entry) => entry.data.publish && getCanonicalTopicSlugs(entry.data.topics).includes(topic))
+    .sort((a, b) => b.data.created.getTime() - a.data.created.getTime() || a.data.slug.localeCompare(b.data.slug));
+  if (!radars.length && !research.length) return [];
+
+  const steps: TopicFlowStep[] = [];
+  const first = radars[0];
+  if (first) steps.push({ stage: '最早记录', date: first.data.date, title: first.data.title,
+    href: `/radar/${radarKey(first)}/`, source: '首次进入 Radar' });
+
+  const latestHigh = [...radars].reverse().find((entry) => matchingSignalWeight(entry, [topic]) >= signalWeight.high
+    && radarKey(entry) !== (first && radarKey(first)));
+  if (latestHigh) {
+    const highlight = latestHigh.data.highlights.find((item) => item.topic === topic
+      && signalWeight[item.signal] >= signalWeight.high);
+    steps.push({ stage: '近期信号', date: latestHigh.data.date, title: highlight?.title ?? latestHigh.data.title,
+      href: `/radar/${radarKey(latestHigh)}/`, source: radarName[latestHigh.data.radar] });
+  }
+
+  const deepDive = research[0];
+  if (deepDive) steps.push({ stage: '深度研究', date: deepDive.data.created, title: deepDive.data.title,
+    href: `/research/${deepDive.data.slug}/`, source: 'Research' });
+
+  const status = getTopicDefinition(topic)?.status;
+  if (status) steps.push({ stage: '当前状态', title: status.toUpperCase(), source: 'Topic Registry' });
+  return steps;
 }
 
 export function getTopicTimeline(topic: string, context: RelationContext, limit = 12): IntelligenceRelation[] {

@@ -1,9 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
-import RelationSection from '../../../components/RelationSection.astro';
+import ContextNavigation from '../../../components/ContextNavigation.astro';
 import { getTopicLabel, isCanonicalTopic, topicSlugsForRadar } from '../../../data/topics';
-import { getRelatedResearch, loadRelationContext } from '../../../lib/relations';
+import { getRelatedResearch, getRelatedTopics, loadRelationContext } from '../../../lib/relations';
 
 export async function getStaticPaths() {
   const entries = await getCollection('radar', ({ data }) => data.publish);
@@ -20,6 +20,7 @@ const topicSlugs = topicSlugsForRadar(entry);
 const canonicalTopics = topicSlugs.filter(isCanonicalTopic);
 const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 const relatedResearch = getRelatedResearch(entry, await loadRelationContext());
+const relatedTopics = getRelatedTopics(entry);
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.description ?? entry.data.verdict}>
@@ -43,21 +44,30 @@ const relatedResearch = getRelatedResearch(entry, await loadRelationContext());
       )}
       <dl class="metrics"><div><dt>SIGNALS</dt><dd>{entry.data.signalCount}</dd></div><div><dt>HIGH SIGNALS</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>ACTION REQUIRED</dt><dd>{entry.data.actionRequired}</dd><small>CONFIDENCE {entry.data.confidence.toUpperCase()}</small></div></dl>
     </header>
-    {entry.data.highlights.length > 0 && <section class="highlight-list" aria-label="重点信号"><h2>重点信号</h2>{entry.data.highlights.map((highlight) => <article class="highlight-row"><div><span class="highlight-level">{highlight.signal.toUpperCase()}</span><span class="highlight-action">{highlight.action}</span></div><h3>{highlight.title}</h3>{highlight.topic && <a class="highlight-topic" href={`/topics/${highlight.topic}`}>{getTopicLabel(highlight.topic)}　→</a>}</article>)}</section>}
+    {entry.data.highlights.length > 0 && <section class="highlight-list" aria-label="重点信号"><h2>重点信号</h2>{entry.data.highlights.map((highlight) => <article class="highlight-row"><div><span class:list={['highlight-level', `level-${highlight.signal}`]}>{highlight.signal.toUpperCase()}</span><span class:list={['highlight-action', `action-${highlight.action}`]}>{highlight.action}</span></div><h3>{highlight.title}</h3>{highlight.topic && <a class="highlight-topic" href={`/topics/${highlight.topic}`}>{getTopicLabel(highlight.topic)}　→</a>}</article>)}</section>}
     <div class="prose"><Content /></div>
-    <RelationSection id="extended-research" eyebrow="RESEARCH TRAIL / CONTEXT" title="延伸研究" items={relatedResearch} />
+    <ContextNavigation kind="radar" topics={relatedTopics} research={relatedResearch} />
   </article>
 </Base>
 
 <style>
-.radar-report { max-width: 1000px; padding-top: 82px; padding-bottom: 112px; }.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent-tech); }.report-date { margin-top: 16px; font-family: var(--font-mono); font-size: 1rem; color: var(--text-tertiary); }.radar-report h1 { margin-top: 10px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; letter-spacing: -.045em; }.description { margin-top: 14px; color: var(--text-secondary); font-size: 1.05rem; }.metrics { display: flex; gap: 0; margin-top: 34px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }.metrics div { flex: 1; padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.metrics div:last-child { border-right: 0; }.metrics dt { font-family: var(--font-mono); font-size: .59rem; letter-spacing: .07em; color: var(--text-tertiary); }.metrics dd { margin-top: 6px; font-size: 1.65rem; font-weight: 700; }.highlight-list { margin-top: 32px; border-top: 1px solid var(--border-subtle); }.highlight-list > h2 { padding: 15px 0; font: .65rem var(--font-mono); letter-spacing: .08em; color: var(--text-tertiary); }.highlight-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 13px 4px; border-top: 1px solid var(--border-subtle); }.highlight-row > div { display: flex; flex-direction: column; gap: 4px; font: .61rem var(--font-mono); }.highlight-level { color: var(--accent-tech); }.highlight-action { color: var(--text-tertiary); }.highlight-row h3 { font-size: .8rem; font-weight: 500; }.highlight-topic { color: var(--text-tertiary); font-size: .68rem; }.highlight-topic:hover { color: var(--accent-tech); }.prose { max-width: 760px; margin-top: 38px; color: #34445a; font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }@media (max-width: 560px) { .metrics { flex-direction: column; }.metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.metrics div:last-child { border-bottom: 0; }.highlight-row { grid-template-columns: 68px minmax(0, 1fr); }.highlight-topic { grid-column: 2; } }
+.radar-report { max-width: 1000px; padding-top: 82px; padding-bottom: 112px; }.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent-text); }.report-date { margin-top: 16px; font-family: var(--font-mono); font-size: 1rem; color: var(--text-tertiary); }.radar-report h1 { margin-top: 10px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; letter-spacing: -.045em; }.description { margin-top: 14px; color: var(--text-secondary); font-size: 1.05rem; }.metrics { display: flex; gap: 0; margin-top: 34px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }.metrics div { flex: 1; padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.metrics div:last-child { border-right: 0; }.metrics dt { font-family: var(--font-mono); font-size: .59rem; letter-spacing: .07em; color: var(--text-tertiary); }.metrics dd { margin-top: 6px; font-size: 1.65rem; font-weight: 700; }.highlight-list { margin-top: 32px; border-top: 1px solid var(--border-subtle); }.highlight-list > h2 { padding: 15px 0; font: .65rem var(--font-mono); letter-spacing: .08em; color: var(--text-tertiary); }.highlight-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 13px 4px; border-top: 1px solid var(--border-subtle); }.highlight-row > div { display: flex; flex-direction: column; gap: 4px; font: .61rem var(--font-mono); }.highlight-level { color: var(--accent-text); }.highlight-action { color: var(--text-tertiary); }.highlight-row h3 { font-size: .8rem; font-weight: 500; }.highlight-topic { color: var(--text-tertiary); font-size: .68rem; }.highlight-topic:hover { color: var(--accent-text); }.prose { max-width: 760px; margin-top: 38px; color: var(--text-body); font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }@media (max-width: 560px) { .metrics { flex-direction: column; }.metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.metrics div:last-child { border-bottom: 0; }.highlight-row { grid-template-columns: 68px minmax(0, 1fr); }.highlight-topic { grid-column: 2; } }
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .topic-tags a { padding: 4px 10px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-surface); color: var(--text-secondary); font-size: .73rem; }
-.topic-tags a:hover { border-color: var(--accent-tech-border); color: var(--accent-tech); }
+.topic-tags a:hover { border-color: var(--accent-tech-border); color: var(--accent-text); }
 .secondary-metadata { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 12px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .64rem; }
 .secondary-metadata a, .secondary-metadata span, .secondary-metadata code { overflow-wrap: anywhere; }
-.secondary-metadata a:hover { color: var(--accent-tech); }
+.secondary-metadata a:hover { color: var(--accent-text); }
 .prose { min-width: 0; overflow-wrap: anywhere; }
 .prose :global(table) { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
 .prose :global(th), .prose :global(td) { padding: 7px 10px; border-bottom: 1px solid var(--border-subtle); text-align: left; white-space: nowrap; }
+.highlight-level.level-critical { color: var(--signal-critical); }
+.highlight-level.level-high { color: var(--signal-high); }
+.highlight-level.level-medium { color: var(--signal-medium); }
+.highlight-level.level-low { color: var(--signal-low); }
+.highlight-action.action-action { color: var(--action); }
+.highlight-action.action-test { color: var(--test); }
+.highlight-action.action-watch { color: var(--watch); }
+.highlight-action.action-read { color: var(--read); }
+.highlight-action.action-explore { color: var(--explore); }
 </style>

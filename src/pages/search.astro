@@ -1,0 +1,221 @@
+---
+import Base from '../layouts/Base.astro';
+import { topicRegistry } from '../data/topics';
+
+const suggestedSlugs = ['agent-systems', 'local-ai', 'ai-coding', 'rag-knowledge', 'developer-tools', 'inference'];
+const suggestions = suggestedSlugs.map((slug) => topicRegistry.find((topic) => topic.slug === slug)).filter((topic) => topic !== undefined);
+---
+
+<Base title="搜索 | Horizon" description="在 Horizon 的技术情报、深度研究、长期议题与公开工作栈之间检索信号、判断与工具。" noindex>
+  <div class="search-page collection-index container">
+    <header class="search-hero">
+      <p class="eyebrow">SEARCH / HORIZON INDEX</p>
+      <h1>搜索</h1>
+      <p>在 Radar、Research、Topics 与工作栈之间，<br />找到曾经出现过的信号、判断与工具。</p>
+    </header>
+
+    <form class="search-form" role="search" action="/search/" method="get">
+      <label for="site-search-input">搜索 Horizon</label>
+      <input id="site-search-input" name="q" type="search" placeholder="搜索模型、工具、议题或研究……" autocomplete="off" spellcheck="false" />
+      <button type="submit" aria-label="提交搜索">↗</button>
+    </form>
+
+    <div class="type-filters" role="group" aria-label="筛选内容类型">
+      <button type="button" data-type="all" aria-pressed="true">全部</button>
+      <button type="button" data-type="research" aria-pressed="false">研究</button>
+      <button type="button" data-type="radar" aria-pressed="false">雷达</button>
+      <button type="button" data-type="topic" aria-pressed="false">议题</button>
+      <button type="button" data-type="stack" aria-pressed="false">工具</button>
+    </div>
+
+    <section class="search-home" id="search-home" aria-labelledby="explore-heading">
+      <div class="section-heading"><p class="eyebrow">START EXPLORING</p><h2 id="explore-heading">探索 Horizon</h2></div>
+      <p class="explore-intro">从一个长期议题开始，沿着情报与研究继续追踪。</p>
+      <div class="suggestions">
+        {suggestions.map((topic) => <a href={`/topics/${topic.slug}/`}><span>{topic.slug}</span><strong>{topic.name}</strong><span aria-hidden="true">↗</span></a>)}
+      </div>
+    </section>
+
+    <section class="search-results" id="search-results" aria-labelledby="results-heading" hidden>
+      <div class="results-heading"><div><p class="eyebrow">SEARCH RESULTS</p><h2 id="results-heading"></h2></div><span id="result-count" aria-live="polite"></span></div>
+      <div class="result-list" id="result-list"></div>
+      <p class="index-loading" id="index-loading" hidden>正在加载搜索索引……</p>
+      <p class="no-results" id="no-results" hidden>没有找到匹配内容。试试更短的关键词，或切换内容类型。</p>
+    </section>
+    <p class="index-error" id="index-error" hidden>搜索索引暂时无法加载，请稍后重试。</p>
+  </div>
+</Base>
+
+<script>
+  import { rankSearch, type SearchFilter } from '../lib/search-ranking';
+  import type { LocalizedText, SearchDocument } from '../lib/search-index';
+
+  const input = document.querySelector<HTMLInputElement>('#site-search-input');
+  const form = document.querySelector<HTMLFormElement>('.search-form');
+  const filters = [...document.querySelectorAll<HTMLButtonElement>('.type-filters button')];
+  const home = document.querySelector<HTMLElement>('#search-home');
+  const results = document.querySelector<HTMLElement>('#search-results');
+  const heading = document.querySelector<HTMLElement>('#results-heading');
+  const count = document.querySelector<HTMLElement>('#result-count');
+  const list = document.querySelector<HTMLElement>('#result-list');
+  const noResults = document.querySelector<HTMLElement>('#no-results');
+  const loading = document.querySelector<HTMLElement>('#index-loading');
+  const error = document.querySelector<HTMLElement>('#index-error');
+  const traditional = document.documentElement.lang === 'zh-Hant';
+  const labels = traditional
+    ? { result: '的搜尋結果', item: '項', radar: '情報', research: '研究', topic: '議題', stack: '工具', core: '核心', environment: '環境', radarCount: '篇情報', researchCount: '篇研究' }
+    : { result: '的搜索结果', item: '项', radar: '雷达', research: '研究', topic: '议题', stack: '工具', core: '核心', environment: '环境', radarCount: '篇雷达', researchCount: '篇研究' };
+  const locale = (value: LocalizedText) => traditional ? value.hant : value.hans;
+  let documents: SearchDocument[] = [];
+  let loaded = false;
+  let filter: SearchFilter = 'all';
+  if (form) form.action = traditional ? '/search/' : '/zh-hans/search/';
+
+  function readState() {
+    const parameters = new URLSearchParams(location.search);
+    const type = parameters.get('type');
+    filter = ['research', 'radar', 'topic', 'stack'].includes(type ?? '') ? type as SearchFilter : 'all';
+    if (input) input.value = parameters.get('q') ?? '';
+  }
+
+  function writeState(push = false) {
+    const parameters = new URLSearchParams();
+    const query = input?.value.trim() ?? '';
+    if (query) parameters.set('q', query);
+    if (filter !== 'all') parameters.set('type', filter);
+    const url = `${location.pathname}${parameters.size ? `?${parameters}` : ''}`;
+    history[push ? 'pushState' : 'replaceState']({}, '', url);
+  }
+
+  function highlight(target: HTMLElement, value: string, alternative: string, query: string) {
+    const needle = query.trim().toLocaleLowerCase();
+    let start = value.toLocaleLowerCase().indexOf(needle);
+    if (start < 0 && value.length === alternative.length) start = alternative.toLocaleLowerCase().indexOf(needle);
+    if (!needle || start < 0) { target.textContent = value; return; }
+    target.append(document.createTextNode(value.slice(0, start)));
+    const mark = document.createElement('mark');
+    mark.textContent = value.slice(start, start + needle.length);
+    target.append(mark, document.createTextNode(value.slice(start + needle.length)));
+  }
+
+  function renderResult(item: SearchDocument, query: string): HTMLAnchorElement {
+    const link = document.createElement('a');
+    link.className = 'result-row';
+    link.href = `${traditional ? '' : '/zh-hans'}${item.url}`;
+
+    const side = document.createElement('div');
+    side.className = 'result-side';
+    const type = document.createElement('span');
+    type.className = 'result-type';
+    type.textContent = item.type.toUpperCase();
+    side.append(type);
+    if (item.date) {
+      const date = document.createElement('time');
+      date.dateTime = item.date;
+      date.textContent = item.date.replaceAll('-', '.');
+      side.append(date);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'result-body';
+    const title = document.createElement('h3');
+    highlight(title, locale(item.title), traditional ? item.title.hans : item.title.hant, query);
+    body.append(title);
+    const description = document.createElement('p');
+    highlight(description, locale(item.description), traditional ? item.description.hans : item.description.hant, query);
+    body.append(description);
+
+    const metadata = document.createElement('div');
+    metadata.className = 'result-meta';
+    const parts: string[] = [];
+    if (item.type === 'radar') parts.push(labels.radar, item.radarType ? locale(item.radarType) : '');
+    if (item.type === 'research') parts.push(labels.research);
+    if (item.type === 'topic') parts.push(labels.topic, `${item.radarCount ?? 0} ${labels.radarCount}`, `${item.researchCount ?? 0} ${labels.researchCount}`);
+    if (item.type === 'stack') parts.push(labels.stack, item.core ? labels.core : labels.environment,
+      item.category ? locale(item.category) : '', item.toolType?.toUpperCase() ?? '');
+    for (const topic of item.topics.slice(0, 3)) parts.push(locale(topic.name));
+    metadata.textContent = parts.filter(Boolean).join('  ·  ');
+    body.append(metadata);
+    const arrow = document.createElement('span');
+    arrow.className = 'result-arrow';
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.textContent = '↗';
+    link.append(side, body, arrow);
+    return link;
+  }
+
+  function render() {
+    const query = input?.value.trim() ?? '';
+    for (const button of filters) button.setAttribute('aria-pressed', String(button.dataset.type === filter));
+    if (home) home.hidden = Boolean(query);
+    if (results) results.hidden = !query;
+    if (!query || !list || !heading || !count) return;
+    heading.textContent = `“${query}”${labels.result}`;
+    if (loading) loading.hidden = loaded;
+    if (!loaded) {
+      count.textContent = '';
+      list.replaceChildren();
+      if (noResults) noResults.hidden = true;
+      return;
+    }
+    const matches = rankSearch(documents, query, filter);
+    count.textContent = `${matches.length} ${labels.item}`;
+    list.replaceChildren(...matches.map(({ document: item }) => renderResult(item, query)));
+    if (noResults) noResults.hidden = matches.length > 0;
+  }
+
+  readState();
+  render();
+  input?.focus();
+  fetch('/search-index.json')
+    .then((response) => { if (!response.ok) throw new Error(`Search index ${response.status}`); return response.json(); })
+    .then((index: SearchDocument[]) => { documents = index; loaded = true; render(); })
+    .catch(() => { if (loading) loading.hidden = true; if (error) error.hidden = false; });
+  input?.addEventListener('input', () => { writeState(); render(); });
+  form?.addEventListener('submit', (event) => { event.preventDefault(); writeState(); render(); });
+  for (const button of filters) button.addEventListener('click', () => {
+    filter = button.dataset.type as SearchFilter;
+    writeState(true);
+    render();
+  });
+  window.addEventListener('popstate', () => { readState(); render(); });
+</script>
+
+<style is:global>
+.search-page { max-width: 1080px; min-height: 65vh; }
+.eyebrow { color: var(--accent-text); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .09em; }
+.search-hero h1 { margin-top: 16px; font-family: var(--font-display); font-size: clamp(2.7rem, 5vw, 4rem); font-weight: 400; line-height: 1.2; letter-spacing: -.04em; }
+.search-hero > p:last-child { margin-top: 15px; color: var(--text-secondary); font-size: .92rem; line-height: 1.85; }
+.search-form { display: grid; grid-template-columns: minmax(0, 1fr) 54px; position: relative; margin-top: 47px; border-bottom: 1px solid var(--border-default); }
+.search-form label { position: absolute; top: -20px; left: 0; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .65rem; }
+.search-form input { width: 100%; min-width: 0; padding: 13px 4px 16px 0; border: 0; outline: 0; background: transparent; color: var(--text-primary); font: 1.36rem var(--font-sans); }
+.search-form input::placeholder { color: var(--text-tertiary); }
+.search-form input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
+.search-form:focus-within { border-bottom-color: var(--accent-tech); }
+.search-form button { border: 0; background: transparent; color: var(--accent-text); cursor: pointer; font-family: var(--font-mono); font-size: 1.25rem; }
+.type-filters { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 22px; }
+.type-filters button { padding: 4px 0 7px; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--text-tertiary); cursor: pointer; font-size: .8rem; }
+.type-filters button:hover,.type-filters button[aria-pressed='true'] { border-bottom-color: var(--accent-tech); color: var(--text-primary); }
+.search-home,.search-results { margin-top: 80px; }
+.search-home[hidden],.search-results[hidden],.index-loading[hidden],.no-results[hidden],.index-error[hidden] { display: none; }
+.section-heading h2,.results-heading h2 { margin-top: 7px; font-family: var(--font-display); font-size: clamp(1.45rem, 2.7vw, 1.9rem); font-weight: 400; letter-spacing: -.025em; }
+.explore-intro { margin-top: 11px; color: var(--text-secondary); font-size: .84rem; }
+.suggestions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; margin-top: 29px; border-top: 1px solid var(--border-default); }
+.suggestions a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 5px 12px; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); }
+.suggestions a span:first-child { grid-column: 1 / -1; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .63rem; }
+.suggestions a strong { font-size: .91rem; font-weight: 600; }.suggestions a span:last-child { color: var(--accent-text); }
+.results-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: 23px; }
+.results-heading h2 { overflow-wrap: anywhere; }.results-heading > span { flex: none; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .7rem; }
+.result-list { border-top: 1px solid var(--border-default); }
+.result-row { display: grid; grid-template-columns: 125px minmax(0, 1fr) 22px; gap: 25px; padding: 21px 0 23px; border-bottom: 1px solid var(--border-subtle); }
+.result-side { display: flex; flex-direction: column; gap: 8px; padding-top: 3px; font-family: var(--font-mono); font-size: .65rem; }
+.result-type { color: var(--accent-text); letter-spacing: .05em; }.result-side time { color: var(--text-tertiary); }
+.result-body { min-width: 0; }.result-body h3 { overflow-wrap: anywhere; font-family: var(--font-display); font-size: 1.13rem; font-weight: 400; line-height: 1.45; }
+.result-body p { margin-top: 7px; color: var(--text-secondary); font-size: .81rem; line-height: 1.75; }
+.result-meta { margin-top: 10px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .63rem; line-height: 1.7; overflow-wrap: anywhere; }
+.result-arrow { color: var(--accent-text); text-align: right; }.result-row:hover h3 { color: var(--accent-text); }
+.result-row mark { padding: 0; background: var(--accent-tech-soft); color: var(--accent-text); }
+.index-loading,.no-results,.index-error { padding: 26px 0; color: var(--text-secondary); font-size: .86rem; }
+@media (max-width: 700px) { .search-page { padding-top: 49px; }.search-home,.search-results { margin-top: 61px; }.result-row { grid-template-columns: minmax(0,1fr) 20px; gap: 7px 12px; padding: 18px 0 21px; }.result-side { grid-column: 1 / -1; flex-direction: row; gap: 16px; }.result-body { grid-column: 1; }.result-arrow { grid-column: 2; grid-row: 2; } }
+@media (max-width: 560px) { .search-form { grid-template-columns: minmax(0,1fr) 38px; margin-top: 40px; }.search-form input { font-size: 1.05rem; }.type-filters { gap: 5px 15px; }.suggestions { grid-template-columns: 1fr; }.search-hero > p:last-child br { display: none; }.results-heading { align-items: start; }.result-body h3 { font-size: 1.03rem; } }
+</style>

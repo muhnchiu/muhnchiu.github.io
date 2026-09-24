@@ -1,10 +1,10 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import RelationSection from '../../components/RelationSection.astro';
+import ContextNavigation from '../../components/ContextNavigation.astro';
 import { statusLabel, confidenceLabel, formatDate } from '../../data/research';
 import { getTopicLabel, isCanonicalTopic } from '../../data/topics';
-import { getDeclaredSourceRadarHref, getRelatedRadars, getRelatedResearchByTopics, loadRelationContext } from '../../lib/relations';
+import { getDeclaredSourceRadarHref, getRelatedRadars, getRelatedResearchByTopics, getRelatedTopics, loadRelationContext } from '../../lib/relations';
 
 // Static paths from published research
 export async function getStaticPaths() {
@@ -21,6 +21,7 @@ const tocItems = headings.filter((heading) => heading.depth === 2 || heading.dep
 const relations = await loadRelationContext();
 const relatedRadars = getRelatedRadars(entry, relations);
 const relatedResearch = getRelatedResearchByTopics(entry, relations);
+const relatedTopics = getRelatedTopics(entry);
 const sourceRadarHref = getDeclaredSourceRadarHref(entry, relations);
 
 const createdStr = formatDate(entry.data.created);
@@ -109,8 +110,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
       )}
     </div>
 
-    <RelationSection id="intelligence-sources" eyebrow="EVIDENCE / RADAR" title="情报来源" items={relatedRadars} />
-    <RelationSection id="related-research" eyebrow="CONTEXT / RESEARCH TRAIL" title="延伸脉络" items={relatedResearch} />
+    <ContextNavigation kind="research" topics={relatedTopics} radars={relatedRadars} research={relatedResearch} />
   </article>
 </Base>
 
@@ -118,40 +118,40 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 .research-detail { max-width: 1200px; padding-top: 64px; padding-bottom: 96px; }
 .breadcrumb { font-size: .82rem; color: var(--text-tertiary); margin-bottom: 16px; }
 .breadcrumb a { color: var(--text-secondary); }
-.breadcrumb a:hover { color: var(--accent-tech); }
+.breadcrumb a:hover { color: var(--accent-text); }
 .sep { margin: 0 8px; }
 
 .research-header h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.75rem, 4vw, 2.8rem); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 12px; }
 .subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; }
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
 .topic { font-size: .75rem; color: var(--text-secondary); padding: 3px 10px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 4px; }
-.topic:hover { color: var(--accent-tech); border-color: var(--accent-tech); }
+.topic:hover { color: var(--accent-text); border-color: var(--accent-tech); }
 .secondary-tags { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: -10px 0 27px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .64rem; }
 .secondary-tags a, .secondary-tags span { overflow-wrap: anywhere; }
-.secondary-tags a:hover { color: var(--accent-tech); }
+.secondary-tags a:hover { color: var(--accent-text); }
 
 .meta-grid { display: flex; flex-wrap: wrap; gap: 32px; padding: 20px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
 .meta-item { display: flex; flex-direction: column; gap: 2px; }
 .meta-key { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .06em; color: var(--text-tertiary); text-transform: uppercase; }
 .meta-val { font-size: .85rem; color: var(--text-primary); }
-.meta-val a { color: var(--accent-tech); }
+.meta-val a { color: var(--accent-text); }
 
-.archived-banner { margin: 24px 0; padding: 16px 20px; background: rgba(245, 158, 11, .06); border: 1px solid rgba(245, 158, 11, .2); border-radius: var(--radius-sm); font-size: .88rem; color: #92400e; }
+.archived-banner { margin: 24px 0; padding: 16px 20px; background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); font-size: .88rem; color: var(--warning-text); }
 
 .content-layout { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 48px; margin-top: 48px; }
-.prose { min-width: 0; max-width: 760px; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.85; color: #34445a; }
+.prose { min-width: 0; max-width: 760px; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.85; color: var(--text-body); }
 .prose :global(h2) { margin: 48px 0 16px; font-family: var(--font-display); font-weight: 400; font-size: 1.4rem; color: var(--text-primary); letter-spacing: -.02em; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; }
 .prose :global(h3) { margin: 32px 0 12px; font-size: 1.15rem; color: var(--text-primary); }
 .prose :global(p) { margin: 14px 0; }
 .prose :global(ul), .prose :global(ol) { margin: 14px 0 14px 24px; }
 .prose :global(li) { margin: 6px 0; }
-.prose :global(a) { color: var(--accent-tech); text-decoration: none; border-bottom: 1px solid var(--accent-tech-border); }
+.prose :global(a) { color: var(--accent-text); text-decoration: none; border-bottom: 1px solid var(--accent-tech-border); }
 .prose :global(a:hover) { border-bottom-color: var(--accent-tech); }
 .prose :global(blockquote) { margin: 20px 0; padding: 12px 20px; border-left: 3px solid var(--accent-tech); background: var(--bg-base); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--text-secondary); }
 .prose :global(table) { display: block; width: 100%; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 20px 0; font-size: .88rem; }
 .prose :global(th) { text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--border-default); font-weight: 600; color: var(--text-primary); }
 .prose :global(td) { padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
-.prose :global(code) { font-family: var(--font-mono); font-size: .85em; padding: 2px 6px; background: var(--bg-base); border-radius: 3px; color: var(--accent-tech); }
+.prose :global(code) { font-family: var(--font-mono); font-size: .85em; padding: 2px 6px; background: var(--bg-base); border-radius: 3px; color: var(--accent-text); }
 .prose :global(pre) { margin: 20px 0; padding: 16px 20px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); overflow-x: auto; font-size: .85rem; line-height: 1.6; }
 .prose :global(pre code) { padding: 0; background: none; color: var(--text-primary); }
 .prose :global(hr) { border: none; border-top: 1px solid var(--border-subtle); margin: 40px 0; }
@@ -160,7 +160,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 .toc { position: sticky; top: 88px; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; }
 .toc-label { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 12px; }
 .toc-item { display: block; font-size: .82rem; color: var(--text-tertiary); padding: 4px 0; border-left: 2px solid var(--border-subtle); padding-left: 12px; transition: color var(--transition), border-color var(--transition); }
-.toc-item:hover { color: var(--accent-tech); border-left-color: var(--accent-tech); }
+.toc-item:hover { color: var(--accent-text); border-left-color: var(--accent-tech); }
 .toc-h3 { padding-left: 24px; font-size: .78rem; }
 
 @media (max-width: 1024px) {

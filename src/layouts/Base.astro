@@ -23,6 +23,7 @@ interface Props {
   canonical?: string;
   ogImage?: string;
   type?: 'website' | 'article';
+  noindex?: boolean;
 }
 
 const {
@@ -31,6 +32,7 @@ const {
   canonical = new URL(Astro.url.pathname, site.url).href,
   ogImage,
   type = 'website',
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -39,9 +41,23 @@ const {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script is:inline>
+    (() => {
+      let preference = 'system';
+      try {
+        const stored = localStorage.getItem('horizon-theme');
+        if (stored === 'light' || stored === 'dark') preference = stored;
+      } catch { /* Storage may be unavailable; system remains the default. */ }
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      document.documentElement.dataset.themePreference = preference;
+      document.documentElement.dataset.theme = preference === 'system'
+        ? (media.matches ? 'dark' : 'light') : preference;
+    })();
+  </script>
   <meta name="generator" content={Astro.generator} />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex, follow" />}
   <link rel="canonical" href={canonical} />
   <meta property="og:type" content={type} />
   <meta property="og:site_name" content={site.name} />

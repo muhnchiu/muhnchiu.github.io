@@ -1,0 +1,199 @@
+---
+import Base from '../layouts/Base.astro';
+
+const focusAreas = [
+  { label: 'AI / MODELS', name: 'AI 模型', description: '关注模型能力、推理、本地 AI 与模型生态的变化。' },
+  { label: 'AGENT SYSTEMS', name: '智能体系统', description: '关注工具调用、记忆、Skills 与自主执行如何形成可靠的协作方式。' },
+  { label: 'DEVELOPER TOOLS', name: '开发工具', description: '关注 AI Coding、开发效率与新一代软件工程工作流。' },
+  { label: 'SOFTWARE', name: '软件', description: '关注真正改变工作方式的软件，而不只是追逐新品。' },
+  { label: 'KNOWLEDGE SYSTEMS', name: '知识系统', description: '关注信息组织，以及人与 AI 共同工作的方式。' },
+];
+
+const workingPrinciples = [
+  { number: '01', title: '先建立系统，再增加工具', body: '工具越多并不意味着效率越高。我更在意它们能否形成稳定、可维护的工作流。' },
+  { number: '02', title: '自动收集，人工判断', body: 'Radar 可以自动运行，Research 可以辅助生成，但什么值得留下，仍然需要人的判断。' },
+  { number: '03', title: '让知识持续演进', body: '重要内容不该在一次阅读后消失；它应该能够被重新发现、关联、修正，并继续研究。' },
+];
+
+const horizonWorkflow = [
+  { time: '08:05', label: 'RADAR', title: '技术信号扫描', description: '持续观察值得留意的变化。' },
+  { time: '08:40', label: 'DEEP DIVE', title: '进入深入研究', description: '把值得追问的内容带入研究。' },
+  { time: '08:50', label: 'PUBLISH', title: '验证与发布', description: '检查内容，再构建公开页面。' },
+  { time: '∞', label: 'HORIZON', title: '长期知识', description: '让信息可以检索、关联与演进。' },
+];
+
+const principles = [
+  { label: 'SIGNAL > NOISE', statement: '信号比数量重要。' },
+  { label: 'SOURCE > CLAIM', statement: '事实必须知道从哪里来。' },
+  { label: 'SYSTEM > TOOL', statement: '系统比单个工具重要。' },
+  { label: 'JUDGMENT > AUTOMATION', statement: '自动化不能替代判断。' },
+  { label: 'EVOLVE > ARCHIVE', statement: '知识应该持续演进，而不是只被收藏。' },
+];
+---
+
+<Base title="关于 | Horizon" description="关于 Horizon 以及它背后的个人技术观察与研究系统，记录 AI、软件、开发工具、智能体与知识系统的长期探索。">
+  <div class="about-page collection-index container">
+    <header class="about-hero">
+      <p class="eyebrow">ABOUT / 关于</p>
+      <h1>关于 Horizon，<br />也关于我</h1>
+      <div class="hero-bottom">
+        <p class="hero-lede">在技术、产品与设计之间，<br />持续构建自己的观察与工作系统。</p>
+        <p class="hero-body">我长期关注 AI、软件、开发工具与智能体系统，也关心这些技术最终如何进入真实的产品与工作流。Horizon 是这个过程留下的公开记录：扫描变化，理解技术，沉淀判断，再把真正有价值的东西带回实践。</p>
+      </div>
+    </header>
+
+    <section class="identity-section about-section" aria-labelledby="identity-heading">
+      <p class="eyebrow">01 / IDENTITY</p>
+      <div class="identity-content">
+        <h2 id="identity-heading">设计 <span>×</span> 产品 <span>×</span> 技术</h2>
+        <div class="identity-copy">
+          <p>从视觉设计出发，逐渐进入产品、技术与 AI 工作流。</p>
+          <p>现在更感兴趣的，不是某一个单独工具，而是如何把工具组织成真正有效的系统。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-section about-section" aria-labelledby="why-heading">
+      <div class="section-head"><p class="eyebrow">02 / WHY HORIZON</p><h2 id="why-heading">为什么做 Horizon</h2></div>
+      <div class="why-content">
+        <p class="why-intro">每天都有大量模型、工具、论文、漏洞和产品变化。真正困难的，不是知道发生了什么。</p>
+        <div class="why-questions" aria-label="Horizon 持续追问的问题">
+          <p>什么值得关注？</p><p>什么值得深入？</p><p>什么会真正影响自己的工作？</p>
+        </div>
+        <p class="why-answer">Horizon 因此被建立。它不是新闻聚合器，也不是 AI 自动转载站；它更像一个持续运行的个人技术情报系统。</p>
+      </div>
+      <ol class="thinking-flow" aria-label="Horizon 的工作过程">
+        {['扫描', '筛选', '研究', '关联', '沉淀'].map((step, index) => <li><span>{String(index + 1).padStart(2, '0')}</span><strong>{step}</strong></li>)}
+      </ol>
+    </section>
+
+    <section class="focus-section about-section" aria-labelledby="focus-heading">
+      <div class="section-head"><p class="eyebrow">03 / WHAT I FOLLOW</p><h2 id="focus-heading">持续关注</h2></div>
+      <div class="focus-list">
+        {focusAreas.map((area, index) => <article class="focus-row">
+          <span class="focus-number">{String(index + 1).padStart(2, '0')}</span>
+          <div><p class="focus-label">{area.label}</p><h3>{area.name}</h3></div>
+          <p>{area.description}</p>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="work-section about-section" aria-labelledby="work-heading">
+      <div class="section-head"><p class="eyebrow">04 / HOW I WORK</p><h2 id="work-heading">我的工作方式</h2></div>
+      <div class="work-grid">
+        {workingPrinciples.map((principle) => <article>
+          <span>{principle.number}</span><h3>{principle.title}</h3><p>{principle.body}</p>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="runs-section about-section" aria-labelledby="runs-heading">
+      <div class="section-head"><p class="eyebrow">05 / HOW HORIZON RUNS</p><h2 id="runs-heading">一个持续运行的系统</h2></div>
+      <p class="section-intro">自动化负责持续运行，判断负责决定什么值得留下。</p>
+      <ol class="run-flow" aria-label="Horizon 的公开工作流程">
+        {horizonWorkflow.map((step) => <li>
+          <span class="run-time">{step.time}</span><span class="run-label">{step.label}</span>
+          <h3>{step.title}</h3><p>{step.description}</p>
+        </li>)}
+      </ol>
+    </section>
+
+    <section class="principles-section about-section" aria-labelledby="principles-heading">
+      <div class="section-head"><p class="eyebrow">06 / PRINCIPLES</p><h2 id="principles-heading">一些原则</h2></div>
+      <div class="principles-list">
+        {principles.map((principle) => <div><span>{principle.label}</span><p>{principle.statement}</p></div>)}
+      </div>
+    </section>
+
+    <nav class="explore-section about-section" aria-labelledby="explore-heading">
+      <div class="section-head"><p class="eyebrow">07 / EXPLORE</p><h2 id="explore-heading">继续探索</h2></div>
+      <p class="section-intro">想知道最近在关注什么，可以从 Radar 开始；想看经过整理的判断，去 Research；想看这些技术如何进入我的工作，看看 Stack。</p>
+      <div class="explore-primary">
+        <a href="/research/"><span>DEEP DIVE / RESEARCH</span><strong>深度研究</strong><span aria-hidden="true">↗</span></a>
+        <a href="/stack/"><span>TOOLS / WORK ENVIRONMENT</span><strong>工作栈</strong><span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="explore-secondary"><a href="/radar/">每日情报 <span aria-hidden="true">↗</span></a><a href="/topics/">长期议题 <span aria-hidden="true">↗</span></a></div>
+    </nav>
+  </div>
+</Base>
+
+<style>
+.about-page { max-width: 1160px; }
+.eyebrow { color: var(--accent-text); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .09em; }
+.about-hero { padding-bottom: 78px; border-bottom: 1px solid var(--border-subtle); }
+.about-hero h1 { margin-top: 22px; font-family: var(--font-display); font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 400; line-height: 1.16; letter-spacing: -.045em; }
+.hero-bottom { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 58px; margin-top: 58px; }
+.hero-lede { font-family: var(--font-display); font-size: clamp(1.24rem, 2.1vw, 1.58rem); line-height: 1.65; }
+.hero-body { max-width: 485px; color: var(--text-secondary); font-size: .9rem; line-height: 1.95; }
+.about-section { padding-top: 78px; }
+.section-head { margin-bottom: 29px; }
+.section-head h2 { margin-top: 8px; font-family: var(--font-display); font-size: clamp(1.75rem, 2.8vw, 2.28rem); font-weight: 400; line-height: 1.32; letter-spacing: -.03em; }
+.section-intro { max-width: 670px; color: var(--text-secondary); font-size: .87rem; line-height: 1.85; }
+.identity-section { padding-bottom: 74px; border-bottom: 1px solid var(--border-subtle); }
+.identity-content { display: grid; grid-template-columns: 1.15fr 1fr; gap: 70px; align-items: start; margin-top: 20px; }
+.identity-content h2 { font-family: var(--font-display); font-size: clamp(1.82rem, 3.4vw, 2.78rem); font-weight: 400; letter-spacing: -.035em; line-height: 1.4; }
+.identity-content h2 span { color: var(--accent-text); font-family: var(--font-mono); font-size: .6em; }
+.identity-copy { display: grid; gap: 13px; max-width: 470px; color: var(--text-secondary); font-size: .88rem; line-height: 1.85; }
+.why-section { padding-top: 92px; padding-bottom: 14px; }
+.why-content { display: grid; grid-template-columns: 1fr 1.15fr; gap: 23px 70px; align-items: start; }
+.why-intro { max-width: 420px; font-size: .93rem; line-height: 1.95; }
+.why-questions { grid-row: span 2; padding-left: 28px; border-left: 1px solid var(--accent-tech-border); font-family: var(--font-display); font-size: clamp(1.15rem, 2.25vw, 1.58rem); line-height: 1.75; }
+.why-answer { max-width: 440px; color: var(--text-secondary); font-size: .86rem; line-height: 1.85; }
+.thinking-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 43px; border-top: 1px solid var(--border-default); border-bottom: 1px solid var(--border-subtle); list-style: none; }
+.thinking-flow li { position: relative; display: flex; align-items: center; gap: 12px; min-width: 0; padding: 21px 8px 22px 0; }
+.thinking-flow li:not(:last-child)::after { content: '→'; position: absolute; right: 19px; color: var(--accent-text); font-family: var(--font-mono); font-size: .75rem; }
+.thinking-flow li span { color: var(--text-tertiary); font-family: var(--font-mono); font-size: .61rem; }
+.thinking-flow li strong { font-family: var(--font-display); font-size: 1.1rem; font-weight: 400; }
+.focus-list { border-top: 1px solid var(--border-default); }
+.focus-row { display: grid; grid-template-columns: 42px minmax(0, .8fr) minmax(0, 1.2fr); align-items: center; gap: 17px; min-height: 94px; padding: 15px 0; border-bottom: 1px solid var(--border-subtle); }
+.focus-number,.focus-label { color: var(--text-tertiary); font-family: var(--font-mono); font-size: .58rem; letter-spacing: .035em; }
+.focus-row h3 { margin-top: 5px; font-size: 1.09rem; font-weight: 650; }
+.focus-row > p { max-width: 475px; color: var(--text-secondary); font-size: .82rem; line-height: 1.7; }
+.work-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
+.work-grid article { padding: 20px 0 0; border-top: 1px solid var(--border-default); }
+.work-grid article > span { color: var(--accent-text); font-family: var(--font-mono); font-size: .68rem; }
+.work-grid h3 { margin-top: 20px; font-family: var(--font-display); font-size: 1.28rem; font-weight: 400; line-height: 1.4; }
+.work-grid p { margin-top: 13px; max-width: 285px; color: color-mix(in srgb, var(--text-primary) 24%, var(--text-secondary)); font-size: .84rem; line-height: 1.85; }
+.runs-section { margin-top: 92px; padding-top: 92px; padding-bottom: 82px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.run-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 33px; list-style: none; }
+.run-flow li { position: relative; min-width: 0; padding: 18px 18px 0 0; border-top: 1px solid var(--border-default); }
+.run-flow li::before { content: ''; position: absolute; top: -4px; left: 0; z-index: 1; width: 7px; height: 7px; border: 1px solid var(--accent-tech); border-radius: 50%; background: var(--bg-base); }
+.run-flow li:not(:last-child)::after { content: '→'; position: absolute; top: -11px; right: 12px; color: var(--accent-text); background: var(--bg-base); padding: 0 5px; font-family: var(--font-mono); font-size: .76rem; }
+.run-time,.run-label { display: block; font-family: var(--font-mono); }
+.run-time { font-size: .95rem; }.run-label { margin-top: 7px; color: var(--accent-text); font-size: .63rem; letter-spacing: .06em; }
+.run-flow h3 { margin-top: 19px; font-family: var(--font-display); font-size: 1.08rem; font-weight: 400; }
+.run-flow p { margin-top: 7px; max-width: 195px; color: var(--text-secondary); font-size: .76rem; line-height: 1.65; }
+.principles-section { padding-top: 92px; padding-bottom: 14px; }
+.principles-list { border-top: 1px solid var(--border-default); }
+.principles-list > div { display: grid; grid-template-columns: minmax(190px, .8fr) 1.2fr; align-items: baseline; gap: 30px; padding: 17px 0; border-bottom: 1px solid var(--border-subtle); }
+.principles-list span { color: var(--accent-text); font-family: var(--font-mono); font-size: .65rem; letter-spacing: .05em; }
+.principles-list p { font-family: var(--font-display); font-size: clamp(1.05rem, 1.9vw, 1.32rem); }
+.explore-section { margin-top: 81px; padding-bottom: 8px; border-top: 1px solid var(--border-subtle); }
+.explore-primary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 33px; }
+.explore-primary a { display: grid; grid-template-columns: 1fr auto; gap: 10px; min-height: 119px; padding: 20px 0 17px; border-top: 1px solid var(--border-default); border-bottom: 1px solid var(--border-subtle); }
+.explore-primary a > span:first-child { grid-column: 1 / -1; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .64rem; letter-spacing: .06em; }
+.explore-primary strong { font-family: var(--font-display); font-size: 1.44rem; font-weight: 400; }.explore-primary a > span:last-child { color: var(--accent-text); font-family: var(--font-mono); }
+.explore-secondary { display: flex; gap: 26px; margin-top: 22px; }.explore-secondary a { color: var(--text-secondary); font-size: .78rem; }.explore-secondary span { color: var(--accent-text); }
+@media (max-width: 850px) {
+  .hero-bottom,.identity-content,.why-content { grid-template-columns: 1fr; gap: 20px; }
+  .hero-bottom { margin-top: 41px; }.why-questions { grid-row: auto; }
+  .run-flow { grid-template-columns: 1fr; gap: 0; }
+  .run-flow li { padding: 0 0 27px 26px; border-top: 0; border-left: 1px solid var(--border-default); }
+  .run-flow li:last-child { padding-bottom: 0; }
+  .run-flow li::before { top: 3px; left: -4px; }
+  .run-flow li:not(:last-child)::after { content: '↓'; top: auto; right: auto; bottom: 5px; left: 3px; padding: 0 3px; }
+}
+@media (max-width: 600px) {
+  .about-page { padding-top: 46px; padding-bottom: 84px; }
+  .about-hero { padding-bottom: 58px; }.about-hero h1 { font-size: clamp(2.5rem, 10vw, 3.6rem); }.hero-bottom { margin-top: 31px; gap: 18px; }.hero-lede { font-size: 1.24rem; }.hero-body { font-size: .85rem; }
+  .about-section { padding-top: 59px; }.identity-section { padding-bottom: 58px; }.identity-content h2 { font-size: 1.93rem; }
+  .why-section { padding-top: 70px; padding-bottom: 10px; }
+  .why-questions { padding-left: 17px; font-size: 1.14rem; }.thinking-flow { grid-template-columns: 1fr; margin-top: 29px; }.thinking-flow li { padding: 8px 0; }.thinking-flow li:not(:last-child)::after { content: '↓'; right: 4px; }
+  .focus-row { grid-template-columns: 25px 1fr; gap: 5px 11px; min-height: 0; padding: 17px 0; }.focus-row > p { grid-column: 2; }
+  .work-grid { grid-template-columns: 1fr; gap: 29px; }.work-grid article { padding-top: 14px; }.work-grid h3 { margin-top: 10px; }.work-grid p { max-width: none; margin-top: 7px; }
+  .runs-section { margin-top: 70px; padding-top: 70px; padding-bottom: 63px; }.run-flow { margin-top: 26px; }.run-flow h3 { margin-top: 11px; }.run-flow p { max-width: none; }
+  .principles-section { padding-top: 70px; padding-bottom: 10px; }
+  .principles-list > div { grid-template-columns: 1fr; gap: 5px; padding: 15px 0; }.principles-list p { font-size: 1.14rem; }
+  .explore-section { margin-top: 61px; }.explore-primary { grid-template-columns: 1fr; gap: 0; }.explore-primary a { min-height: 97px; }.explore-secondary { flex-wrap: wrap; }
+}
+</style>

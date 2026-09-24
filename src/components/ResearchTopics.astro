@@ -34,18 +34,18 @@ const { topics } = Astro.props as { topics: Array<TopicAggregate & { updatedLabe
 <style>
 .topics-section { padding-top: 0; padding-bottom: 52px; }
 .section-header { margin-bottom: 16px; }
-.all-link { font-size: .72rem; color: #315d88; }
+.all-link { font-size: .72rem; color: var(--ink-blue); }
 .topics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.topic-card { display: flex; flex-direction: column; min-height: 155px; padding: 17px 18px; border: 1px solid #dce8f1; border-radius: 6px; background: #fff; transition: border-color var(--transition), box-shadow var(--transition); }
-.topic-card:hover { color: inherit; border-color: #a8c9e3; box-shadow: var(--shadow-md); }
-.topic-kicker { font-family: var(--font-mono); font-size: .57rem; letter-spacing: .08em; color: #7890a6; }
+.topic-card { display: flex; flex-direction: column; min-height: 155px; padding: 17px 18px; border: 1px solid var(--surface-blue-border); border-radius: 6px; background: var(--bg-surface); transition: border-color var(--transition), box-shadow var(--transition); }
+.topic-card:hover { color: inherit; border-color: var(--surface-blue-hover-border); box-shadow: var(--shadow-md); }
+.topic-kicker { font-family: var(--font-mono); font-size: .57rem; letter-spacing: .08em; color: var(--text-tertiary); }
 .topic-card h3 { margin-top: 9px; font-family: var(--font-display); font-size: 1.06rem; font-weight: 400; line-height: 1.25; }
-.topic-card code { margin-top: 4px; color: #7890a6; font-size: .61rem; }
-.topic-card p { margin-top: 13px; font-size: .69rem; color: #52647d; }
-.topic-card p b { color: #263d57; }
-.topic-card p span { margin: 0 5px; color: #a3b2c1; }
-.topic-updated { margin-top: auto; padding-top: 12px; font-size: .61rem; color: #8292a4; }
-.topic-updated time { margin-left: 4px; font-family: var(--font-mono); color: #5a6f85; }
+.topic-card code { margin-top: 4px; color: var(--text-tertiary); font-size: .61rem; }
+.topic-card p { margin-top: 13px; font-size: .69rem; color: var(--ink-blue-soft); }
+.topic-card p b { color: var(--ink-blue-deep); }
+.topic-card p span { margin: 0 5px; color: var(--text-tertiary); }
+.topic-updated { margin-top: auto; padding-top: 12px; font-size: .61rem; color: var(--text-tertiary); }
+.topic-updated time { margin-left: 4px; font-family: var(--font-mono); color: var(--text-secondary); }
 .topics-empty { padding: 30px 0; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: .86rem; }
 @media (max-width: 900px) { .topics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .topics-grid { grid-template-columns: 1fr; } }

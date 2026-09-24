@@ -1,17 +1,17 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { loadTopicRoutes, topicGroups } from '../../data/topics';
-import { getTopicTimeline, loadRelationContext } from '../../lib/relations';
+import { getTopicFlow, getTopicTimeline, loadRelationContext } from '../../lib/relations';
 
 export async function getStaticPaths() {
   const [topics, relations] = await Promise.all([loadTopicRoutes(), loadRelationContext()]);
   return topics.map((topic) => ({
     params: { slug: topic.slug },
-    props: { topic, timeline: getTopicTimeline(topic.slug, relations) },
+    props: { topic, timeline: getTopicTimeline(topic.slug, relations), flow: getTopicFlow(topic.slug, relations) },
   }));
 }
 
-const { topic, timeline } = Astro.props;
+const { topic, timeline, flow } = Astro.props;
 const displayDate = (date?: Date) => date ? date.toISOString().slice(0, 10) : '—';
 const isEmpty = topic.radarCount === 0 && topic.researchCount === 0;
 const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
@@ -32,6 +32,22 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
         <div><b>{displayDate(topic.latestActivity)}</b><span>Last Updated</span></div>
       </div>
     </header>
+
+    {flow.length > 0 && (
+      <section class="content-section topic-flow" aria-labelledby="topic-flow-heading">
+        <header class="section-heading">
+          <div><p class="eyebrow">SIGNAL / RESEARCH / STATE</p><h2 id="topic-flow-heading">议题脉络</h2></div>
+        </header>
+        <ol class="flow-list">
+          {flow.map((step) => <li>
+            <span class="flow-stage">{step.stage}</span>
+            <span class="flow-date">{step.date ? displayDate(step.date).replaceAll('-', '.') : '当前'}</span>
+            {step.href ? <a href={step.href}>{step.title} <span aria-hidden="true">↗</span></a> : <strong>{step.title}</strong>}
+            <small>{step.source}</small>
+          </li>)}
+        </ol>
+      </section>
+    )}
 
     {timeline.length > 0 && (
       <section class="content-section timeline-section" aria-labelledby="topic-timeline-heading">
@@ -110,9 +126,9 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
 
 <style>
 .topic-detail { max-width: 1040px; padding-top: 58px; padding-bottom: 112px; }
-.back-link { color: var(--text-tertiary); font-size: .75rem; }.back-link:hover { color: var(--accent-tech); }
+.back-link { color: var(--text-tertiary); font-size: .75rem; }.back-link:hover { color: var(--accent-text); }
 .topic-hero { padding: 28px 0 32px; border-bottom: 1px solid var(--border-subtle); }
-.eyebrow { font-family: var(--font-mono); font-size: .63rem; letter-spacing: .09em; color: var(--accent-tech); }
+.eyebrow { font-family: var(--font-mono); font-size: .63rem; letter-spacing: .09em; color: var(--accent-text); }
 .topic-hero > .eyebrow { margin-top: 22px; }
 .topic-hero h1 { margin-top: 8px; font-family: var(--font-display); font-weight: 400; font-size: clamp(2.25rem, 5vw, 3.8rem); line-height: 1.08; letter-spacing: -.04em; }
 .slug { display: inline-block; margin-top: 8px; color: var(--text-tertiary); font-size: .7rem; overflow-wrap: anywhere; }
@@ -126,13 +142,13 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }.section-heading h2 { margin-top: 5px; font-family: var(--font-display); font-weight: 400; font-size: 1.38rem; }.section-heading > span { color: var(--text-tertiary); font-size: .7rem; }
 .content-list,.related-list { border-top: 1px solid var(--border-subtle); }
 .content-row { display: grid; grid-template-columns: 128px minmax(0, 1fr) 18px; gap: 20px; align-items: start; padding: 19px 8px; border-bottom: 1px solid var(--border-subtle); }.content-row:hover { color: inherit; background: var(--bg-surface); }
-.row-meta { display: flex; flex-direction: column; gap: 7px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .65rem; }.row-meta span { color: var(--accent-tech); letter-spacing: .06em; }
+.row-meta { display: flex; flex-direction: column; gap: 7px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .65rem; }.row-meta span { color: var(--accent-text); letter-spacing: .06em; }
 .row-copy h3 { font-size: .93rem; font-weight: 600; line-height: 1.45; }.row-copy p { margin-top: 6px; color: var(--text-secondary); font-size: .8rem; line-height: 1.55; }.row-copy small { display: block; margin-top: 8px; color: var(--text-tertiary); font-size: .68rem; }
 .timeline-list { border-top: 1px solid var(--border-subtle); }
 .timeline-row { display: grid; grid-template-columns: 105px 48px minmax(0, 1fr) 120px 14px; align-items: start; gap: 14px; padding: 18px 5px; border-bottom: 1px solid var(--border-subtle); }
 .timeline-row:hover { color: inherit; background: var(--bg-surface); }
 .timeline-row time, .timeline-source { color: var(--text-tertiary); font-family: var(--font-mono); font-size: .66rem; }
-.timeline-kind { color: var(--accent-tech); font-size: .7rem; }
+.timeline-kind { color: var(--accent-text); font-size: .7rem; }
 .timeline-copy { display: flex; flex-direction: column; min-width: 0; }
 .timeline-copy strong { font-size: .9rem; font-weight: 600; line-height: 1.45; }
 .timeline-copy small { margin-top: 5px; color: var(--text-secondary); font-size: .76rem; line-height: 1.5; }
@@ -140,7 +156,16 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
 .timeline-arrow { color: var(--text-tertiary); }
 .arrow { color: var(--text-tertiary); text-align: right; }.section-empty { padding: 23px 8px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); font-size: .8rem; }
 .related-list a { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: center; padding: 13px 8px; border-bottom: 1px solid var(--border-subtle); }.related-list code,.related-list small { color: var(--text-tertiary); font-size: .65rem; }.related-list small { text-align: right; }
+.flow-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); margin: 0; padding: 19px 0 21px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); list-style: none; }
+.flow-list li { position: relative; display: flex; flex-direction: column; min-width: 0; gap: 7px; padding: 0 20px; border-left: 1px solid var(--border-subtle); }
+.flow-list li:first-child { padding-left: 0; border-left: 0; }
+.flow-stage { color: var(--accent-text); font: .66rem var(--font-mono); letter-spacing: .06em; }
+.flow-date, .flow-list small { color: var(--text-tertiary); font: .67rem var(--font-mono); }
+.flow-list a, .flow-list strong { color: var(--text-primary); font-size: .84rem; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+.flow-list a:hover, .flow-list a span { color: var(--accent-text); }
+.flow-list small { margin-top: auto; }
 @media (max-width: 720px) { .topic-detail { padding-top: 38px; }.overview div { padding: 14px 12px; }.overview b { font-size: 1.1rem; }.content-row { grid-template-columns: minmax(0, 1fr) 18px; gap: 9px; }.row-meta { grid-column: 1; flex-direction: row; gap: 12px; }.row-copy { grid-column: 1; }.content-row .arrow { grid-column: 2; grid-row: 1 / span 2; }.related-list a { grid-template-columns: 1fr auto; }.related-list code { grid-column: 1; }.related-list small { grid-column: 2; grid-row: 1 / span 2; } }
+@media (max-width: 720px) { .flow-list { grid-template-columns: 1fr; gap: 0; padding: 0; }.flow-list li, .flow-list li:first-child { padding: 17px 0 17px 18px; border-left: 1px solid var(--border-subtle); }.flow-list li:not(:last-child)::after { content: ''; position: absolute; top: 100%; left: -2px; width: 3px; height: 18px; background: var(--accent-tech-border); } }
 @media (max-width: 460px) { .overview { grid-template-columns: 1fr; }.overview div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.overview div:last-child { border-bottom: 0; } }
 @media (max-width: 720px) { .timeline-row { grid-template-columns: 1fr auto; gap: 6px 12px; }.timeline-row time { grid-column: 1; }.timeline-kind { grid-column: 2; grid-row: 1; text-align: right; }.timeline-copy { grid-column: 1 / -1; }.timeline-source { grid-column: 1; text-align: left; }.timeline-arrow { grid-column: 2; grid-row: 3; text-align: right; } }
 </style>
