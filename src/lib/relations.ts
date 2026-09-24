@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { formatRadarDate } from '../data/radar';
-import { topicSlugsForRadar } from '../data/topics';
+import { getCanonicalTopicSlugs, isCanonicalTopic, topicSlugsForRadar } from '../data/topics';
 
 type RadarEntry = CollectionEntry<'radar'>;
 type ResearchEntry = CollectionEntry<'research'>;
@@ -30,10 +30,9 @@ const radarName: Record<RadarEntry['data']['radar'], string> = {
 
 const dayKey = (date: Date) => date.toISOString().slice(0, 10);
 const distance = (left: Date, right: Date) => Math.abs(left.getTime() - right.getTime());
-const unique = (topics: string[]) => [...new Set(topics)];
 const overlap = (left: string[], right: string[]) => {
-  const rightSet = new Set(right);
-  return unique(left).filter((topic) => rightSet.has(topic));
+  const rightSet = new Set(getCanonicalTopicSlugs(right));
+  return getCanonicalTopicSlugs(left).filter((topic) => rightSet.has(topic));
 };
 const radarKey = (entry: RadarEntry) => `${entry.data.radar}/${formatRadarDate(entry.data.date)}`;
 
@@ -134,6 +133,7 @@ export function getRelatedResearchByTopics(entry: ResearchEntry, context: Relati
 }
 
 export function getTopicTimeline(topic: string, context: RelationContext, limit = 12): IntelligenceRelation[] {
+  if (!isCanonicalTopic(topic)) return [];
   const entries = new Map<string, IntelligenceRelation>();
   for (const radar of context.radars.filter(({ data }) => data.publish)) {
     if (topicSlugsForRadar(radar).includes(topic)) {

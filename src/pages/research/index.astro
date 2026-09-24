@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import CollectionHero from '../../components/CollectionHero.astro';
 import ResearchCard from '../../components/ResearchCard.astro';
 import { formatDate } from '../../data/research';
+import { getCanonicalTopicSlugs } from '../../data/topics';
 
 const all = (await getCollection('research', ({ data }) => data.publish))
   .sort((a, b) => {
@@ -21,7 +22,7 @@ const categories = [...new Set(all.flatMap((e) => e.data.category))].sort();
 
 // Stats
 const totalArticles = all.length;
-const totalTopics = [...new Set(all.flatMap((e) => e.data.topics))].length;
+const totalTopics = getCanonicalTopicSlugs(all.flatMap((e) => e.data.topics)).length;
 const evolvingCount = all.filter((e) => e.data.status === 'evolving').length;
 const lastUpdate = all[0]?.data.updated;
 

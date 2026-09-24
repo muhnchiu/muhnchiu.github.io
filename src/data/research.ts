@@ -1,32 +1,4 @@
-// Research & Topic shared utilities
-
-// Topic slug → display name mapping
-const topicNames: Record<string, string> = {
-  'agent-systems': 'Agent Systems',
-  'local-ai': 'Local AI',
-  'ai-coding': 'AI Coding',
-  'frontier-models': 'Frontier Models',
-  'open-models': 'Open Models',
-  'inference': 'Inference',
-  'mcp': 'MCP',
-  'security': 'Security',
-  'developer-tools': 'Developer Tools',
-  'mac-apps': 'Mac Apps',
-  'workflow': 'Workflow',
-  'edge-computing': 'Edge Computing',
-  'serverless': 'Serverless',
-  'python': 'Python',
-  'openai-models': 'OpenAI Models',
-  'anthropic-models': 'Anthropic Models',
-  'free-api': 'Free API',
-  'ai-training-data': 'AI Training Data',
-  'supply-chain': 'Supply Chain',
-  'infrastructure': 'Infrastructure',
-};
-
-export function topicLabel(slug: string): string {
-  return topicNames[slug] || slug;
-}
+// Research display utilities. Topic names come from the canonical registry.
 
 // Status mapping
 const statusLabels: Record<string, string> = {

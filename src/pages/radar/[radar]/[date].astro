@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import RelationSection from '../../../components/RelationSection.astro';
-import { getTopicLabel, topicSlugsForRadar } from '../../../data/topics';
+import { getTopicLabel, isCanonicalTopic, topicSlugsForRadar } from '../../../data/topics';
 import { getRelatedResearch, loadRelationContext } from '../../../lib/relations';
 
 export async function getStaticPaths() {
@@ -17,6 +17,8 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const date = entry.data.date.toISOString().slice(0, 10);
 const topicSlugs = topicSlugsForRadar(entry);
+const canonicalTopics = topicSlugs.filter(isCanonicalTopic);
+const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 const relatedResearch = getRelatedResearch(entry, await loadRelationContext());
 ---
 
@@ -27,10 +29,17 @@ const relatedResearch = getRelatedResearch(entry, await loadRelationContext());
       <p class="report-date">{date.replaceAll('-', '.')}</p>
       <h1>{entry.data.title}</h1>
       <p class="description">{entry.data.description ?? entry.data.verdict}</p>
-      {topicSlugs.length > 0 && (
-        <nav class="topic-tags" aria-label="主题脉络">
-          {topicSlugs.map((slug) => <a href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
+      {canonicalTopics.length > 0 && (
+        <nav class="topic-tags" aria-label="长期议题">
+          {canonicalTopics.map((slug) => <a href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
         </nav>
+      )}
+      {(historicalTopics.length > 0 || (entry.data.tags?.length ?? 0) > 0 || (entry.data.events?.length ?? 0) > 0) && (
+        <div class="secondary-metadata" aria-label="内容标记">
+          {historicalTopics.map((slug) => <a href={`/topics/${slug}/`} title="历史主题标记">{slug}</a>)}
+          {entry.data.tags?.map((tag) => <span>{tag}</span>)}
+          {entry.data.events?.map((event) => <code>{event}</code>)}
+        </div>
       )}
       <dl class="metrics"><div><dt>SIGNALS</dt><dd>{entry.data.signalCount}</dd></div><div><dt>HIGH SIGNALS</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>ACTION REQUIRED</dt><dd>{entry.data.actionRequired}</dd><small>CONFIDENCE {entry.data.confidence.toUpperCase()}</small></div></dl>
     </header>
@@ -45,4 +54,10 @@ const relatedResearch = getRelatedResearch(entry, await loadRelationContext());
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .topic-tags a { padding: 4px 10px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-surface); color: var(--text-secondary); font-size: .73rem; }
 .topic-tags a:hover { border-color: var(--accent-tech-border); color: var(--accent-tech); }
+.secondary-metadata { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 12px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .64rem; }
+.secondary-metadata a, .secondary-metadata span, .secondary-metadata code { overflow-wrap: anywhere; }
+.secondary-metadata a:hover { color: var(--accent-tech); }
+.prose { min-width: 0; overflow-wrap: anywhere; }
+.prose :global(table) { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+.prose :global(th), .prose :global(td) { padding: 7px 10px; border-bottom: 1px solid var(--border-subtle); text-align: left; white-space: nowrap; }
 </style>

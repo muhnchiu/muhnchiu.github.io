@@ -1,10 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { loadTopics } from '../../data/topics';
+import { loadTopicRoutes, topicGroups } from '../../data/topics';
 import { getTopicTimeline, loadRelationContext } from '../../lib/relations';
 
 export async function getStaticPaths() {
-  const [topics, relations] = await Promise.all([loadTopics(), loadRelationContext()]);
+  const [topics, relations] = await Promise.all([loadTopicRoutes(), loadRelationContext()]);
   return topics.map((topic) => ({
     params: { slug: topic.slug },
     props: { topic, timeline: getTopicTimeline(topic.slug, relations) },
@@ -12,17 +12,20 @@ export async function getStaticPaths() {
 }
 
 const { topic, timeline } = Astro.props;
-const displayDate = (date: Date) => date.toISOString().slice(0, 10);
+const displayDate = (date?: Date) => date ? date.toISOString().slice(0, 10) : '—';
+const isEmpty = topic.radarCount === 0 && topic.researchCount === 0;
+const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
 ---
 
-<Base title={`${topic.name}｜Horizon 主题脉络`} description={topic.description}>
+<Base title={`${topic.name}｜Horizon ${topic.canonical ? '长期议题' : '历史主题记录'}`} description={topic.description}>
   <article class="topic-detail container">
     <header class="topic-hero">
-      <a class="back-link" href="/topics/">← 主题脉络</a>
-      <p class="eyebrow">TOPIC FILE {topic.category && ` / ${topic.category}`}</p>
+      <a class="back-link" href="/topics/">← 长期议题</a>
+      <p class="eyebrow">{topic.canonical ? `TOPIC FILE / ${groupName}` : 'HISTORICAL TOPIC / ARCHIVE'}</p>
       <h1>{topic.name}</h1>
       <code class="slug">{topic.slug}</code>
       <p class="description">{topic.description}</p>
+      {!topic.canonical && <p class="historical-note">这是旧内容中的历史标记，未纳入正式长期议题。</p>}
       <div class="overview">
         <div><b>{topic.radarCount}</b><span>Radar Signals</span></div>
         <div><b>{topic.researchCount}</b><span>Research</span></div>
@@ -50,7 +53,9 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
       </section>
     )}
 
-    <section class="content-section" aria-labelledby="topic-research-heading">
+    {isEmpty && <div class="topic-empty">这个议题正在观察中，尚未形成足够的研究记录。</div>}
+
+    {!isEmpty && <section class="content-section" aria-labelledby="topic-research-heading">
       <header class="section-heading">
         <div><p class="eyebrow">RESEARCH / LONG-TERM VIEW</p><h2 id="topic-research-heading">研究专题</h2></div>
         <span>{topic.researchCount} 篇</span>
@@ -68,9 +73,9 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
       ) : (
         <p class="section-empty">这个主题尚无已发布研究，先从每日情报观察信号。</p>
       )}
-    </section>
+    </section>}
 
-    <section class="content-section" aria-labelledby="topic-radar-heading">
+    {!isEmpty && <section class="content-section" aria-labelledby="topic-radar-heading">
       <header class="section-heading">
         <div><p class="eyebrow">RADAR / DAILY SIGNALS</p><h2 id="topic-radar-heading">每日情报</h2></div>
         <span>{topic.radarCount} 期</span>
@@ -88,7 +93,7 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
       ) : (
         <p class="section-empty">这个主题尚无已发布 Radar 日报。</p>
       )}
-    </section>
+    </section>}
 
     {topic.relatedTopics.length > 0 && (
       <section class="content-section related-section" aria-labelledby="related-topics-heading">
@@ -110,8 +115,10 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10);
 .eyebrow { font-family: var(--font-mono); font-size: .63rem; letter-spacing: .09em; color: var(--accent-tech); }
 .topic-hero > .eyebrow { margin-top: 22px; }
 .topic-hero h1 { margin-top: 8px; font-family: var(--font-display); font-weight: 400; font-size: clamp(2.25rem, 5vw, 3.8rem); line-height: 1.08; letter-spacing: -.04em; }
-.slug { display: inline-block; margin-top: 8px; color: var(--text-tertiary); font-size: .7rem; }
+.slug { display: inline-block; margin-top: 8px; color: var(--text-tertiary); font-size: .7rem; overflow-wrap: anywhere; }
 .description { max-width: 700px; margin-top: 16px; color: var(--text-secondary); font-size: .95rem; line-height: 1.7; }
+.historical-note { max-width: 700px; margin-top: 15px; padding-left: 12px; border-left: 2px solid var(--border-default); color: var(--text-tertiary); font-size: .76rem; line-height: 1.6; }
+.topic-empty { margin-top: 44px; padding: 34px 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); color: var(--text-secondary); font-size: .87rem; line-height: 1.7; }
 .overview { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 28px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .overview div { padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.overview div:last-child { border-right: 0; }
 .overview b { display: block; font-family: var(--font-mono); font-size: 1.45rem; }.overview span { display: block; margin-top: 5px; color: var(--text-tertiary); font-size: .68rem; }

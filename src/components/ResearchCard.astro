@@ -1,5 +1,6 @@
 ---
-import { topicLabel, statusLabel, confidenceLabel, formatDate } from '../data/research';
+import { statusLabel, confidenceLabel, formatDate } from '../data/research';
+import { getTopicName, getCanonicalTopicSlugs } from '../data/topics';
 
 const { entry } = Astro.props;
 const { data } = entry;
@@ -16,9 +17,9 @@ const { data } = entry;
   </div>
   <h3 class="card-title">{data.title}</h3>
   <p class="card-sub">{data.subtitle}</p>
-  <div class="card-topics">
-    {data.topics.slice(0, 4).map((topic) => <span class="topic">{topicLabel(topic)}</span>)}
-  </div>
+  {getCanonicalTopicSlugs(data.topics).length > 0 && <div class="card-topics">
+    {getCanonicalTopicSlugs(data.topics).slice(0, 4).map((topic) => <span class="topic">{getTopicName(topic)}</span>)}
+  </div>}
   <div class="card-meta">
     <span class="meta-date">{formatDate(data.created)}</span>
     <span class="meta-sep">·</span>

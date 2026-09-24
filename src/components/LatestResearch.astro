@@ -1,4 +1,6 @@
 ---
+import { getCanonicalTopicSlugs, getTopicName } from '../data/topics';
+
 const { featured, recent } = Astro.props;
 const displayDate = (date: Date) => date.toISOString().slice(0, 10).replaceAll('-', '.');
 ---
@@ -7,7 +9,7 @@ const displayDate = (date: Date) => date.toISOString().slice(0, 10).replaceAll('
     <div class="section-header"><div><h2>近期研究</h2><p class="section-sub">从每日信号出发，追踪技术背后的长期变量。</p></div><a class="all-link" href="/research">查看全部研究　→</a></div>
     {featured ? <div class="research-layout">
       <article class="research-feature"><div class="research-copy"><div class="research-pills">{featured.data.category.map((category) => <span>{category}</span>)}</div><h3>{featured.data.title}</h3><p class="research-subtitle">{featured.data.subtitle}</p><p class="research-desc">{featured.data.source}</p><div class="research-bottom"><span>UPDATED {displayDate(featured.data.updated)}　·　{featured.data.confidence.toUpperCase()} CONFIDENCE</span><a href={`/research/${featured.data.slug}`} class="read-button">阅读研究　→</a></div></div><div class="research-art" aria-hidden="true"><span>RESEARCH<br />LONG-TERM<br />VARIABLES<br />BEHIND<br />THE SIGNALS.</span><i></i><b></b><em></em></div></article>
-      <div class="recent-list">{recent.length ? recent.map((entry) => <a href={`/research/${entry.data.slug}`} class="recent-item"><span>{displayDate(entry.data.updated).slice(5)}</span><div><h3>{entry.data.title}</h3><p>{entry.data.topics.join('　').toUpperCase()}</p></div></a>) : <p class="empty">暂无更多公开研究。</p>}</div>
+      <div class="recent-list">{recent.length ? recent.map((entry) => <a href={`/research/${entry.data.slug}`} class="recent-item"><span>{displayDate(entry.data.updated).slice(5)}</span><div><h3>{entry.data.title}</h3><p>{getCanonicalTopicSlugs(entry.data.topics).map(getTopicName).join(' · ') || entry.data.category.join(' · ')}</p></div></a>) : <p class="empty">暂无更多公开研究。</p>}</div>
     </div> : <div class="research-empty">暂无公开研究。</div>}
   </div>
 </section>
