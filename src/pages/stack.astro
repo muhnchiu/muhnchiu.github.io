@@ -1,0 +1,251 @@
+---
+import Base from '../layouts/Base.astro';
+import stack from '../data/stack.json';
+
+const categoryNames: Record<string, string> = {
+  AI: 'AI', Coding: '开发', Terminal: '终端', Knowledge: '知识', Automation: '自动化',
+  Infrastructure: '基础设施', Productivity: '生产力', Creative: '创意',
+  Communication: '通信', Browser: '浏览器', Network: '网络', Utility: '工具',
+  DevOps: '运维', Runtime: '运行时', Media: '影音', Other: '其他',
+};
+const categoryOrder = [
+  'AI', 'Coding', 'Terminal', 'Knowledge', 'Automation', 'Infrastructure',
+  'Productivity', 'Creative', 'Communication', 'Browser', 'Network',
+  'Utility', 'DevOps', 'Runtime', 'Media', 'Other',
+];
+const categories = [...new Set(stack.environment.map((item) => item.category))]
+  .sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
+
+const coreDescriptions: Record<string, string> = {
+  OpenClaw: '运行个人 AI 助手与自动化任务的基础平台。',
+  'Claude Code': '参与编程、研究与日常工程工作的 AI 助手。',
+  'VS Code Insiders': '日常编写与阅读代码的主力编辑器。',
+  Ghostty: '快速、现代的主力终端环境。',
+  Starship: '让命令行状态保持清晰的提示符。',
+  fzf: '在命令行中快速查找文件、历史与选项。',
+  zoxide: '记住常用目录，减少重复导航。',
+  chezmoi: '让个人配置可以跨设备管理与重建。',
+  Homebrew: '管理软件与命令行工具的基础入口。',
+  mise: '统一管理开发语言与运行时版本。',
+  Git: '记录代码与环境配置的变化。',
+  gh: '在命令行中处理 GitHub 工作流。',
+  lazygit: '用轻量界面完成日常 Git 操作。',
+  Obsidian: '连接笔记、研究与长期知识积累。',
+  Horizon: '整理技术情报与深度研究的公开界面。',
+  Tailscale: '连接个人设备的私有网络。',
+};
+
+const coreGroups = [
+  { id: 'ai', name: 'AI 与自动化', label: 'AI / AUTOMATION', names: ['OpenClaw', 'Claude Code'] },
+  { id: 'coding', name: '编程', label: 'CODING', names: ['VS Code Insiders', 'Git', 'gh', 'lazygit'] },
+  { id: 'terminal', name: '终端', label: 'TERMINAL', names: ['Ghostty', 'Starship', 'fzf', 'zoxide'] },
+  { id: 'environment', name: '环境管理', label: 'ENVIRONMENT', names: ['Homebrew', 'chezmoi', 'mise'] },
+  { id: 'knowledge', name: '知识', label: 'KNOWLEDGE', names: ['Obsidian', 'Horizon'] },
+  { id: 'network', name: '网络', label: 'NETWORK', names: ['Tailscale'] },
+];
+const groupedCore = coreGroups.map((group) => ({
+  ...group,
+  tools: group.names.map((name) => {
+    const tool = stack.core.find((item) => item.name === name);
+    if (!tool) throw new Error(`Missing public Core tool: ${name}`);
+    return tool;
+  }),
+}));
+const primaryCore = new Set(['OpenClaw', 'Claude Code', 'VS Code Insiders', 'Ghostty', 'Obsidian', 'Horizon']);
+if (new Set(coreGroups.flatMap((group) => group.names)).size !== stack.core.length
+  || stack.core.length !== stack.summary.coreCount
+  || stack.environment.length !== stack.summary.publicEnvironment
+  || stack.environment.filter((item) => item.type === 'app').length !== stack.summary.apps
+  || stack.environment.filter((item) => item.type === 'cli').length !== stack.summary.cli) {
+  throw new Error('Stack public dataset counts or presentation groups do not match');
+}
+
+const management = (item: { installManagement: string; configManagement: string }) => [
+  item.installManagement === 'homebrew' ? 'Homebrew' : undefined,
+  item.configManagement === 'chezmoi' ? 'chezmoi' : undefined,
+].filter((label): label is string => Boolean(label));
+const stats = [
+  { value: stack.summary.coreCount, label: '核心工具' },
+  { value: stack.summary.apps, label: '桌面应用' },
+  { value: stack.summary.cli, label: '命令行工具' },
+  { value: stack.environmentManagement.managedEntries, label: '受管配置' },
+];
+const pipeline = [
+  { name: 'Homebrew', stage: 'SOFTWARE', description: '管理软件与 CLI 包' },
+  { name: 'Brewfile', stage: 'MANIFEST', description: '声明可重建的软件环境' },
+  { name: 'chezmoi', stage: 'CONFIG', description: '管理终端、Git 与编辑器配置' },
+  { name: 'Git', stage: 'VERSION', description: '记录环境配置的演进' },
+  { name: 'Mac Environment', stage: 'ENVIRONMENT', description: '在新设备上重新建立工作环境' },
+];
+---
+
+<Base title="工作栈 | Horizon" description="记录个人工作环境中的开发工具、AI Coding、终端与知识管理，以及通过 Homebrew、Brewfile 和 chezmoi 维护的可重建环境。">
+  <div class="stack-page collection-index container">
+    <header class="stack-hero">
+      <p class="eyebrow">STACK / WORK ENVIRONMENT</p>
+      <h1>工作栈</h1>
+      <p class="hero-lede">软件会变，工作环境应该可以重建。</p>
+      <p class="hero-description">这里记录真正构成我日常工作流的工具，以及一套持续维护、可以重建的个人计算环境。</p>
+      <dl class="hero-stats">
+        {stats.map((stat) => <div><dd>{stat.value}</dd><dt>{stat.label}</dt></div>)}
+      </dl>
+    </header>
+
+    <section class="stack-section core-section" aria-labelledby="core-heading">
+      <div class="section-heading"><div><p class="section-index">01 / CURATED TOOLS</p><h2 id="core-heading">核心工作栈</h2></div><p>真正构成日常工作流的 16 个工具。</p></div>
+      <div class="core-groups">
+        {groupedCore.map((group) => <section class="core-group" aria-labelledby={`core-${group.id}`}>
+          <div class="group-heading"><div><small>{group.label}</small><h3 id={`core-${group.id}`}>{group.name}</h3></div><span>{String(group.tools.length).padStart(2, '0')}</span></div>
+          <div class="core-grid">
+            {group.tools.map((tool) => <article class:list={['core-card', { 'core-card-primary': primaryCore.has(tool.name) }]}>
+              <div class="core-card-top"><h4>{tool.name}</h4><span>{categoryNames[tool.category] ?? tool.category}</span></div>
+              <p>{coreDescriptions[tool.name] ?? tool.description}</p>
+              {management(tool).length > 0 && <div class="core-management" aria-label="管理方式">{management(tool).map((label) => <span>{label}</span>)}</div>}
+            </article>)}
+          </div>
+        </section>)}
+      </div>
+    </section>
+
+    <section class="stack-section environment-code" aria-labelledby="environment-code-heading">
+      <div class="section-heading"><div><p class="section-index">02 / ENVIRONMENT AS CODE</p><h2 id="environment-code-heading">环境即代码</h2></div></div>
+      <p class="section-intro">这套环境不是一次性配置，而是一套持续维护的系统。</p>
+      <ol class="pipeline" aria-label="工作环境重建流程">
+        {pipeline.map((step, index) => <li>
+          <div class="pipeline-kicker"><small>{String(index + 1).padStart(2, '0')}</small><span>{step.stage}</span></div>
+          <div class="pipeline-track" aria-hidden="true"></div>
+          <strong>{step.name}</strong><span class="pipeline-description">{step.description}</span>
+        </li>)}
+      </ol>
+      <div class="management-stats">
+        <div><b>{stack.environmentManagement.brewFormulaCount}</b><span>Brew Formula</span></div>
+        <div><b>{stack.environmentManagement.brewCaskCount}</b><span>Brew Cask</span></div>
+        <div><b>{stack.environmentManagement.masCount}</b><span>App Store</span></div>
+        <div><b>{stack.environmentManagement.managedEntries}</b><span>Managed Entries</span></div>
+      </div>
+    </section>
+
+    <section class="stack-section browser-section" aria-labelledby="browser-heading">
+      <div class="section-heading"><div><p class="section-index">03 / PUBLIC ENVIRONMENT</p><h2 id="browser-heading">软件环境</h2></div><p>{stack.summary.publicEnvironment} 个公开环境项，按工作用途浏览。</p></div>
+      <div class="browser-tools">
+        <label class="search-field" for="stack-search"><span>搜索环境</span><input id="stack-search" type="search" placeholder="搜索名称、分类或类型" autocomplete="off" /></label>
+        <div class="category-filters" role="group" aria-label="按分类筛选">
+          <button type="button" data-category="all" aria-pressed="true">全部</button>
+          {categories.map((category) => <button type="button" data-category={category} aria-pressed="false">{categoryNames[category] ?? category}</button>)}
+        </div>
+      </div>
+      <div class="core-search-results" id="core-search-results" hidden>
+        <p>核心工具匹配</p>
+        {stack.core.map((item) => <div
+          class="environment-row core-result"
+          data-category={item.category}
+          data-search={`${item.name} ${item.category} ${categoryNames[item.category] ?? item.category} ${item.type} ${item.type === 'app' ? '应用 App' : item.type === 'cli' ? '命令行 CLI' : '服务 Service'} ${item.name === 'gh' ? 'git github' : ''}`.toLocaleLowerCase()}
+          hidden
+        >
+          <strong>{item.name}</strong>
+          <span class="item-type">Core</span>
+          <span class="item-management">{management(item).length ? management(item).join(' · ') : '其他来源'}</span>
+        </div>)}
+      </div>
+      <div class="environment-list" id="environment-list">
+        {stack.environment.map((item, index) => <div
+          class="environment-row"
+          data-category={item.category}
+          data-search={`${item.name} ${item.category} ${categoryNames[item.category] ?? item.category} ${item.type} ${item.type === 'app' ? '应用 App' : '命令行 CLI'} ${item.name === 'gh' ? 'git github' : ''}`.toLocaleLowerCase()}
+          hidden={index >= 24}
+        >
+          <strong>{item.name}</strong>
+          <span class="item-type">{item.type === 'app' ? 'App' : 'CLI'}</span>
+          <span class="item-management">{management(item).length ? management(item).join(' · ') : '其他来源'}</span>
+        </div>)}
+      </div>
+      <p class="browser-empty" id="browser-empty" hidden>没有符合条件的环境项。试试其他关键词或分类。</p>
+      <div class="browser-footer"><p id="browser-count" aria-live="polite">显示 24 / {stack.summary.publicEnvironment} 项</p><button id="show-all" type="button" aria-controls="environment-list" aria-expanded="false">显示全部　→</button></div>
+    </section>
+
+    <section class="stack-section about-section" aria-labelledby="about-stack-heading">
+      <div class="section-heading"><div><p class="section-index">04 / ABOUT THIS LIST</p><h2 id="about-stack-heading">关于这份清单</h2></div></div>
+      <p class="section-intro">这里区分实际工作的核心工具、公开可见的软件环境，以及帮助重建环境的受管配置。安装了什么，不等于每天使用什么；被管理，也不等于属于核心工作流。</p>
+      <div class="about-grid">
+        <div><span>CORE / SELECTED</span><h3>核心工作栈</h3><p>直接参与日常工作，构成主要工作流。</p></div>
+        <div><span>ENVIRONMENT / INVENTORY</span><h3>软件环境</h3><p>公开的软件清单，不代表每天都在使用。</p></div>
+        <div><span>MANAGED / REPRODUCIBLE</span><h3>受管配置</h3><p>由 Homebrew、Brewfile 与 chezmoi 维护，便于重建。</p></div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('#stack-search');
+  const filters = [...document.querySelectorAll<HTMLButtonElement>('.category-filters button')];
+  const rows = [...document.querySelectorAll<HTMLElement>('.environment-row')];
+  const coreRows = [...document.querySelectorAll<HTMLElement>('.core-result')];
+  const environmentRows = rows.filter((row) => !row.classList.contains('core-result'));
+  const coreResults = document.querySelector<HTMLElement>('#core-search-results');
+  const count = document.querySelector<HTMLElement>('#browser-count');
+  const more = document.querySelector<HTMLButtonElement>('#show-all');
+  const empty = document.querySelector<HTMLElement>('#browser-empty');
+  const traditional = document.documentElement.lang.toLowerCase() === 'zh-hant';
+  const labels = traditional
+    ? { show: '顯示', environment: '個環境項', core: '個核心工具', all: '顯示全部', collapse: '收起' }
+    : { show: '显示', environment: '个环境项', core: '个核心工具', all: '显示全部', collapse: '收起' };
+  let category = 'all';
+  let expanded = false;
+
+  function updateBrowser() {
+    const query = search?.value.trim().toLocaleLowerCase() ?? '';
+    const matches = environmentRows.filter((row) => (category === 'all' || row.dataset.category === category)
+      && (!query || row.dataset.search?.includes(query)));
+    const coreMatches = query ? coreRows.filter((row) => (category === 'all' || row.dataset.category === category)
+      && row.dataset.search?.includes(query)) : [];
+    const limit = expanded || query ? matches.length : Math.min(24, matches.length);
+    const visible = new Set(matches.slice(0, limit));
+    const visibleCore = new Set(coreMatches);
+    for (const row of environmentRows) row.hidden = !visible.has(row);
+    for (const row of coreRows) row.hidden = !visibleCore.has(row);
+    if (coreResults) coreResults.hidden = coreMatches.length === 0;
+    for (const filter of filters) filter.setAttribute('aria-pressed', String(filter.dataset.category === category));
+    if (count) count.textContent = `${labels.show} ${limit} / ${matches.length} ${labels.environment}${coreMatches.length ? ` · ${coreMatches.length} ${labels.core}` : ''}`;
+    if (empty) empty.hidden = matches.length + coreMatches.length > 0;
+    if (more) {
+      more.hidden = Boolean(query) || matches.length <= 24;
+      more.textContent = expanded ? `${labels.collapse}　↑` : `${labels.all}　→`;
+      more.setAttribute('aria-expanded', String(expanded));
+    }
+  }
+
+  search?.addEventListener('input', updateBrowser);
+  for (const filter of filters) filter.addEventListener('click', () => {
+    category = filter.dataset.category ?? 'all';
+    expanded = false;
+    updateBrowser();
+  });
+  more?.addEventListener('click', () => {
+    expanded = !expanded;
+    updateBrowser();
+  });
+  updateBrowser();
+</script>
+
+<style>
+.stack-page { max-width: 1200px; }
+.stack-hero { padding-bottom: 42px; border-bottom: 1px solid var(--border-subtle); }
+.eyebrow,.section-index { color: var(--accent-tech); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .09em; }
+.stack-hero h1 { margin-top: 14px; font-family: var(--font-display); font-size: clamp(2.75rem, 5vw, 4rem); font-weight: 400; letter-spacing: -.045em; line-height: 1.15; }
+.hero-lede { margin-top: 16px; font-family: var(--font-display); font-size: clamp(1.18rem, 2vw, 1.5rem); line-height: 1.55; }
+.hero-description { max-width: 660px; margin-top: 12px; color: var(--text-secondary); font-size: .92rem; line-height: 1.8; }
+.hero-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: 42px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.hero-stats > div { padding: 22px 18px 20px; border-right: 1px solid var(--border-subtle); }.hero-stats > div:first-child { padding-left: 0; }.hero-stats > div:last-child { border-right: 0; }
+.hero-stats dd { font-family: var(--font-mono); font-size: clamp(1.45rem,3vw,2rem); font-weight: 600; line-height: 1.2; }.hero-stats dt { margin-top: 7px; color: var(--text-tertiary); font-size: .75rem; }
+.stack-section { padding-top: 70px; }.section-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }.section-heading h2 { margin-top: 7px; font-family: var(--font-display); font-size: clamp(1.55rem,2.5vw,2rem); font-weight: 400; letter-spacing: -.03em; }.section-heading > p,.section-intro { max-width: 560px; color: var(--text-secondary); font-size: .84rem; line-height: 1.75; }
+.core-groups { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; gap: 24px 28px; }.core-group { min-width: 0; }.group-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 10px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 9px; }.group-heading small { font-family: var(--font-mono); font-size: .59rem; letter-spacing: .08em; color: var(--text-tertiary); }.group-heading h3 { margin-top: 4px; font-size: .9rem; font-weight: 600; }.group-heading > span { color: var(--text-tertiary); font-family: var(--font-mono); font-size: .7rem; }
+.core-grid { display: grid; gap: 8px; }.core-card { display: flex; flex-direction: column; min-width: 0; min-height: 112px; padding: 15px 18px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); }.core-card-primary { border-left: 2px solid var(--accent-tech-border); background: var(--accent-tech-soft); }.core-card-top { display: flex; align-items: start; justify-content: space-between; gap: 10px; }.core-card h4 { overflow-wrap: anywhere; font-size: .94rem; line-height: 1.35; font-weight: 600; }.core-card-top > span { flex: none; color: var(--text-tertiary); font-size: .64rem; }.core-card > p { margin-top: 7px; color: var(--text-secondary); font-size: .76rem; line-height: 1.55; }.core-management { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; padding-top: 8px; }.core-management span { color: var(--accent-tech); font-family: var(--font-mono); font-size: .61rem; }
+.environment-code { padding-top: 72px; }.environment-code .section-heading { margin-bottom: 6px; }.pipeline { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 0; margin-top: 27px; padding: 28px 18px 30px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); list-style: none; }.pipeline li { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0 13px; }.pipeline li:not(:last-child)::after { content: '→'; position: absolute; top: 41px; right: -7px; z-index: 1; color: var(--accent-tech); background: var(--bg-surface); font-family: var(--font-mono); font-size: .82rem; }.pipeline-kicker { display: flex; align-items: baseline; gap: 7px; min-height: 20px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .58rem; letter-spacing: .055em; }.pipeline-kicker small { color: var(--accent-tech); font-size: .58rem; }.pipeline-track { position: relative; height: 16px; margin-top: 15px; border-top: 1px solid var(--border-default); }.pipeline-track::before { content: ''; position: absolute; top: -4px; left: 0; width: 7px; height: 7px; border: 1px solid var(--accent-tech); border-radius: 50%; background: var(--bg-surface); }.pipeline strong { margin-top: 7px; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .82rem; }.pipeline-description { margin-top: 7px; color: var(--text-secondary); font-size: .71rem; line-height: 1.55; }
+.management-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 0; margin-top: 25px; padding: 20px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }.management-stats div { padding: 0 20px; border-right: 1px solid var(--border-subtle); }.management-stats div:first-child { padding-left: 0; }.management-stats div:last-child { border-right: 0; }.management-stats b { display: block; font-family: var(--font-mono); font-size: 1.32rem; }.management-stats span { display: block; margin-top: 4px; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .64rem; }
+.browser-section .section-heading { margin-bottom: 24px; }.browser-tools { display: grid; gap: 16px; }.search-field { display: flex; flex-direction: column; gap: 8px; max-width: 440px; color: var(--text-secondary); font-size: .73rem; }.search-field input { width: 100%; min-height: 42px; padding: 9px 13px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); outline: none; background: var(--bg-surface); color: var(--text-primary); font: .82rem var(--font-sans); }.search-field input:focus { border-color: var(--accent-tech); box-shadow: 0 0 0 3px var(--accent-tech-soft); }.category-filters { display: flex; flex-wrap: wrap; gap: 7px; }.category-filters button { flex: none; padding: 6px 11px; border: 1px solid var(--border-subtle); border-radius: 20px; background: var(--bg-surface); color: var(--text-secondary); cursor: pointer; font-size: .72rem; }.category-filters button:hover,.category-filters button[aria-pressed='true'] { border-color: var(--accent-tech-border); background: var(--accent-tech-soft); color: var(--accent-tech); }
+.environment-list,.core-search-results { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 32px; margin-top: 22px; }.core-search-results { margin-top: 16px; }.core-search-results > p { grid-column: 1 / -1; padding: 0 0 7px; color: var(--accent-tech); font-family: var(--font-mono); font-size: .64rem; letter-spacing: .06em; }.environment-row { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(80px,auto); gap: 8px; align-items: baseline; min-width: 0; padding: 10px 2px; border-bottom: 1px solid var(--border-subtle); font-size: .78rem; }.environment-row strong { min-width: 0; overflow-wrap: anywhere; font-weight: 600; }.item-type { color: var(--text-secondary); font-family: var(--font-mono); font-size: .65rem; }.item-management { color: var(--text-tertiary); font-size: .67rem; text-align: right; }.environment-row[hidden],.core-search-results[hidden],.browser-empty[hidden],#show-all[hidden] { display: none; }.browser-empty { padding: 28px 2px; color: var(--text-secondary); font-size: .8rem; }.browser-footer { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding-top: 20px; }.browser-footer p { color: var(--text-tertiary); font-family: var(--font-mono); font-size: .68rem; }.browser-footer button { border: 0; background: none; color: var(--accent-tech); cursor: pointer; font-size: .75rem; }
+.about-section { padding-bottom: 8px; }.about-section .section-heading { margin-bottom: 7px; }.about-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; margin-top: 28px; }.about-grid > div { padding: 20px 0; border-top: 1px solid var(--border-subtle); }.about-grid > div:first-child { border-top-color: var(--accent-tech-border); }.about-grid span { color: var(--accent-tech); font-family: var(--font-mono); font-size: .63rem; letter-spacing: .08em; }.about-grid h3 { margin-top: 9px; font-size: .94rem; }.about-grid p { margin-top: 7px; color: var(--text-secondary); font-size: .78rem; line-height: 1.7; }
+@media (max-width: 950px) { .core-groups { grid-template-columns: 1fr; }.pipeline { grid-template-columns: 1fr; gap: 0; padding: 23px 24px; }.pipeline li { display: grid; grid-template-columns: 20px minmax(0,1fr); grid-template-areas: 'track kicker' 'track title' 'track description'; column-gap: 15px; padding: 0 0 22px; }.pipeline li:last-child { padding-bottom: 0; }.pipeline-kicker { grid-area: kicker; }.pipeline-track { grid-area: track; width: 1px; height: 100%; margin: 0 0 0 3px; border-top: 0; border-left: 1px solid var(--border-default); }.pipeline-track::before { top: 3px; left: -4px; }.pipeline strong { grid-area: title; margin-top: 4px; }.pipeline-description { grid-area: description; margin-top: 4px; }.pipeline li:not(:last-child)::after { content: '↓'; top: auto; right: auto; bottom: 1px; left: 0; }.environment-list,.core-search-results { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .section-heading { align-items: start; flex-direction: column; gap: 8px; }.hero-stats,.management-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }.hero-stats > div,.management-stats div { padding: 17px 12px; border-bottom: 1px solid var(--border-subtle); }.hero-stats > div:nth-child(2),.management-stats div:nth-child(2) { border-right: 0; }.hero-stats > div:nth-last-child(-n+2),.management-stats div:nth-last-child(-n+2) { border-bottom: 0; }.hero-stats > div:nth-child(3),.management-stats div:nth-child(3) { padding-left: 0; }.about-grid { grid-template-columns: 1fr; gap: 0; } }
+@media (max-width: 560px) { .stack-page { padding-top: 43px; padding-bottom: 86px; }.stack-section { padding-top: 54px; }.core-card { min-height: 0; }.category-filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin; }.environment-row { grid-template-columns: minmax(0,1fr) auto; gap: 3px 12px; padding: 12px 2px; }.environment-row strong { grid-column: 1; }.item-type { grid-column: 2; text-align: right; }.item-management { grid-column: 1 / -1; text-align: left; }.hero-description { font-size: .86rem; } }
+</style>

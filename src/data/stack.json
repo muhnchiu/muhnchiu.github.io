@@ -1,0 +1,793 @@
+{
+  "summary": {
+    "coreCount": 16,
+    "publicEnvironment": 92,
+    "apps": 58,
+    "cli": 34
+  },
+  "environmentManagement": {
+    "homebrew": true,
+    "brewfile": true,
+    "chezmoi": true,
+    "managedEntries": 124,
+    "brewFormulaCount": 45,
+    "brewCaskCount": 16,
+    "masCount": 6
+  },
+  "core": [
+    {
+      "name": "OpenClaw",
+      "category": "AI",
+      "type": "service",
+      "description": "AI agent runtime and personal assistant",
+      "installManagement": "curated",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Claude Code",
+      "category": "AI",
+      "type": "cli",
+      "description": "AI coding agent",
+      "installManagement": "curated",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "VS Code Insiders",
+      "category": "Coding",
+      "type": "app",
+      "description": "Primary code editor",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Ghostty",
+      "category": "Terminal",
+      "type": "app",
+      "description": "Primary terminal emulator",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Starship",
+      "category": "Terminal",
+      "type": "cli",
+      "description": "Shell prompt",
+      "installManagement": "homebrew",
+      "configManagement": "chezmoi"
+    },
+    {
+      "name": "fzf",
+      "category": "Terminal",
+      "type": "cli",
+      "description": "Fuzzy finder",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "zoxide",
+      "category": "Terminal",
+      "type": "cli",
+      "description": "Directory jump",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "chezmoi",
+      "category": "Coding",
+      "type": "cli",
+      "description": "Dotfiles management",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Homebrew",
+      "category": "Infrastructure",
+      "type": "service",
+      "description": "Package manager",
+      "installManagement": "curated",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "mise",
+      "category": "Runtime",
+      "type": "cli",
+      "description": "Runtime version manager",
+      "installManagement": "homebrew",
+      "configManagement": "chezmoi"
+    },
+    {
+      "name": "Git",
+      "category": "Coding",
+      "type": "cli",
+      "description": "Version control",
+      "installManagement": "homebrew",
+      "configManagement": "chezmoi"
+    },
+    {
+      "name": "gh",
+      "category": "Coding",
+      "type": "cli",
+      "description": "GitHub CLI",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "lazygit",
+      "category": "Coding",
+      "type": "cli",
+      "description": "Git TUI",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Obsidian",
+      "category": "Knowledge",
+      "type": "app",
+      "description": "Knowledge management",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Horizon",
+      "category": "Knowledge",
+      "type": "service",
+      "description": "Personal knowledge base",
+      "installManagement": "curated",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Tailscale",
+      "category": "Network",
+      "type": "app",
+      "description": "Mesh VPN",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    }
+  ],
+  "environment": [
+    {
+      "name": "Alfred",
+      "category": "Automation",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "AnyDesk",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Apifox",
+      "category": "Coding",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Applite",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "CC Switch",
+      "category": "Automation",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Caesium",
+      "category": "Creative",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "ChatGPT",
+      "category": "AI",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Claude",
+      "category": "AI",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "CleanMyMac X",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Codex++",
+      "category": "AI",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "ColorSnapper2",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Contents",
+      "category": "Other",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "CopyQ",
+      "category": "Automation",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "DBX",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "DaisyDisk",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "DingTalk",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "GarageBand",
+      "category": "Creative",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Google Chrome",
+      "category": "Browser",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Kaleidoscope",
+      "category": "Coding",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Kap",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Keka",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Keynote",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Lark",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Magic Battery",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Microsoft Edge",
+      "category": "Browser",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Microsoft Remote Desktop",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Microsoft Teams",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "NetEase Music",
+      "category": "Media",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Numbers",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Open Island",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "OpenLogi",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Orca",
+      "category": "AI",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Pages",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "PortKiller",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Postman",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Proxyman",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Rectangle",
+      "category": "Automation",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Safari",
+      "category": "Browser",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "SecureFX",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Shottr",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Stats",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Sublime Text",
+      "category": "Coding",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "SwitchHosts",
+      "category": "Automation",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "TencentMeeting",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Termius",
+      "category": "Other",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "ToDesk",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Transmit",
+      "category": "Utility",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "VS Code",
+      "category": "Coding",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Warp",
+      "category": "Terminal",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "WeChat",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Windows App",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "iMovie",
+      "category": "Creative",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "iTerm",
+      "category": "Terminal",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "iTerm Browser Plugin",
+      "category": "Terminal",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "MarkText",
+      "category": "Knowledge",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "WeChat DevTools",
+      "category": "Coding",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "WPS Office",
+      "category": "Productivity",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "WeCom",
+      "category": "Communication",
+      "type": "app",
+      "installManagement": "other",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Azure CLI",
+      "category": "Infrastructure",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "bat",
+      "category": "Terminal",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "cmake",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "curl",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "difftastic",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "eza",
+      "category": "Terminal",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "fd",
+      "category": "Terminal",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "FFmpeg",
+      "category": "Creative",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "FreeTDS",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "GCC",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "git-delta",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "git-filter-repo",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Go",
+      "category": "Runtime",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Graphviz",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "JMeter",
+      "category": "DevOps",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "lazydocker",
+      "category": "DevOps",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "libpq",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "libzip",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "macmon",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "mas",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Maven",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "mingw-w64",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "neovim",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "chezmoi"
+    },
+    {
+      "name": "opencode",
+      "category": "AI",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "OpenJDK 17",
+      "category": "Runtime",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "OpenLDAP",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "OpenSSL",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "pkgconf",
+      "category": "Coding",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "Python 3.9",
+      "category": "Runtime",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "ranger",
+      "category": "Terminal",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "reattach-to-user-namespace",
+      "category": "Terminal",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "rtmpdump",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    },
+    {
+      "name": "tmux",
+      "category": "Terminal",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "chezmoi"
+    },
+    {
+      "name": "wget",
+      "category": "Utility",
+      "type": "cli",
+      "installManagement": "homebrew",
+      "configManagement": "unknown"
+    }
+  ]
+}
