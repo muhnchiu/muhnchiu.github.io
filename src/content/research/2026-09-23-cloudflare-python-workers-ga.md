@@ -7,14 +7,15 @@ category:
   - Developer
   - Infrastructure
 topics:
-  - edge-computing
-  - python
-  - serverless
+  - local-ai
 tags:
   - Cloudflare
   - Python
   - WebAssembly
   - Pyodide
+  - edge-computing
+  - python
+  - serverless
 source: "Dev Radar 2026-09-23"
 created: 2026-09-23
 updated: 2026-09-23

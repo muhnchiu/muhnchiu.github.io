@@ -8,7 +8,7 @@ category:
 topics:
   - frontier-models
   - open-models
-  - free-api
+  - model-economics
 tags:
   - AI模型市场
   - 定价策略

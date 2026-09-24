@@ -7,9 +7,9 @@ category:
   - AI模型
   - Agent Skill
 topics:
-  - agent-skill-training
-  - llm-optimization
-  - prompt-engineering
+  - agent-systems
+  - inference
+  - ai-coding
 tags:
   - SkillOpt
   - AgentSkill

@@ -8,8 +8,7 @@ category:
   - Agent Skill
 topics:
   - ai-coding
-  - agent-harness
-  - coding-agent
+  - agent-systems
 tags:
   - ZCode
   - Z.ai
