@@ -1,0 +1,6 @@
+[submodule "horizon-contracts"]
+	path = vendor/horizon-contracts
+	url = https://github.com/muhnchiu/horizon-contracts.git
+[submodule "vendor/horizon-policies"]
+	path = vendor/horizon-policies
+	url = https://github.com/muhnchiu/horizon-policies.git

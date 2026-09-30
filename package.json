@@ -5,7 +5,14 @@
   "description": "Horizon — Technology Intelligence & Research",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node scripts/verify-radar-policy-distribution.mjs && node scripts/verify-radar-contract.mjs && npm run test:contract && npm run test:phase3 && npm run test:registry",
     "build": "astro build && node scripts/build-locales.mjs",
+    "test:contract": "node --test tests/radar-contract.test.mjs tests/radar-event-replay-contract.test.mjs tests/radar-observation-fixture.test.mjs tests/radar-event-identity-engine.test.mjs tests/radar-observation-identity-engine.test.mjs && node --test vendor/horizon-contracts/radar/v2/test/normalize.test.mjs vendor/horizon-contracts/radar/v2/2.1.0/test/*.test.mjs vendor/horizon-contracts/radar/v2/2.1.1/test/*.test.mjs vendor/horizon-contracts/radar/v2/2.1.2/test/*.test.mjs",
+    "test:phase3": "node --test tests/radar-validator.test.mjs",
+    "test:registry": "node --test tests/radar-registry.test.mjs tests/radar-registry-atomic.test.mjs tests/radar-registry-lock-identity.test.mjs tests/radar-registry-quarantine.test.mjs",
+    "test:evidence": "node --test tests/radar-evidence-pipeline.test.mjs",
+    "verify:score-policy": "node scripts/verify-radar-score-policy.mjs",
+    "test:phase4": "npm run verify:score-policy && node --test tests/radar-intelligence.test.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -32,5 +39,9 @@
     "astro": "^7.3.4",
     "opencc-js": "^1.4.2",
     "parse5": "^8.0.1"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
   }
 }

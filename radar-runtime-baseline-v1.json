@@ -1,0 +1,45 @@
+{
+  "runtimeBaselineVersion": 1,
+  "status": "FROZEN",
+  "contract": {
+    "version": "2.1.2",
+    "schemaVersion": 2,
+    "distributionCommit": "5ac615eda0de0b0fa1d2cc398309fc2657bacc49",
+    "consumerPath": "vendor/horizon-contracts"
+  },
+  "scorePolicy": {
+    "version": "2.0.1",
+    "path": "radar/score/2.0.1/radar-score-policy-v2.0.1.json"
+  },
+  "eventPolicy": {
+    "version": "1.0",
+    "path": "radar/event/1.0/radar-event-policy-v1.json"
+  },
+  "observationPolicy": {
+    "version": "1.0",
+    "path": "radar/observation/1.0/radar-observation-policy-v1.json"
+  },
+  "registryPolicy": {
+    "version": "1.0",
+    "path": "radar/registry/1.0/radar-registry-policy-v1.json"
+  },
+  "policyDistribution": {
+    "repository": "https://github.com/muhnchiu/horizon-policies.git",
+    "path": "vendor/horizon-policies",
+    "commit": "09c811f7a67ab5a6a1f9f45295d5d815ffb321be",
+    "pinMechanism": "git-submodule gitlink; exact commit required"
+  },
+  "compatibility": {
+    "combination": "Contract 2.1.2 × Score Policy 2.0.1 × Event Policy 1.0 × Observation Policy 1.0 × Registry Policy 1.0",
+    "result": "COMPATIBLE",
+    "evidence": [
+      "vendor/horizon-policies/radar/registry/1.0/radar-registry-score-compatibility-v1.json",
+      "vendor/horizon-policies/radar/registry/1.0/radar-registry-policy-v1-canonical-manifest.json"
+    ]
+  },
+  "historicalVerificationBaseline": {
+    "scorePolicy": "2.0",
+    "status": "HISTORICAL_VERIFICATION_BASELINE",
+    "activeRuntimePolicy": false
+  }
+}
