@@ -26,7 +26,7 @@
   "policyDistribution": {
     "repository": "https://github.com/muhnchiu/horizon-policies.git",
     "path": "vendor/horizon-policies",
-    "commit": "68e81559b3f2b82dc15577a3680a33884e01e2a7",
+    "commit": "f01683ad960663267361f5a5519ddbc7095d6543",
     "pinMechanism": "git-submodule gitlink; exact commit required"
   },
   "compatibility": {
