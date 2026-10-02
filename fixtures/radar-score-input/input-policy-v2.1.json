@@ -1,0 +1,649 @@
+{
+  "artifact": "radar-score-input-generation-policy-v2.1-candidate",
+  "policyVersion": "2.1.0-candidate",
+  "status": "DRAFT",
+  "normative": false,
+  "supersedes": "radar-score-input-policy-v1-draft for candidate score 2.1 input semantics only",
+  "authority": "One per-field authority as declared in radar-score-input-authority-map-v2.1.json.",
+  "semanticBoundary": "Score Input Generation creates and validates provenance-carrying inputs only. It does not change Score/Signal/Filter/Action formulas, Event/Observation identity, Registry state, risk semantics or priorValidation lifecycle.",
+  "generationMethods": [
+    "DETERMINISTIC",
+    "MODEL_JUDGMENT",
+    "HUMAN_AUTHORITY",
+    "DERIVED"
+  ],
+  "requiredFields": [
+    "relevanceLevel",
+    "impact",
+    "actionability",
+    "confidence",
+    "novelty",
+    "momentum",
+    "relevanceScore",
+    "radarModifier",
+    "radar",
+    "title",
+    "entity",
+    "securityGate",
+    "risk",
+    "priorValidation",
+    "duplicate",
+    "eventType",
+    "eventClass",
+    "sourceAuthority"
+  ],
+  "conditionalFields": [
+    "securityEscalation"
+  ],
+  "contextFields": [
+    "radar",
+    "title",
+    "entity",
+    "eventClass",
+    "eventState",
+    "sourceAuthority",
+    "candidateObservationObservedAt"
+  ],
+  "fieldProvenance": "Every required/conditional generated input has one schema-valid field-level provenance envelope. Authority cannot be absent/UNKNOWN. Deterministic requires policyVersion+ruleId; model judgment requires rubricVersion+model/provider/config/evidence; human authority requires a human validation lookup/record; derived requires policyVersion+derivedFrom.",
+  "riskGeneration": {
+    "architecture": "HYBRID",
+    "deterministicFirst": true,
+    "modelFallback": "Only when deterministic facts/rules are insufficient; fixed rubric and cited evidence only.",
+    "precedence": "Decisive deterministic safety facts always win. Model cannot override them. Conflicting authoritative facts => RISK_UNRESOLVED.",
+    "missing": "RISK_UNRESOLVED; do not map missing to normal."
+  },
+  "priorValidation": {
+    "generationMethod": "HUMAN_AUTHORITY",
+    "primaryAuthority": "HUMAN_VALIDATION_REGISTRY",
+    "authority": "EXPLICIT_HUMAN_VALIDATION",
+    "lifecycle": [
+      "ACTIVE",
+      "STALE",
+      "REVOKED"
+    ],
+    "projection": "ACTIVE=true; STALE/REVOKED/no matching row after complete healthy lookup=false; authority unavailable/conflicting=unresolved.",
+    "automaticActiveCreation": "NO",
+    "forbiddenCreationSources": [
+      "Radar output",
+      "Registry state",
+      "model output",
+      "score output",
+      "action history",
+      "duplicate history"
+    ]
+  },
+  "eventStateBoundary": "eventState and duplicate originate only from committed Event/Observation Registry result. Score Policy consumes them and cannot generate or mutate them.",
+  "eligibilityResolver": {
+    "name": "resolveScoreInputEligibility(candidate)",
+    "fieldStatuses": [
+      "READY",
+      "MISSING_PROVENANCE",
+      "MISSING_AUTHORITY",
+      "MISSING_VERSION",
+      "MISSING_EVIDENCE",
+      "MISSING_TIME_RELATION",
+      "INVALID_VALUE"
+    ],
+    "order": [
+      "INVALID_VALUE",
+      "MISSING_PROVENANCE",
+      "MISSING_AUTHORITY",
+      "MISSING_VERSION",
+      "MISSING_EVIDENCE",
+      "MISSING_TIME_RELATION",
+      "READY"
+    ],
+    "semantics": "For each required field, validate target value first, then existence and field match of provenance, known non-UNKNOWN authority and ownership, method-specific version, required evidence/derived inputs, and observedAt relationship + conditional timestamps. Return the first status from the ordered checks and all diagnostics. Candidate is SCORE_READY iff every required field is READY and all conditional fields are valid; otherwise RECEIPT_ONLY. No partial scoring, defaults, guessing or V1 signal/action/confidence reverse mapping.",
+    "implementation": "src/lib/radar-score-input/eligibility.ts",
+    "failureOrder": [
+      "MISSING_PROVENANCE",
+      "MISSING_AUTHORITY",
+      "MISSING_VERSION",
+      "MISSING_EVIDENCE",
+      "MISSING_TIME_RELATION",
+      "INVALID_VALUE"
+    ],
+    "successAndFailure": {
+      "eligible": "SCORE_READY",
+      "ineligible": "RECEIPT_ONLY",
+      "partialScoring": false
+    }
+  },
+  "stages": {
+    "preRegistry": "Collect source-owned evidence; preserve URLs/timestamps; normalize; resolve identity and all non-Registry-owned Score Inputs. If an input is known unresolved, do not invoke Score Policy or commit a candidate solely for scoring.",
+    "registry": "Event/Observation Registry atomically resolves and commits state under its own policy. Score generation does not write Registry.",
+    "postRegistry": "Consume committed duplicate/EventState, complete provenance validation, then invoke Score Policy once. Registry transaction failure or missing result => RECEIPT_ONLY; no prediction."
+  },
+  "noPartialScoring": true,
+  "noV1ReverseMapping": [
+    "signal",
+    "action",
+    "reportConfidence"
+  ],
+  "productionEligibility": "SCORE_READY only when every required field is READY; all else RECEIPT_ONLY.",
+  "provenanceSchemaPath": "radar-score-input-provenance-schema-v2.1.json",
+  "authorityMapPath": "#/authorityMap",
+  "calibrationSchemaPath": "radar-score-calibration-dataset-schema-v2.1.json",
+  "authorityMap": {
+    "artifact": "radar-score-input-authority-map-v2.1-candidate",
+    "version": "2.1.0-candidate",
+    "status": "DRAFT",
+    "normative": false,
+    "classificationDefinitions": {
+      "INPUT_AUTHORITY": "Direct authoritative facts/policy-owned generated inputs consumed by Score Policy.",
+      "CONTEXT_AUTHORITY": "Candidate and event context consumed by modifier or Action Decision Policy.",
+      "DERIVED_BY_POLICY": "Consumed inputs derived by their single owning policy or committed Registry result.",
+      "OUTPUT_OWNERSHIP": {
+        "scoreSignalFilterAction": "Score Policy 2.1.0 / Action Decision Policy 2.1.0; outputs, excluded from this input map.",
+        "eventIdentityState": "Event Policy 1.0; outputs/context only.",
+        "observationIdentity": "Observation Policy 1.0; source evidence semantics.",
+        "persistentRows": "Registry Policy 1.0; persistent state only.",
+        "calibration": "Calibration Dataset; evaluation only."
+      }
+    },
+    "consumedScoreInputs": [
+      {
+        "field": "relevanceLevel",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+        "generationMethod": "DETERMINISTIC_OR_MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "DIRECT",
+            "ADJACENT",
+            "EXPLORATORY",
+            "UNRELATED"
+          ]
+        },
+        "generationMethods": [
+          "DETERMINISTIC",
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "impact",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_RUBRIC_1.0",
+        "generationMethod": "MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "generationMethods": [
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "actionability",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_RUBRIC_1.0",
+        "generationMethod": "MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "generationMethods": [
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "confidence",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_RUBRIC_1.0",
+        "generationMethod": "MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "generationMethods": [
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "novelty",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_RUBRIC_1.0",
+        "generationMethod": "MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "generationMethods": [
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "momentum",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+        "generationMethod": "DETERMINISTIC_OR_MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "generationMethods": [
+          "DETERMINISTIC",
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "relevanceScore",
+        "classification": "DERIVED_BY_POLICY",
+        "primaryAuthority": "SCORE_POLICY_2.1.0",
+        "generationMethod": "DERIVED",
+        "valueDomain": {
+          "type": "integer",
+          "enum": [
+            9,
+            5,
+            3,
+            1
+          ]
+        },
+        "generationMethods": [
+          "DERIVED"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "radarModifier",
+        "classification": "DERIVED_BY_POLICY",
+        "primaryAuthority": "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "integer",
+          "minimum": -10,
+          "maximum": 10
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "radar",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "AI",
+            "DEV",
+            "APP",
+            "SEC",
+            "SKILL"
+          ]
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "title",
+        "classification": "CONTEXT_AUTHORITY",
+        "primaryAuthority": "RADAR_SOURCE_RECORD",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "entity",
+        "classification": "CONTEXT_AUTHORITY",
+        "primaryAuthority": "EVENT_POLICY_1.0",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "securityGate",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SECURITY_GATE_POLICY",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "N/A",
+            "DIRECTLY_EXPOSED",
+            "DEPENDENCY_RELEVANT",
+            "ECOSYSTEM_RELEVANT",
+            "UNRELATED"
+          ]
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "securityEscalation",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "SECURITY_GATE_POLICY",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "object",
+          "properties": {
+            "activeExploitation": {
+              "type": "boolean"
+            },
+            "supplyChainImpact": {
+              "type": "boolean"
+            },
+            "reachableDependency": {
+              "type": "boolean"
+            },
+            "officialEmergencyAdvisory": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "risk",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "RISK_POLICY_1.0",
+        "generationMethod": "DETERMINISTIC_OR_MODEL_JUDGMENT",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "low",
+            "normal",
+            "high"
+          ]
+        },
+        "generationMethods": [
+          "DETERMINISTIC",
+          "MODEL_JUDGMENT"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "priorValidation",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "HUMAN_VALIDATION_REGISTRY",
+        "generationMethod": "HUMAN_AUTHORITY",
+        "valueDomain": {
+          "type": "boolean"
+        },
+        "generationMethods": [
+          "HUMAN_AUTHORITY"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "duplicate",
+        "classification": "DERIVED_BY_POLICY",
+        "primaryAuthority": "REGISTRY_POLICY_1.0",
+        "generationMethod": "DERIVED",
+        "valueDomain": {
+          "type": "boolean"
+        },
+        "generationMethods": [
+          "DERIVED"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "eventType",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "EVENT_POLICY_1.0",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "release",
+            "model-release",
+            "skill-release",
+            "research-release",
+            "version-update",
+            "pricing-change",
+            "capability-change",
+            "security-cve",
+            "security-cisa-kev",
+            "security-advisory",
+            "funding",
+            "incident",
+            "documentation"
+          ]
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "eventClass",
+        "classification": "CONTEXT_AUTHORITY",
+        "primaryAuthority": "ACTION_DECISION_POLICY_2.1.0",
+        "generationMethod": "DERIVED",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "FIRST_DISCOVERY",
+            "VERSION_RELEASE",
+            "OTHER"
+          ]
+        },
+        "generationMethods": [
+          "DERIVED"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      },
+      {
+        "field": "sourceAuthority",
+        "classification": "INPUT_AUTHORITY",
+        "primaryAuthority": "HORIZON_SOURCE_AUTHORITY_MAP",
+        "generationMethod": "DETERMINISTIC",
+        "valueDomain": {
+          "type": "string",
+          "enum": [
+            "official",
+            "primary",
+            "secondary",
+            "community"
+          ]
+        },
+        "generationMethods": [
+          "DETERMINISTIC"
+        ],
+        "nullable": false,
+        "requiredProvenance": [
+          "generationMethod",
+          "authority",
+          "generatedAt",
+          "observedAtRelationship",
+          "policyVersion_or_rubricVersion",
+          "methodEvidence"
+        ]
+      }
+    ],
+    "outputsExcluded": [
+      "baseScore",
+      "directBonus",
+      "finalScore",
+      "signal",
+      "filtered",
+      "filterReason",
+      "action",
+      "eventState"
+    ],
+    "completenessDerivation": "Score weights + Direct Bonus predicates + modifier event/radar/title/entity inputs + Security Gate + filter predicates + Action Decision Policy required/optional inputs; deduplicated by field name.",
+    "competingPrimaryAuthorities": 0,
+    "missingAuthorities": 0,
+    "unknownAuthorityEntries": 0
+  }
+}

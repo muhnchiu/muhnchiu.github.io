@@ -1,0 +1,521 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Score Policy 2.1 Calibration Dataset Schema Candidate",
+  "status": "DRAFT",
+  "normative": false,
+  "description": "Exactly 30 human-labeled cases, 6 per Radar. INPUT_GROUND_TRUTH labels are evidence-grounded and adjudicated independently of policy outputs. EXPECTED_POLICY_OUTPUT is evaluated by the pinned policy from adjudicated input truth; outputs must never create or modify ground truth. No case labels are populated in this phase.",
+  "type": "array",
+  "minItems": 30,
+  "maxItems": 30,
+  "items": {
+    "$ref": "#/$defs/case"
+  },
+  "allOf": [
+    {
+      "contains": {
+        "properties": {
+          "radar": {
+            "const": "AI"
+          }
+        },
+        "required": [
+          "radar"
+        ]
+      },
+      "minContains": 6,
+      "maxContains": 6
+    },
+    {
+      "contains": {
+        "properties": {
+          "radar": {
+            "const": "DEV"
+          }
+        },
+        "required": [
+          "radar"
+        ]
+      },
+      "minContains": 6,
+      "maxContains": 6
+    },
+    {
+      "contains": {
+        "properties": {
+          "radar": {
+            "const": "APP"
+          }
+        },
+        "required": [
+          "radar"
+        ]
+      },
+      "minContains": 6,
+      "maxContains": 6
+    },
+    {
+      "contains": {
+        "properties": {
+          "radar": {
+            "const": "SEC"
+          }
+        },
+        "required": [
+          "radar"
+        ]
+      },
+      "minContains": 6,
+      "maxContains": 6
+    },
+    {
+      "contains": {
+        "properties": {
+          "radar": {
+            "const": "SKILL"
+          }
+        },
+        "required": [
+          "radar"
+        ]
+      },
+      "minContains": 6,
+      "maxContains": 6
+    }
+  ],
+  "$defs": {
+    "scoredDimension": {
+      "type": "object",
+      "required": [
+        "value",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "caseId",
+        "candidateIdentity",
+        "radar",
+        "evidenceProvenanceSnapshot",
+        "INPUT_GROUND_TRUTH",
+        "EXPECTED_POLICY_OUTPUT",
+        "labelStatus",
+        "reviewers"
+      ],
+      "properties": {
+        "caseId": {
+          "type": "string",
+          "pattern": "^CAL-[A-Z]+-[0-9]{2}$"
+        },
+        "candidateIdentity": {
+          "type": "object",
+          "required": [
+            "entity"
+          ],
+          "properties": {
+            "entity": {
+              "type": "string",
+              "minLength": 1
+            },
+            "candidateVersion": {
+              "type": "string"
+            },
+            "eventKey": {
+              "type": "string"
+            },
+            "canonicalEventType": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "radar": {
+          "enum": [
+            "AI",
+            "DEV",
+            "APP",
+            "SEC",
+            "SKILL"
+          ]
+        },
+        "evidenceProvenanceSnapshot": {
+          "type": "object",
+          "required": [
+            "candidateObservation",
+            "sourceEvidence"
+          ],
+          "properties": {
+            "candidateObservation": {
+              "type": "object",
+              "required": [
+                "observationId",
+                "observedAt"
+              ],
+              "properties": {
+                "observationId": {
+                  "type": "string"
+                },
+                "observedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "additionalProperties": false
+            },
+            "sourceEvidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "evidenceRef",
+                  "sourceAuthority"
+                ],
+                "properties": {
+                  "evidenceRef": {
+                    "type": "string"
+                  },
+                  "sourceUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "sourceAuthority": {
+                    "type": "string"
+                  },
+                  "sourcePublishedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "observedAtRelationship": {
+                    "enum": [
+                      "SAME_OBSERVATION",
+                      "SOURCE_EVIDENCE",
+                      "PRIOR_STATE",
+                      "HUMAN_RECORD",
+                      "DERIVED_FROM_INPUTS"
+                    ]
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "INPUT_GROUND_TRUTH": {
+          "$ref": "#/$defs/inputGroundTruth"
+        },
+        "EXPECTED_POLICY_OUTPUT": {
+          "$ref": "#/$defs/expectedOutput"
+        },
+        "labelStatus": {
+          "enum": [
+            "UNLABELED",
+            "IN_REVIEW",
+            "ADJUDICATED"
+          ]
+        },
+        "reviewers": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/reviewer"
+          }
+        },
+        "adjudication": {
+          "$ref": "#/$defs/reviewer"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "inputGroundTruth": {
+      "type": "object",
+      "required": [
+        "relevance",
+        "impact",
+        "actionability",
+        "confidence",
+        "novelty",
+        "momentum",
+        "risk"
+      ],
+      "properties": {
+        "relevance": {
+          "$ref": "#/$defs/inputLabels/properties/relevance"
+        },
+        "impact": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "actionability": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "confidence": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "novelty": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "momentum": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "risk": {
+          "$ref": "#/$defs/inputLabels/properties/risk"
+        },
+        "priorValidation": {
+          "$ref": "#/$defs/inputLabels/properties/priorValidation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "inputLabels": {
+      "type": "object",
+      "required": [
+        "relevance",
+        "impact",
+        "actionability",
+        "confidence",
+        "novelty",
+        "momentum",
+        "risk"
+      ],
+      "properties": {
+        "relevance": {
+          "type": "object",
+          "required": [
+            "level",
+            "evidenceRefs"
+          ],
+          "properties": {
+            "level": {
+              "enum": [
+                "DIRECT",
+                "ADJACENT",
+                "EXPLORATORY",
+                "UNRELATED"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "impact": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "actionability": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "confidence": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "novelty": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "momentum": {
+          "$ref": "#/$defs/scoredDimension"
+        },
+        "risk": {
+          "type": "object",
+          "required": [
+            "level",
+            "evidenceRefs"
+          ],
+          "properties": {
+            "level": {
+              "enum": [
+                "low",
+                "normal",
+                "high"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "priorValidation": {
+          "type": "object",
+          "required": [
+            "value",
+            "authority",
+            "evidenceRefs"
+          ],
+          "properties": {
+            "value": {
+              "type": "boolean"
+            },
+            "authority": {
+              "const": "EXPLICIT_HUMAN_VALIDATION"
+            },
+            "validationId": {
+              "type": "string"
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "notApplicableReason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "expectedOutput": {
+      "type": "object",
+      "required": [
+        "expectedScore",
+        "expectedSignal",
+        "expectedAction",
+        "expectedFilter",
+        "expectedEventState"
+      ],
+      "properties": {
+        "expectedScore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "expectedSignal": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "filtered"
+          ]
+        },
+        "expectedAction": {
+          "enum": [
+            "ignore",
+            "watch",
+            "read",
+            "test",
+            "adopt"
+          ]
+        },
+        "expectedFilter": {
+          "type": "object",
+          "required": [
+            "filtered"
+          ],
+          "properties": {
+            "filtered": {
+              "type": "boolean"
+            },
+            "filterReason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "expectedEventState": {
+          "enum": [
+            "NEW",
+            "DUPLICATE",
+            "UPDATE"
+          ]
+        },
+        "scorePolicyVersion": {
+          "const": "2.1.0"
+        },
+        "eventPolicyVersion": {
+          "const": "1.0"
+        },
+        "registryPolicyVersion": {
+          "const": "1.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reviewer": {
+      "type": "object",
+      "required": [
+        "reviewer",
+        "reviewedAt",
+        "labelStatus",
+        "notes"
+      ],
+      "properties": {
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "labelStatus": {
+          "enum": [
+            "UNLABELED",
+            "IN_REVIEW",
+            "ADJUDICATED"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        },
+        "inputGroundTruth": {
+          "$ref": "#/$defs/inputGroundTruth"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allocationValidation": "JSON Schema contains exactly 6 cases per Radar plus array length 30; validator must run this schema before accepting dataset.",
+  "labelSeparation": "INPUT_GROUND_TRUTH and EXPECTED_POLICY_OUTPUT are disjoint required objects. Policy outputs are generated/evaluated after adjudicating input truth and MUST NOT be evidence for input labels.",
+  "eventStateBoundary": "expectedEventState is evaluation context sourced from Event Identity/Event Policy 1.0 and Registry Policy 1.0. Score Policy cannot generate EventState. Allowed values are the existing Event Policy enum NEW/DUPLICATE/UPDATE.",
+  "noFabrication": "Schema only; no labeled case records are created in this phase."
+}

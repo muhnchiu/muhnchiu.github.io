@@ -1,0 +1,171 @@
+{
+  "artifact": "radar-prior-validation-lifecycle-policy-candidate-v1",
+  "policyVersion": "1.0",
+  "status": "DRAFT",
+  "normative": false,
+  "authority": "EXPLICIT_HUMAN_VALIDATION",
+  "granularity": "ENTITY_LEVEL",
+  "states": {
+    "ACTIVE": {
+      "meaning": "Explicit human validation is current for the declared entity and scope.",
+      "scoreProjection": true,
+      "entry": "Only an explicit human validation record with attributable evidence."
+    },
+    "STALE": {
+      "meaning": "Validation no longer safely applies or requires revalidation; retained for audit.",
+      "scoreProjection": false,
+      "entry": "Automated material invalidation or human supersession/review transition."
+    },
+    "REVOKED": {
+      "meaning": "A human explicitly withdrew validation or authority/evidence was invalidated.",
+      "scoreProjection": false,
+      "entry": "Explicit human revocation, or confirmed invalidating event per this policy."
+    }
+  },
+  "projection": {
+    "priorValidation": "true iff exactly one authoritative, non-conflicting matching record is ACTIVE and current facts remain within its scope. STALE/REVOKED/no matching record after complete healthy lookup => false. Incomplete, unavailable or conflicting lookup => PRIOR_VALIDATION_UNRESOLVED (fail closed; no scoring/adoption)."
+  },
+  "invalidationTriggers": [
+    {
+      "trigger": "MAJOR_VERSION_CHANGE",
+      "classification": "REVIEW_REQUIRED",
+      "scope": "Only if validatedVersion was exact/current-major scoped or compatibility cannot be established. Explicitly approved version family may continue only when evidence supports it.",
+      "transition": "ACTIVE -> STALE pending human review; no automatic ACTIVE."
+    },
+    {
+      "trigger": "MAJOR_CAPABILITY_CHANGE",
+      "classification": "AUTO_INVALIDATE",
+      "scope": "Capability materially changes evaluated behavior/use; affected validation scope only.",
+      "transition": "ACTIVE -> STALE immediately; priorValidation=false."
+    },
+    {
+      "trigger": "SECURITY_REGRESSION",
+      "classification": "AUTO_INVALIDATE",
+      "scope": "Security regression affects validated usage/environment.",
+      "transition": "ACTIVE -> REVOKED for affected scope; independent of Security Gate scoring."
+    },
+    {
+      "trigger": "ACTIVE_EXPLOITATION",
+      "classification": "AUTO_INVALIDATE",
+      "scope": "Credible active exploitation affects validated usage/environment.",
+      "transition": "ACTIVE -> REVOKED for affected scope."
+    },
+    {
+      "trigger": "LICENSE_CHANGE",
+      "classification": "AUTO_INVALIDATE",
+      "scope": "License change conflicts with evaluated deployment assumptions or legal approval scope.",
+      "transition": "ACTIVE -> STALE; if conflict is confirmed, human may REVOKE."
+    },
+    {
+      "trigger": "PRICING_CHANGE",
+      "classification": "NO_INVALIDATION",
+      "scope": "Default: pricing alone does not invalidate technical validation. If record explicitly includes a price/cost ceiling as an approval condition, out-of-scope price requires REVIEW_REQUIRED for that approval only.",
+      "transition": "No automatic state change absent explicit price-sensitive scope."
+    },
+    {
+      "trigger": "API_AVAILABILITY_CHANGE",
+      "classification": "REVIEW_REQUIRED",
+      "scope": "Material availability/access change affects evaluated environment or intended use.",
+      "transition": "ACTIVE -> STALE pending review; ordinary transient outage does not invalidate."
+    },
+    {
+      "trigger": "OWNERSHIP_OR_MAINTAINER_CHANGE",
+      "classification": "REVIEW_REQUIRED",
+      "scope": "Only when governance change plausibly affects validated support/trust assumptions.",
+      "transition": "ACTIVE -> STALE pending human review."
+    },
+    {
+      "trigger": "LONG_TIME_ELAPSED",
+      "classification": "NO_INVALIDATION",
+      "scope": "No implicit TTL. A separate justified policy or human-set reviewDueAt may request review but does not itself revoke truth.",
+      "transition": "No automatic state transition."
+    },
+    {
+      "trigger": "ORDINARY_VERSION_UPDATE",
+      "classification": "NO_INVALIDATION",
+      "scope": "Patch/minor update within validated compatibility scope, absent material change triggers.",
+      "transition": "Remain ACTIVE."
+    },
+    {
+      "trigger": "POPULARITY_CHANGE",
+      "classification": "NO_INVALIDATION",
+      "scope": "Popularity is not validation evidence.",
+      "transition": "No state change."
+    },
+    {
+      "trigger": "SOURCE_OR_REPORTING_CHANGE",
+      "classification": "NO_INVALIDATION",
+      "scope": "Observation/reporting metadata alone is not material fact.",
+      "transition": "No state change."
+    },
+    {
+      "trigger": "REPEATED_OBSERVATION",
+      "classification": "NO_INVALIDATION",
+      "scope": "Duplicate/repeated evidence is not a validation lifecycle event.",
+      "transition": "No state change."
+    }
+  ],
+  "minimumScopeFields": {
+    "entity": "required canonical Contract 2.1.2 entity key",
+    "validatedVersion": "required; exact version, or explicit reviewed family/range; use unknown only if version genuinely unavailable and scope explicitly bounded elsewhere",
+    "validatedCapabilities": "required canonical list or explicit all-capabilities-with-evidence declaration; no implicit future capability inheritance",
+    "validatedUsage": "required concise intended use / workload; operationally maintainable category or text",
+    "validatedEnvironment": "required stable environment/config reference when behavior or approval depends on environment; may be explicit environment-independent",
+    "validatedAt": "required RFC3339 UTC"
+  },
+  "record": {
+    "required": [
+      "validationId",
+      "entity",
+      "status",
+      "validatedAt",
+      "validatedBy",
+      "validationType",
+      "scope",
+      "evidenceRefs"
+    ],
+    "optional": [
+      "notes",
+      "invalidatedAt",
+      "invalidationReason",
+      "supersedes",
+      "reviewDueAt"
+    ],
+    "scopeRequired": [
+      "validatedVersion",
+      "validatedCapabilities",
+      "validatedUsage",
+      "validatedEnvironment"
+    ],
+    "appendOnly": "Transitions append a linked record; no silent mutation/deletion. Equal-time/conflicting ACTIVE records => unresolved."
+  },
+  "authorityBoundary": {
+    "onlyCreation": "An authenticated human explicitly validates after independent test/review/use evidence.",
+    "cannotCreateActive": [
+      "Radar score",
+      "signal",
+      "action",
+      "publication",
+      "Event Registry",
+      "Observation Registry",
+      "model recommendation",
+      "sourceAuthority",
+      "candidate popularity",
+      "automated lifecycle transition"
+    ],
+    "automatedMay": "Invalidate, mark STALE or request human review; never create ACTIVE.",
+    "humanRevalidation": "A new explicit human record may supersede stale/revoked history and become ACTIVE after fresh evidence."
+  },
+  "circularity": {
+    "status": "NONE",
+    "edges": [
+      "Independent evidence + explicit human act -> validation record",
+      "Versioned event/source facts -> one-way invalidate or request review of validation record",
+      "Validation record -> boolean priorValidation score input",
+      "Score/action/publication/registry <- downstream outputs; no write edge back to validation authority",
+      "Validation record -> no Event/Observation Registry mutation"
+    ],
+    "proof": "Registry/event facts can only trigger one-way state invalidation/review. The validation process has no registry write capability, and registry state cannot be changed by validation."
+  },
+  "statusNotice": "Candidate design only. No persistent store or transition processor implemented."
+}

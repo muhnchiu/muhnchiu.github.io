@@ -1,0 +1,577 @@
+{
+  "artifact": "radar-production-candidate-adapter-fixtures-v1",
+  "fixtureKind": "offline-parser-projection-and-synthetic-edge-cases",
+  "caseCount": 40,
+  "byRadar": {
+    "AI": 8,
+    "DEV": 8,
+    "APP": 8,
+    "SEC": 8,
+    "SKILL": 8
+  },
+  "calibrationGroundTruth": "NOT_PRESENT",
+  "cases": [
+    {
+      "caseId": "AI-01",
+      "radar": "AI",
+      "sourceName": "Hugging Face Papers",
+      "record": {
+        "title": "Paper title",
+        "authors": [
+          {
+            "name": "Author"
+          }
+        ]
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "AI-02",
+      "radar": "AI",
+      "sourceName": "Hugging Face 热门模型",
+      "record": {
+        "modelId": "org/model",
+        "createdAt": "2026-09-30T10:00:00Z",
+        "downloads": 20
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "AI-03",
+      "radar": "AI",
+      "sourceName": "GitHub AI repositories",
+      "record": {
+        "full_name": "org/repo",
+        "description": "AI tooling"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "AI-04",
+      "radar": "AI",
+      "sourceName": "OpenRouter 免费模型",
+      "record": {
+        "id": "vendor/model:free",
+        "name": "Model"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "AI-05",
+      "radar": "AI",
+      "sourceName": "TechCrunch AI",
+      "record": {
+        "title": "AI story",
+        "displayDate": "Sep 30, 2026"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "AI-06",
+      "radar": "AI",
+      "sourceName": "arXiv cs.LG",
+      "record": {
+        "title": "Research paper"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "AI-07",
+      "radar": "AI",
+      "sourceName": "GitHub AI Trending",
+      "record": {
+        "name": "no parser field"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "UNSUPPORTED_SOURCE_RECORD"
+      ]
+    },
+    {
+      "caseId": "AI-08",
+      "radar": "AI",
+      "sourceName": "HuggingFace Papers",
+      "record": {
+        "title": "Paper",
+        "authors": []
+      },
+      "observedAt": null,
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL",
+        "MISSING_OBSERVED_AT"
+      ]
+    },
+    {
+      "caseId": "DEV-01",
+      "radar": "DEV",
+      "sourceName": "GitHub developer-tool trending",
+      "record": {
+        "full_name": "org/tool",
+        "description": "CLI"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "DEV-02",
+      "radar": "DEV",
+      "sourceName": "Hacker News",
+      "record": {
+        "objectID": "12345",
+        "title": "Developer story",
+        "url": null,
+        "points": 12
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "DEV-03",
+      "radar": "DEV",
+      "sourceName": "Hacker News",
+      "record": {
+        "objectID": "12346",
+        "title": "No observed boundary"
+      },
+      "observedAt": null,
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_OBSERVED_AT"
+      ]
+    },
+    {
+      "caseId": "DEV-04",
+      "radar": "DEV",
+      "sourceName": "Hacker News Show HN",
+      "record": {
+        "objectID": "23456",
+        "title": "Show HN: Tool",
+        "points": 3
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "DEV-05",
+      "radar": "DEV",
+      "sourceName": "npm downloads",
+      "record": {
+        "package": "typescript",
+        "downloads": 1234
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "DEV-06",
+      "radar": "DEV",
+      "sourceName": "VS Code Marketplace",
+      "record": {
+        "publisher": {
+          "publisherName": "pub"
+        },
+        "extensionName": "ext",
+        "displayName": "Ext"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "DEV-07",
+      "radar": "DEV",
+      "sourceName": "AI coding-tool GitHub releases",
+      "record": {
+        "tag_name": "v1.2",
+        "name": "Release",
+        "displayDate": "2026-09-30"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "DEV-08",
+      "radar": "DEV",
+      "sourceName": "Hacker News developer stories",
+      "record": {
+        "objectID": "12347",
+        "title": "Invalid time"
+      },
+      "observedAt": "yesterday",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "INVALID_TIMESTAMP"
+      ]
+    },
+    {
+      "caseId": "APP-01",
+      "radar": "APP",
+      "sourceName": "Hacker News Home",
+      "record": {
+        "objectID": "34567",
+        "title": "HN story",
+        "url": "https://example.com/item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "APP-02",
+      "radar": "APP",
+      "sourceName": "Hacker News Show HN",
+      "record": {
+        "objectID": "34568",
+        "title": "Showcase"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "APP-03",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "record": {
+        "title": "Product launch",
+        "link": "https://www.producthunt.com/products/example",
+        "description": "Short blurb"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "APP-04",
+      "radar": "APP",
+      "sourceName": "少数派",
+      "record": {
+        "title": "Article",
+        "link": "https://sspai.com/post/123",
+        "description": "Summary"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "APP-05",
+      "radar": "APP",
+      "sourceName": "小众软件",
+      "record": {
+        "title": "Missing link",
+        "description": "Text"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "UNSUPPORTED_SOURCE_RECORD"
+      ]
+    },
+    {
+      "caseId": "APP-06",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "record": {
+        "title": "Aggregator misuse",
+        "link": "https://www.producthunt.com/feed"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "AGGREGATOR_URL_NOT_ITEM"
+      ]
+    },
+    {
+      "caseId": "APP-07",
+      "radar": "APP",
+      "sourceName": "Hacker News 首页",
+      "record": {
+        "objectID": "x-unsafe",
+        "title": "Bad id",
+        "url": "not-a-url"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "INVALID_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "APP-08",
+      "radar": "APP",
+      "sourceName": "UNKNOWN APP SOURCE",
+      "record": {
+        "title": "Unknown"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "UNKNOWN_SOURCE"
+      ]
+    },
+    {
+      "caseId": "SEC-01",
+      "radar": "SEC",
+      "sourceName": "NVD",
+      "record": {
+        "id": "CVE-2026-12345",
+        "score": 9.8,
+        "desc": "Vulnerability",
+        "references": [
+          {
+            "url": "https://third-party.example/advisory"
+          }
+        ]
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "SEC-02",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "record": {
+        "ghsa_id": "GHSA-aaaa-bbbb-cccc",
+        "summary": "Advisory"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "SEC-03",
+      "radar": "SEC",
+      "sourceName": "CISA KEV",
+      "record": {
+        "cveID": "CVE-2026-12345",
+        "dateAdded": "2026-09-30",
+        "vulnerabilityName": "Known exploited"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL"
+      ]
+    },
+    {
+      "caseId": "SEC-04",
+      "radar": "SEC",
+      "sourceName": "Hacker News Security",
+      "record": {
+        "objectID": "45678",
+        "title": "Security story",
+        "url": "https://example.org/cve"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "SEC-05",
+      "radar": "SEC",
+      "sourceName": "Hacker News Security",
+      "record": {
+        "objectID": "45679",
+        "title": "HN fallback"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "CANDIDATE_READY",
+      "expectedReasons": []
+    },
+    {
+      "caseId": "SEC-06",
+      "radar": "SEC",
+      "sourceName": "Hacker News Security",
+      "record": {
+        "objectID": "45680",
+        "title": "Invalid publication",
+        "sourcePublishedAt": "2026-14-99T00:00:00Z"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "INVALID_TIMESTAMP"
+      ]
+    },
+    {
+      "caseId": "SEC-07",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "record": {
+        "ghsa_id": "GHSA-aaaa-bbbb-cccc",
+        "summary": "Bad source authority",
+        "sourceAuthority": "community"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "MISSING_ITEM_URL",
+        "INVALID_PROVENANCE"
+      ]
+    },
+    {
+      "caseId": "SEC-08",
+      "radar": "SEC",
+      "sourceName": "NVD",
+      "record": {
+        "cve": "CVE-2026-12345"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "UNSUPPORTED_SOURCE_RECORD"
+      ]
+    },
+    {
+      "caseId": "SKILL-01",
+      "radar": "SKILL",
+      "sourceName": "Skills.sh Trending",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-02",
+      "radar": "SKILL",
+      "sourceName": "Linkly Top 100",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-03",
+      "radar": "SKILL",
+      "sourceName": "OfficialSkills.sh",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-04",
+      "radar": "SKILL",
+      "sourceName": "ClawHub search",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-05",
+      "radar": "SKILL",
+      "sourceName": "SkillsMP",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-06",
+      "radar": "SKILL",
+      "sourceName": "LobeHub",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-07",
+      "radar": "SKILL",
+      "sourceName": "GitHub Explore",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    },
+    {
+      "caseId": "SKILL-08",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "record": {
+        "text": "Human-readable report line; not a structured item"
+      },
+      "observedAt": "2026-10-01T00:00:00Z",
+      "expectedStatus": "RECEIPT_ONLY",
+      "expectedReasons": [
+        "SKILL_STRUCTURED_INPUT_UNAVAILABLE"
+      ]
+    }
+  ]
+}

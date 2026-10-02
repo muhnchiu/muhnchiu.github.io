@@ -1,0 +1,1587 @@
+{
+  "artifact": "radar-action-boundary-fixtures-candidate-v1",
+  "fixtureVersion": "candidate-1.0",
+  "status": "REVIEW_DRAFT",
+  "normative": false,
+  "caseCount": 50,
+  "targetRange": [
+    30,
+    50
+  ],
+  "coverage": {
+    "actionVocabulary": [
+      "ignore",
+      "watch",
+      "read",
+      "test",
+      "adopt"
+    ],
+    "terminalRuleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15"
+    ],
+    "risk": [
+      "low",
+      "normal",
+      "high"
+    ],
+    "priorValidation": [
+      false,
+      true
+    ],
+    "securityGate": [
+      "N/A",
+      "DIRECTLY_EXPOSED",
+      "DEPENDENCY_RELEVANT",
+      "ECOSYSTEM_RELEVANT",
+      "UNRELATED"
+    ],
+    "duplicate": [
+      false,
+      true
+    ],
+    "signal": [
+      "filtered",
+      "high",
+      "medium",
+      "low"
+    ],
+    "signalScoreThresholds": [
+      24,
+      25,
+      49,
+      50,
+      74,
+      75
+    ],
+    "adoptGuards": [
+      "priorValidation",
+      "risk",
+      "eventClass",
+      "relevance",
+      "actionability",
+      "impact",
+      "confidence"
+    ],
+    "directBonus": [
+      "DIRECT impact>=7 (threshold positive)",
+      "DIRECT actionability>=7 (threshold positive)",
+      "DIRECT impact<7 AND actionability<7 (zero bonus)",
+      "non-DIRECT impact>=7 (zero bonus)"
+    ],
+    "minimalPairs": [
+      "ADOPT gate toggles",
+      "threshold sides",
+      "risk classes",
+      "priorValidation bool",
+      "security gate cap/filter"
+    ],
+    "p07MinimalPairs": [
+      "first discovery low/medium/high relevance",
+      "actionability low/medium/high",
+      "risk low/normal/high",
+      "priorValidation false/true",
+      "P05 actionability 6/7 threshold with fixed remaining P07 inputs"
+    ]
+  },
+  "cases": [
+    {
+      "fixtureId": "B01",
+      "name": "filtered-duplicate",
+      "purpose": "Duplicate is filtered upstream; action policy terminates ignore.",
+      "actionPolicyInput": {
+        "signal": "filtered",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "duplicate": true,
+        "radar": "ai",
+        "effectiveSignal": "filtered",
+        "hardFilterReason": "DUPLICATE"
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "ignore",
+        "historicalEngineAction": "ignore",
+        "proposedAction": "ignore",
+        "decisionReason": "P01_SIGNAL_FILTERED_TERMINAL"
+      }
+    },
+    {
+      "fixtureId": "B02",
+      "name": "filtered-sec-unrelated",
+      "purpose": "SEC/UNRELATED hard filter remains upstream.",
+      "actionPolicyInput": {
+        "signal": "filtered",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "duplicate": false,
+        "radar": "sec",
+        "securityGate": "UNRELATED",
+        "effectiveSignal": "filtered",
+        "hardFilterReason": "SEC_UNRELATED"
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "ignore",
+        "historicalEngineAction": "ignore",
+        "proposedAction": "ignore",
+        "decisionReason": "P01_SIGNAL_FILTERED_TERMINAL"
+      }
+    },
+    {
+      "fixtureId": "B03",
+      "name": "high-first-discovery-test",
+      "purpose": "First-discovery first branch passes actionability and relevance.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "FIRST_DISCOVERY",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 3,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P05_FIRST_DISCOVERY_ACTIONABLE_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B04",
+      "name": "high-first-discovery-impact-read",
+      "purpose": "First-discovery misses test condition but meets impact threshold.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "FIRST_DISCOVERY",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 6,
+        "actionability": 6,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P06_FIRST_DISCOVERY_MATERIAL_IMPACT_READ"
+      }
+    },
+    {
+      "fixtureId": "B05",
+      "name": "high-first-discovery-default-read",
+      "purpose": "First discovery fails explicit relevance/actionability TEST gate and material-impact READ gate; newness alone must not produce TEST.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "FIRST_DISCOVERY",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 5,
+        "actionability": 3,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P07_FIRST_DISCOVERY_DEFAULT_READ"
+      }
+    },
+    {
+      "fixtureId": "B06",
+      "name": "first-discovery-never-adopt",
+      "purpose": "Prior validation does not override first-discovery ADOPT guard.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "FIRST_DISCOVERY",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 10
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "adopt",
+        "proposedAction": "test",
+        "decisionReason": "P05_FIRST_DISCOVERY_ACTIONABLE_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B07",
+      "name": "high-version-release-read",
+      "purpose": "Version update has explicit high-signal read precedence.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "VERSION_RELEASE",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 10
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P04_VERSION_RELEASE_READ"
+      }
+    },
+    {
+      "fixtureId": "B08",
+      "name": "high-adopt",
+      "purpose": "All explicit ADOPT gates pass for an OTHER event class.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "adopt",
+        "historicalEngineAction": "adopt",
+        "proposedAction": "adopt",
+        "decisionReason": "P08_VALIDATED_LOW_RISK_ADOPT"
+      }
+    },
+    {
+      "fixtureId": "B09",
+      "name": "adopt-prior-validation-required",
+      "purpose": "Single-field minimal pair: priorValidation false blocks ADOPT.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B10",
+      "name": "adopt-low-risk-required",
+      "purpose": "Single-field minimal pair: normal risk blocks ADOPT.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "adopt",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B11",
+      "name": "adopt-direct-relevance-required",
+      "purpose": "Single-field minimal pair: adjacent relevance blocks ADOPT.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B12",
+      "name": "adopt-actionability-boundary",
+      "purpose": "Actionability 6 is below ADOPT threshold.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 6,
+        "confidence": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "read",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B13",
+      "name": "adopt-impact-boundary",
+      "purpose": "Impact 6 is below ADOPT threshold.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 6,
+        "actionability": 7,
+        "confidence": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "adopt",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B14",
+      "name": "adopt-confidence-boundary",
+      "purpose": "Confidence 5 is below ADOPT threshold.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 5
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B15",
+      "name": "high-fallback-test",
+      "purpose": "High fallback accepts actionability at 5.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 5,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "read",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B16",
+      "name": "high-fallback-read",
+      "purpose": "High fallback actionability 4 is below test threshold.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 4,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P10_HIGH_DEFAULT_READ"
+      }
+    },
+    {
+      "fixtureId": "B17",
+      "name": "high-risk-read",
+      "purpose": "High negative usage risk prevents test/adopt and requests review.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "high",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 10
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "adopt",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P02_HIGH_RISK_HIGH_SIGNAL_REVIEW"
+      }
+    },
+    {
+      "fixtureId": "B18",
+      "name": "medium-test",
+      "purpose": "Medium test branch meets actionability/relevance thresholds.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 6,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P11_MEDIUM_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B19",
+      "name": "medium-actionability-boundary",
+      "purpose": "Actionability 5 is below medium test threshold.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 5,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "watch",
+        "historicalEngineAction": "read",
+        "proposedAction": "watch",
+        "decisionReason": "P13_MEDIUM_DEFAULT_WATCH"
+      }
+    },
+    {
+      "fixtureId": "B20",
+      "name": "medium-relevance-boundary",
+      "purpose": "Adjacent relevance fails medium test despite high actionability.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 0,
+        "actionability": 6,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "watch",
+        "historicalEngineAction": "read",
+        "proposedAction": "watch",
+        "decisionReason": "P13_MEDIUM_DEFAULT_WATCH"
+      }
+    },
+    {
+      "fixtureId": "B21",
+      "name": "medium-impact-read",
+      "purpose": "Medium fallback uses impact 5 to read.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 5,
+        "actionability": 3,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "watch",
+        "proposedAction": "read",
+        "decisionReason": "P12_MEDIUM_IMPACT_READ"
+      }
+    },
+    {
+      "fixtureId": "B22",
+      "name": "medium-impact-boundary-watch",
+      "purpose": "Impact 4 falls to medium watch.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 4,
+        "actionability": 3,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "watch",
+        "historicalEngineAction": "watch",
+        "proposedAction": "watch",
+        "decisionReason": "P13_MEDIUM_DEFAULT_WATCH"
+      }
+    },
+    {
+      "fixtureId": "B23",
+      "name": "medium-high-risk-watch",
+      "purpose": "High risk at medium signal is watch.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "high",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "watch",
+        "proposedAction": "watch",
+        "decisionReason": "P03_HIGH_RISK_NONHIGH_MONITOR"
+      }
+    },
+    {
+      "fixtureId": "B24",
+      "name": "low-read-boundary",
+      "purpose": "Low actionability 4 is read.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 4,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P14_LOW_ACTIONABLE_READ"
+      }
+    },
+    {
+      "fixtureId": "B25",
+      "name": "low-watch-boundary",
+      "purpose": "Low actionability 3 is watch.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 3,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "watch",
+        "historicalEngineAction": "watch",
+        "proposedAction": "watch",
+        "decisionReason": "P15_LOW_DEFAULT_WATCH"
+      }
+    },
+    {
+      "fixtureId": "B26",
+      "name": "low-high-risk-watch",
+      "purpose": "High risk at low signal remains watch.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "high",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "watch",
+        "proposedAction": "watch",
+        "decisionReason": "P03_HIGH_RISK_NONHIGH_MONITOR"
+      }
+    },
+    {
+      "fixtureId": "B27",
+      "name": "risk-low-test",
+      "purpose": "Low risk permits an otherwise eligible high test.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 4,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B28",
+      "name": "risk-normal-test",
+      "purpose": "Normal risk preserves 2.0.1 behavior and permits test.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 4,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B29",
+      "name": "risk-high-no-test",
+      "purpose": "High risk blocks test and returns read.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "high",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 4,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P02_HIGH_RISK_HIGH_SIGNAL_REVIEW"
+      }
+    },
+    {
+      "fixtureId": "B30",
+      "name": "prior-validation-false",
+      "purpose": "False prior validation cannot ADOPT.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 10
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B31",
+      "name": "prior-validation-true",
+      "purpose": "True prior validation reaches ADOPT only with all other guards.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "low",
+        "priorValidation": true,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 10,
+        "actionability": 10,
+        "confidence": 10
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "adopt",
+        "historicalEngineAction": "adopt",
+        "proposedAction": "adopt",
+        "decisionReason": "P08_VALIDATED_LOW_RISK_ADOPT"
+      }
+    },
+    {
+      "fixtureId": "B32",
+      "name": "sec-gate-directly-exposed",
+      "purpose": "Security Gate DIRECTLY_EXPOSED remains upstream; effective signal feeds Action Policy.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "sec",
+        "securityGate": "DIRECTLY_EXPOSED",
+        "preGateSignal": "high",
+        "securityEscalation": {},
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B33",
+      "name": "sec-gate-dependency-relevant",
+      "purpose": "Security Gate DEPENDENCY_RELEVANT remains upstream; effective signal feeds Action Policy.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "sec",
+        "securityGate": "DEPENDENCY_RELEVANT",
+        "preGateSignal": "high",
+        "securityEscalation": {},
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B34",
+      "name": "sec-gate-ecosystem-relevant",
+      "purpose": "Security Gate ECOSYSTEM_RELEVANT remains upstream; effective signal feeds Action Policy.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "sec",
+        "securityGate": "ECOSYSTEM_RELEVANT",
+        "preGateSignal": "high",
+        "securityEscalation": {},
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P11_MEDIUM_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B35",
+      "name": "sec-gate-unrelated",
+      "purpose": "Security Gate UNRELATED remains upstream; effective signal feeds Action Policy.",
+      "actionPolicyInput": {
+        "signal": "filtered",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "sec",
+        "securityGate": "UNRELATED",
+        "preGateSignal": "high",
+        "securityEscalation": {},
+        "effectiveSignal": "filtered",
+        "hardFilterReason": "SEC_UNRELATED"
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "ignore",
+        "historicalEngineAction": "ignore",
+        "proposedAction": "ignore",
+        "decisionReason": "P01_SIGNAL_FILTERED_TERMINAL"
+      }
+    },
+    {
+      "fixtureId": "B36",
+      "name": "sec-ecosystem-escalation",
+      "purpose": "A frozen escalation bypasses ecosystem high-to-medium signal cap.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "sec",
+        "securityGate": "ECOSYSTEM_RELEVANT",
+        "preGateSignal": "high",
+        "securityEscalation": {
+          "activeExploitation": true
+        },
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B37",
+      "name": "duplicate-false",
+      "purpose": "No duplicate hard filter; ordinary signal passes downstream.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "ai",
+        "duplicate": false,
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B38",
+      "name": "signal-score-24",
+      "purpose": "Frozen signal threshold boundary at finalScore=24.",
+      "actionPolicyInput": {
+        "signal": "filtered",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "finalScore": 24,
+        "signalThresholds": {
+          "low": 25,
+          "medium": 50,
+          "high": 75
+        },
+        "effectiveSignal": "filtered",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "ignore",
+        "historicalEngineAction": "ignore",
+        "proposedAction": "ignore",
+        "decisionReason": "P01_SIGNAL_FILTERED_TERMINAL"
+      }
+    },
+    {
+      "fixtureId": "B39",
+      "name": "signal-score-25",
+      "purpose": "Frozen signal threshold boundary at finalScore=25.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "finalScore": 25,
+        "signalThresholds": {
+          "low": 25,
+          "medium": 50,
+          "high": 75
+        },
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P14_LOW_ACTIONABLE_READ"
+      }
+    },
+    {
+      "fixtureId": "B40",
+      "name": "signal-score-49",
+      "purpose": "Frozen signal threshold boundary at finalScore=49.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "finalScore": 49,
+        "signalThresholds": {
+          "low": 25,
+          "medium": 50,
+          "high": 75
+        },
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P14_LOW_ACTIONABLE_READ"
+      }
+    },
+    {
+      "fixtureId": "B41",
+      "name": "signal-score-50",
+      "purpose": "Frozen signal threshold boundary at finalScore=50.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "finalScore": 50,
+        "signalThresholds": {
+          "low": 25,
+          "medium": 50,
+          "high": 75
+        },
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P11_MEDIUM_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B42",
+      "name": "signal-score-74",
+      "purpose": "Frozen signal threshold boundary at finalScore=74.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "finalScore": 74,
+        "signalThresholds": {
+          "low": 25,
+          "medium": 50,
+          "high": 75
+        },
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P11_MEDIUM_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B43",
+      "name": "signal-score-75",
+      "purpose": "Frozen signal threshold boundary at finalScore=75.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "finalScore": 75,
+        "signalThresholds": {
+          "low": 25,
+          "medium": 50,
+          "high": 75
+        },
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B44",
+      "name": "direct-bonus-impact",
+      "purpose": "Direct Bonus changes only Score calculation; Action Policy consumes resulting signal and dimensions, never the bonus.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 0,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": {
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 0,
+        "confidence": 0,
+        "novelty": 0,
+        "momentum": 0,
+        "radarModifier": 0,
+        "weightedScore": 4.449999999999999,
+        "baseScore": 44,
+        "directBonus": 5,
+        "finalScore": 49,
+        "signal": "low"
+      },
+      "expected": {
+        "historicalMatrixAction": "watch",
+        "historicalEngineAction": "watch",
+        "proposedAction": "watch",
+        "decisionReason": "P15_LOW_DEFAULT_WATCH"
+      }
+    },
+    {
+      "fixtureId": "B45",
+      "name": "direct-bonus-actionability",
+      "purpose": "Direct Bonus changes only Score calculation; Action Policy consumes resulting signal and dimensions, never the bonus.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": {
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 0,
+        "actionability": 7,
+        "confidence": 0,
+        "novelty": 0,
+        "momentum": 0,
+        "radarModifier": 0,
+        "weightedScore": 3.75,
+        "baseScore": 37,
+        "directBonus": 5,
+        "finalScore": 42,
+        "signal": "low"
+      },
+      "expected": {
+        "historicalMatrixAction": "read",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P14_LOW_ACTIONABLE_READ"
+      }
+    },
+    {
+      "fixtureId": "B46",
+      "name": "no-direct-bonus-adjacent",
+      "purpose": "Direct Bonus changes only Score calculation; Action Policy consumes resulting signal and dimensions, never the bonus.",
+      "actionPolicyInput": {
+        "signal": "low",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 7,
+        "actionability": 0,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "low",
+        "hardFilterReason": null
+      },
+      "scoreContext": {
+        "relevanceLevel": "ADJACENT",
+        "relevanceScore": 5,
+        "impact": 7,
+        "actionability": 0,
+        "confidence": 0,
+        "novelty": 0,
+        "momentum": 0,
+        "radarModifier": 0,
+        "weightedScore": 3.25,
+        "baseScore": 32,
+        "directBonus": 0,
+        "finalScore": 32,
+        "signal": "low"
+      },
+      "expected": {
+        "historicalMatrixAction": "watch",
+        "historicalEngineAction": "watch",
+        "proposedAction": "watch",
+        "decisionReason": "P15_LOW_DEFAULT_WATCH"
+      }
+    },
+    {
+      "fixtureId": "B47",
+      "name": "sec-gate-na",
+      "purpose": "N/A is the fifth frozen Security Gate value; it preserves the pre-gate signal without a cap or hard filter.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 7,
+        "actionability": 7,
+        "confidence": 7
+      },
+      "upstreamContext": {
+        "radar": "sec",
+        "securityGate": "N/A",
+        "preGateSignal": "high",
+        "securityEscalation": {},
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P09_HIGH_ACTIONABLE_TEST"
+      }
+    },
+    {
+      "fixtureId": "B48",
+      "name": "direct-bonus-below-both-thresholds",
+      "purpose": "Direct relevance alone does not grant the frozen Direct Bonus when both impact and actionability are below 7; the modifier/bonus stay upstream of Action Policy.",
+      "actionPolicyInput": {
+        "signal": "medium",
+        "eventClass": "OTHER",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 6,
+        "actionability": 6,
+        "confidence": 0
+      },
+      "upstreamContext": {
+        "effectiveSignal": "medium",
+        "hardFilterReason": null
+      },
+      "scoreContext": {
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 6,
+        "actionability": 6,
+        "confidence": 0,
+        "novelty": 0,
+        "momentum": 0,
+        "radarModifier": 0,
+        "weightedScore": 5.1,
+        "baseScore": 51,
+        "directBonus": 0,
+        "finalScore": 51,
+        "signal": "medium"
+      },
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P11_MEDIUM_RELEVANT_TEST"
+      }
+    },
+    {
+      "fixtureId": "B49",
+      "name": "first-discovery-test-actionability-threshold-fail",
+      "purpose": "Minimal pair: all context fixed; actionability crosses the P05 TEST threshold 6 -> 7.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "FIRST_DISCOVERY",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 5,
+        "confidence": 7,
+        "actionability": 6
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "read",
+        "proposedAction": "read",
+        "decisionReason": "P07_FIRST_DISCOVERY_DEFAULT_READ"
+      }
+    },
+    {
+      "fixtureId": "B50",
+      "name": "first-discovery-test-actionability-threshold-pass",
+      "purpose": "Minimal pair: all context fixed; actionability crosses the P05 TEST threshold 6 -> 7.",
+      "actionPolicyInput": {
+        "signal": "high",
+        "eventClass": "FIRST_DISCOVERY",
+        "risk": "normal",
+        "priorValidation": false,
+        "relevanceLevel": "DIRECT",
+        "relevanceScore": 9,
+        "impact": 5,
+        "confidence": 7,
+        "actionability": 7
+      },
+      "upstreamContext": {
+        "effectiveSignal": "high",
+        "hardFilterReason": null
+      },
+      "scoreContext": null,
+      "expected": {
+        "historicalMatrixAction": "test",
+        "historicalEngineAction": "test",
+        "proposedAction": "test",
+        "decisionReason": "P05_FIRST_DISCOVERY_ACTIONABLE_RELEVANT_TEST"
+      }
+    }
+  ],
+  "validation": {
+    "computedExpectedActionsFromCandidate": true,
+    "candidateActionsValid": true,
+    "historicalFixtureUntouched": true,
+    "newCasesAddedAfterReview": [
+      "B47 sec-gate-na",
+      "B48 direct-bonus-below-both-thresholds"
+    ],
+    "newCasesReason": "Review found the fifth Security Gate enum N/A and the below-both Direct Bonus threshold boundary were absent; both are now covered without changing policy logic."
+  }
+}

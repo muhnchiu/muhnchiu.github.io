@@ -1,0 +1,990 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Horizon Score Policy 2.1 Typed Field Provenance Contract Candidate",
+  "$id": "https://horizon.local/schemas/radar-score-input-provenance-v2.1-candidate.json",
+  "status": "DRAFT",
+  "normative": false,
+  "description": "Exactly one field-discriminated record per consumed input. Each field const selects a value schema; arbitrary JSON values and unknown fields are rejected.",
+  "type": "object",
+  "$defs": {
+    "sourceEvidence": {
+      "type": "object",
+      "required": [
+        "evidenceRef",
+        "sourceAuthority"
+      ],
+      "properties": {
+        "evidenceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sourceAuthority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourcePublishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "humanValidationRecord": {
+      "type": "object",
+      "required": [
+        "resolution",
+        "registryVersion",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "resolution": {
+          "enum": [
+            "ACTIVE_MATCH",
+            "NO_ACTIVE_RECORD",
+            "LATEST_STALE",
+            "LATEST_REVOKED",
+            "CONFLICT"
+          ]
+        },
+        "validationId": {
+          "type": "string"
+        },
+        "recordVersion": {
+          "type": "string"
+        },
+        "registryVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validatedBy": {
+          "type": "string"
+        },
+        "validatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "completeLookupReceipt": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "fieldRecord": {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "relevanceLevel"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "DIRECT",
+                    "ADJACENT",
+                    "EXPLORATORY",
+                    "UNRELATED"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC",
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "impact"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "generationMethod": {
+                  "enum": [
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "actionability"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "generationMethod": {
+                  "enum": [
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "confidence"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "generationMethod": {
+                  "enum": [
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "novelty"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "generationMethod": {
+                  "enum": [
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "momentum"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC",
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "relevanceScore"
+                },
+                "value": {
+                  "type": "integer",
+                  "enum": [
+                    9,
+                    5,
+                    3,
+                    1
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DERIVED"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "radarModifier"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": -10,
+                  "maximum": 10
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "radar"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "AI",
+                    "DEV",
+                    "APP",
+                    "SEC",
+                    "SKILL"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "title"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "entity"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9._-]*$"
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "securityGate"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "N/A",
+                    "DIRECTLY_EXPOSED",
+                    "DEPENDENCY_RELEVANT",
+                    "ECOSYSTEM_RELEVANT",
+                    "UNRELATED"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "securityEscalation"
+                },
+                "value": {
+                  "type": "object",
+                  "properties": {
+                    "activeExploitation": {
+                      "type": "boolean"
+                    },
+                    "supplyChainImpact": {
+                      "type": "boolean"
+                    },
+                    "reachableDependency": {
+                      "type": "boolean"
+                    },
+                    "officialEmergencyAdvisory": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "risk"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "normal",
+                    "high"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC",
+                    "MODEL_JUDGMENT"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "priorValidation"
+                },
+                "value": {
+                  "type": "boolean"
+                },
+                "generationMethod": {
+                  "enum": [
+                    "HUMAN_AUTHORITY"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "duplicate"
+                },
+                "value": {
+                  "type": "boolean"
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DERIVED"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "eventType"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "release",
+                    "model-release",
+                    "skill-release",
+                    "research-release",
+                    "version-update",
+                    "pricing-change",
+                    "capability-change",
+                    "security-cve",
+                    "security-cisa-kev",
+                    "security-advisory",
+                    "funding",
+                    "incident",
+                    "documentation"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "eventClass"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "FIRST_DISCOVERY",
+                    "VERSION_RELEASE",
+                    "OTHER"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DERIVED"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/commonRecord"
+            },
+            {
+              "properties": {
+                "field": {
+                  "const": "sourceAuthority"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "official",
+                    "primary",
+                    "secondary",
+                    "community"
+                  ]
+                },
+                "generationMethod": {
+                  "enum": [
+                    "DETERMINISTIC"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "commonRecord": {
+      "type": "object",
+      "required": [
+        "field",
+        "value",
+        "generationMethod",
+        "authority",
+        "observedAtRelationship",
+        "generatedAt"
+      ],
+      "properties": {
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {},
+        "generationMethod": {
+          "enum": [
+            "DETERMINISTIC",
+            "MODEL_JUDGMENT",
+            "HUMAN_AUTHORITY",
+            "DERIVED"
+          ]
+        },
+        "authority": {
+          "enum": [
+            "RADAR_SOURCE_RECORD",
+            "HORIZON_SOURCE_AUTHORITY_MAP",
+            "HORIZON_TRACKED_CONTEXT_CONFIG",
+            "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+            "SCORE_INPUT_RUBRIC_1.0",
+            "RISK_POLICY_1.0",
+            "HUMAN_VALIDATION_REGISTRY",
+            "SCORE_POLICY_2.1.0",
+            "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+            "SECURITY_GATE_POLICY",
+            "EVENT_POLICY_1.0",
+            "OBSERVATION_POLICY_1.0",
+            "REGISTRY_POLICY_1.0",
+            "ACTION_DECISION_POLICY_2.1.0"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rubricVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observedAtRelationship": {
+          "enum": [
+            "SAME_OBSERVATION",
+            "SOURCE_EVIDENCE",
+            "PRIOR_STATE",
+            "HUMAN_RECORD",
+            "DERIVED_FROM_INPUTS"
+          ]
+        },
+        "candidateObservationObservedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sourceEvidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceEvidence"
+          }
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sourceAuthority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourcePublishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "humanValidationRecord": {
+          "$ref": "#/$defs/humanValidationRecord"
+        },
+        "derivedFrom": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ruleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modelId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generationConfigRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "staticConfigRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decisionEvidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "generationConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/fieldRecord"
+    },
+    {
+      "if": {
+        "properties": {
+          "generationMethod": {
+            "const": "DETERMINISTIC"
+          }
+        },
+        "required": [
+          "generationMethod"
+        ]
+      },
+      "then": {
+        "required": [
+          "policyVersion",
+          "ruleId"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "generationMethod": {
+            "const": "MODEL_JUDGMENT"
+          }
+        },
+        "required": [
+          "generationMethod"
+        ]
+      },
+      "then": {
+        "required": [
+          "rubricVersion",
+          "modelId",
+          "provider",
+          "generationConfigRef",
+          "generationConfidence",
+          "sourceEvidence"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "generationMethod": {
+            "const": "HUMAN_AUTHORITY"
+          }
+        },
+        "required": [
+          "generationMethod"
+        ]
+      },
+      "then": {
+        "required": [
+          "humanValidationRecord",
+          "policyVersion"
+        ],
+        "properties": {
+          "authority": {
+            "const": "HUMAN_VALIDATION_REGISTRY"
+          },
+          "field": {
+            "const": "priorValidation"
+          },
+          "observedAtRelationship": {
+            "const": "HUMAN_RECORD"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "generationMethod": {
+            "const": "DERIVED"
+          }
+        },
+        "required": [
+          "generationMethod"
+        ]
+      },
+      "then": {
+        "required": [
+          "policyVersion",
+          "derivedFrom"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "observedAtRelationship": {
+            "const": "SAME_OBSERVATION"
+          }
+        },
+        "required": [
+          "observedAtRelationship"
+        ]
+      },
+      "then": {
+        "required": [
+          "candidateObservationObservedAt"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "observedAtRelationship": {
+            "const": "SOURCE_EVIDENCE"
+          }
+        },
+        "required": [
+          "observedAtRelationship"
+        ]
+      },
+      "then": {
+        "required": [
+          "sourceEvidence"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "observedAtRelationship": {
+            "const": "PRIOR_STATE"
+          }
+        },
+        "required": [
+          "observedAtRelationship"
+        ]
+      },
+      "then": {
+        "required": [
+          "decisionEvidenceRefs"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "observedAtRelationship": {
+            "const": "HUMAN_RECORD"
+          }
+        },
+        "required": [
+          "observedAtRelationship"
+        ]
+      },
+      "then": {
+        "required": [
+          "humanValidationRecord"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "observedAtRelationship": {
+            "const": "DERIVED_FROM_INPUTS"
+          }
+        },
+        "required": [
+          "observedAtRelationship"
+        ]
+      },
+      "then": {
+        "required": [
+          "derivedFrom"
+        ]
+      }
+    }
+  ],
+  "productionEligibility": "Only field/value pairs selected by fieldRecord are valid. Candidate eligibility additionally matches the actual candidate input value to the provenance record value."
+}

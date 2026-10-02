@@ -1,0 +1,31 @@
+{
+  "artifact": "radar-score-input-production-dry-run-v1",
+  "phase": "5A.6.8b",
+  "mode": "OFFLINE_DRY_RUN",
+  "productionRadarExecuted": false,
+  "sourceFetches": 0,
+  "sourcesWithVerifiedStructuredHandoff": 0,
+  "radars": [
+    {"radar":"AI","disposition":"RECEIPT_ONLY","reason":"PRODUCTION_STRUCTURED_INPUT_INCOMPLETE"},
+    {"radar":"DEV","disposition":"RECEIPT_ONLY","reason":"PRODUCTION_STRUCTURED_INPUT_INCOMPLETE"},
+    {"radar":"APP","disposition":"RECEIPT_ONLY","reason":"PRODUCTION_STRUCTURED_INPUT_INCOMPLETE"},
+    {"radar":"SEC","disposition":"RECEIPT_ONLY","reason":"PRODUCTION_STRUCTURED_INPUT_INCOMPLETE","nvdItemUrl":"MISSING_WHEN_FEED_HAS_NO_ITEM_URL","cisaKevItemUrl":"MISSING_WHEN_FEED_HAS_NO_ITEM_URL"},
+    {"radar":"SKILL","disposition":"RECEIPT_ONLY","reason":"SKILL_STRUCTURED_INPUT_UNAVAILABLE"}
+  ],
+  "syntheticBoundaryConformance": {
+    "candidateEvidenceNormalization": "PASS",
+    "eventObservationIdentityPreparation": "PASS",
+    "scoreInputEligibility": "RECEIPT_ONLY",
+    "reason": "REGISTRY_RESULT_UNAVAILABLE",
+    "partialScoreInputsExposed": false,
+    "scoreResolverCalls": 0,
+    "actionResolverCalls": 0,
+    "registryCommitCalls": 0,
+    "publisherCalls": 0,
+    "commitObservationCalled": false
+  },
+  "productionAutoPromotion": 0,
+  "registryModified": false,
+  "publisherRun": false,
+  "deploymentRun": false
+}

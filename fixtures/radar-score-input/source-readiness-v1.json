@@ -1,0 +1,751 @@
+{
+  "artifact": "radar-score-input-source-readiness-v1",
+  "policyVersion": "2.1.0",
+  "readOnlyAudit": true,
+  "radarCount": 5,
+  "inputCountPerRadar": 19,
+  "sourceReadiness": [
+    {
+      "radar": "AI",
+      "sourceFamilies": [
+        "OpenAI News",
+        "Anthropic News",
+        "Google DeepMind",
+        "HuggingFace Papers",
+        "OpenRouter 免费模型"
+      ],
+      "disposition": "RECEIPT_ONLY",
+      "receiptOnlyReason": "PRODUCTION_STRUCTURED_INPUT_INCOMPLETE",
+      "inputs": [
+        {
+          "field": "relevanceLevel",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "impact",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "actionability",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "confidence",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "novelty",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "momentum",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "relevanceScore",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.1.0",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "radarModifier",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "radar",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Radar key is explicit in the caller context; this alone does not establish end-to-end source readiness."
+        },
+        {
+          "field": "title",
+          "classification": "MISSING",
+          "authority": "RADAR_SOURCE_RECORD",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "entity",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "securityGate",
+          "classification": "MISSING",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "risk",
+          "classification": "MISSING",
+          "authority": "RISK_POLICY_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "priorValidation",
+          "classification": "MISSING",
+          "authority": "HUMAN_VALIDATION_REGISTRY",
+          "required": true,
+          "reason": "No production human-validation registry lookup is wired; only explicit human authority is accepted."
+        },
+        {
+          "field": "duplicate",
+          "classification": "MISSING",
+          "authority": "REGISTRY_POLICY_1.0",
+          "required": true,
+          "reason": "Requires a committed Event/Observation Registry result; the dry integration stops before commitObservation()."
+        },
+        {
+          "field": "eventType",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "eventClass",
+          "classification": "MISSING",
+          "authority": "ACTION_DECISION_POLICY_2.1.0",
+          "required": true,
+          "reason": "README-designated parser authority and scheduler path remain unverified; Markdown rendering drops the typed row handoff."
+        },
+        {
+          "field": "sourceAuthority",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "HORIZON_SOURCE_AUTHORITY_MAP",
+          "required": true,
+          "reason": "Static source map exists for known per-item source names; unmapped or merged source names fail closed."
+        },
+        {
+          "field": "securityEscalation",
+          "classification": "NOT_APPLICABLE",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": false,
+          "reason": "Optional conditional field is omitted unless an explicit security assessment supplies it; no false defaults are emitted."
+        }
+      ]
+    },
+    {
+      "radar": "DEV",
+      "sourceFamilies": [
+        "Claude Code Changelog",
+        "GitHub Changelog",
+        "Node.js Releases",
+        "Hacker News",
+        "npm Downloads"
+      ],
+      "disposition": "RECEIPT_ONLY",
+      "receiptOnlyReason": "PRODUCTION_STRUCTURED_INPUT_INCOMPLETE",
+      "inputs": [
+        {
+          "field": "relevanceLevel",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "impact",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "actionability",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "confidence",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "novelty",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "momentum",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "relevanceScore",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.1.0",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "radarModifier",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "radar",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Radar key is explicit in the caller context; this alone does not establish end-to-end source readiness."
+        },
+        {
+          "field": "title",
+          "classification": "MISSING",
+          "authority": "RADAR_SOURCE_RECORD",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "entity",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "securityGate",
+          "classification": "MISSING",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "risk",
+          "classification": "MISSING",
+          "authority": "RISK_POLICY_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "priorValidation",
+          "classification": "MISSING",
+          "authority": "HUMAN_VALIDATION_REGISTRY",
+          "required": true,
+          "reason": "No production human-validation registry lookup is wired; only explicit human authority is accepted."
+        },
+        {
+          "field": "duplicate",
+          "classification": "MISSING",
+          "authority": "REGISTRY_POLICY_1.0",
+          "required": true,
+          "reason": "Requires a committed Event/Observation Registry result; the dry integration stops before commitObservation()."
+        },
+        {
+          "field": "eventType",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "eventClass",
+          "classification": "MISSING",
+          "authority": "ACTION_DECISION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Multiple parser copies exist; authoritative implementation and structured runtime handoff are unresolved."
+        },
+        {
+          "field": "sourceAuthority",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "HORIZON_SOURCE_AUTHORITY_MAP",
+          "required": true,
+          "reason": "Static source map exists for known per-item source names; unmapped or merged source names fail closed."
+        },
+        {
+          "field": "securityEscalation",
+          "classification": "NOT_APPLICABLE",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": false,
+          "reason": "Optional conditional field is omitted unless an explicit security assessment supplies it; no false defaults are emitted."
+        }
+      ]
+    },
+    {
+      "radar": "APP",
+      "sourceFamilies": [
+        "Product Hunt",
+        "少数派",
+        "小众软件",
+        "AlternativeTo",
+        "GitHub Trending"
+      ],
+      "disposition": "RECEIPT_ONLY",
+      "receiptOnlyReason": "PRODUCTION_STRUCTURED_INPUT_INCOMPLETE",
+      "inputs": [
+        {
+          "field": "relevanceLevel",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "impact",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "actionability",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "confidence",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "novelty",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "momentum",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "relevanceScore",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.1.0",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "radarModifier",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "radar",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Radar key is explicit in the caller context; this alone does not establish end-to-end source readiness."
+        },
+        {
+          "field": "title",
+          "classification": "MISSING",
+          "authority": "RADAR_SOURCE_RECORD",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "entity",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "securityGate",
+          "classification": "MISSING",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "risk",
+          "classification": "MISSING",
+          "authority": "RISK_POLICY_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "priorValidation",
+          "classification": "MISSING",
+          "authority": "HUMAN_VALIDATION_REGISTRY",
+          "required": true,
+          "reason": "No production human-validation registry lookup is wired; only explicit human authority is accepted."
+        },
+        {
+          "field": "duplicate",
+          "classification": "MISSING",
+          "authority": "REGISTRY_POLICY_1.0",
+          "required": true,
+          "reason": "Requires a committed Event/Observation Registry result; the dry integration stops before commitObservation()."
+        },
+        {
+          "field": "eventType",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "eventClass",
+          "classification": "MISSING",
+          "authority": "ACTION_DECISION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Parser source exists but validated structured production handoff is not present."
+        },
+        {
+          "field": "sourceAuthority",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "HORIZON_SOURCE_AUTHORITY_MAP",
+          "required": true,
+          "reason": "Static source map exists for known per-item source names; unmapped or merged source names fail closed."
+        },
+        {
+          "field": "securityEscalation",
+          "classification": "NOT_APPLICABLE",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": false,
+          "reason": "Optional conditional field is omitted unless an explicit security assessment supplies it; no false defaults are emitted."
+        }
+      ]
+    },
+    {
+      "radar": "SEC",
+      "sourceFamilies": [
+        "NVD",
+        "GitHub Security Advisories",
+        "CISA KEV",
+        "FIRST EPSS",
+        "Hacker News Security"
+      ],
+      "disposition": "RECEIPT_ONLY",
+      "receiptOnlyReason": "PRODUCTION_STRUCTURED_INPUT_INCOMPLETE",
+      "inputs": [
+        {
+          "field": "relevanceLevel",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "impact",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "actionability",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "confidence",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "novelty",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "momentum",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "relevanceScore",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.1.0",
+          "required": true,
+          "reason": "NVD/CISA aggregates may lack item URLs; preserve source-owned URL constraints. Security assessment and runtime source authority remain unresolved."
+        },
+        {
+          "field": "radarModifier",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+          "required": true,
+          "reason": "NVD/CISA aggregates may lack item URLs; preserve source-owned URL constraints. Security assessment and runtime source authority remain unresolved."
+        },
+        {
+          "field": "radar",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Radar key is explicit in the caller context; this alone does not establish end-to-end source readiness."
+        },
+        {
+          "field": "title",
+          "classification": "MISSING",
+          "authority": "RADAR_SOURCE_RECORD",
+          "required": true,
+          "reason": "NVD/CISA aggregates may lack item URLs; preserve source-owned URL constraints. Security assessment and runtime source authority remain unresolved."
+        },
+        {
+          "field": "entity",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "NVD/CISA aggregates may lack item URLs; preserve source-owned URL constraints. Security assessment and runtime source authority remain unresolved."
+        },
+        {
+          "field": "securityGate",
+          "classification": "MISSING",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": true,
+          "reason": "No verified per-item security assessment is attached. NVD third-party references and CISA KEV rows without item URL cannot fill evidence."
+        },
+        {
+          "field": "risk",
+          "classification": "MISSING",
+          "authority": "RISK_POLICY_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "priorValidation",
+          "classification": "MISSING",
+          "authority": "HUMAN_VALIDATION_REGISTRY",
+          "required": true,
+          "reason": "No production human-validation registry lookup is wired; only explicit human authority is accepted."
+        },
+        {
+          "field": "duplicate",
+          "classification": "MISSING",
+          "authority": "REGISTRY_POLICY_1.0",
+          "required": true,
+          "reason": "Requires a committed Event/Observation Registry result; the dry integration stops before commitObservation()."
+        },
+        {
+          "field": "eventType",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "NVD/CISA aggregates may lack item URLs; preserve source-owned URL constraints. Security assessment and runtime source authority remain unresolved."
+        },
+        {
+          "field": "eventClass",
+          "classification": "MISSING",
+          "authority": "ACTION_DECISION_POLICY_2.1.0",
+          "required": true,
+          "reason": "NVD/CISA aggregates may lack item URLs; preserve source-owned URL constraints. Security assessment and runtime source authority remain unresolved."
+        },
+        {
+          "field": "sourceAuthority",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "HORIZON_SOURCE_AUTHORITY_MAP",
+          "required": true,
+          "reason": "Static source map exists for known per-item source names; unmapped or merged source names fail closed."
+        },
+        {
+          "field": "securityEscalation",
+          "classification": "MISSING",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": false,
+          "reason": "No verified per-item security assessment is attached. NVD third-party references and CISA KEV rows without item URL cannot fill evidence."
+        }
+      ]
+    },
+    {
+      "radar": "SKILL",
+      "sourceFamilies": [
+        "Skills.sh",
+        "Linkly",
+        "OfficialSkills",
+        "ClawHub",
+        "SkillsMP",
+        "LobeHub"
+      ],
+      "disposition": "RECEIPT_ONLY",
+      "receiptOnlyReason": "SKILL_STRUCTURED_INPUT_UNAVAILABLE",
+      "inputs": [
+        {
+          "field": "relevanceLevel",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "impact",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "actionability",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "confidence",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "novelty",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_RUBRIC_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "momentum",
+          "classification": "MISSING",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "relevanceScore",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.1.0",
+          "required": true,
+          "reason": "No verifiable ClawHub structured handoff; merged and aggregate rows remain receipt-only."
+        },
+        {
+          "field": "radarModifier",
+          "classification": "MISSING",
+          "authority": "SCORE_POLICY_2.0.1_MODIFIER_RESOLVER",
+          "required": true,
+          "reason": "No verifiable ClawHub structured handoff; merged and aggregate rows remain receipt-only."
+        },
+        {
+          "field": "radar",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "SCORE_INPUT_GENERATION_POLICY_2.1.0",
+          "required": true,
+          "reason": "Radar key is explicit in the caller context; this alone does not establish end-to-end source readiness."
+        },
+        {
+          "field": "title",
+          "classification": "MISSING",
+          "authority": "RADAR_SOURCE_RECORD",
+          "required": true,
+          "reason": "SKILL_STRUCTURED_INPUT_UNAVAILABLE: local audit cannot prove a ClawHub structured row handoff."
+        },
+        {
+          "field": "entity",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "SKILL_STRUCTURED_INPUT_UNAVAILABLE: local audit cannot prove a ClawHub structured row handoff."
+        },
+        {
+          "field": "securityGate",
+          "classification": "MISSING",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": true,
+          "reason": "No verifiable ClawHub structured handoff; merged and aggregate rows remain receipt-only."
+        },
+        {
+          "field": "risk",
+          "classification": "MISSING",
+          "authority": "RISK_POLICY_1.0",
+          "required": true,
+          "reason": "No production judgment provider is configured; model authority/version/evidence remain absent."
+        },
+        {
+          "field": "priorValidation",
+          "classification": "MISSING",
+          "authority": "HUMAN_VALIDATION_REGISTRY",
+          "required": true,
+          "reason": "No production human-validation registry lookup is wired; only explicit human authority is accepted."
+        },
+        {
+          "field": "duplicate",
+          "classification": "MISSING",
+          "authority": "REGISTRY_POLICY_1.0",
+          "required": true,
+          "reason": "Requires a committed Event/Observation Registry result; the dry integration stops before commitObservation()."
+        },
+        {
+          "field": "eventType",
+          "classification": "MISSING",
+          "authority": "EVENT_POLICY_1.0",
+          "required": true,
+          "reason": "SKILL_STRUCTURED_INPUT_UNAVAILABLE: local audit cannot prove a ClawHub structured row handoff."
+        },
+        {
+          "field": "eventClass",
+          "classification": "MISSING",
+          "authority": "ACTION_DECISION_POLICY_2.1.0",
+          "required": true,
+          "reason": "No verifiable ClawHub structured handoff; merged and aggregate rows remain receipt-only."
+        },
+        {
+          "field": "sourceAuthority",
+          "classification": "DETERMINISTIC_AVAILABLE",
+          "authority": "HORIZON_SOURCE_AUTHORITY_MAP",
+          "required": true,
+          "reason": "SKILL_STRUCTURED_INPUT_UNAVAILABLE: local audit cannot prove a ClawHub structured row handoff."
+        },
+        {
+          "field": "securityEscalation",
+          "classification": "NOT_APPLICABLE",
+          "authority": "SECURITY_GATE_POLICY",
+          "required": false,
+          "reason": "Optional conditional field is omitted unless an explicit security assessment supplies it; no false defaults are emitted."
+        }
+      ]
+    }
+  ],
+  "constraints": {
+    "skillNotPromoted": true,
+    "nvdThirdPartyReferencesNotSubstituted": true,
+    "cisaItemUrlNotSynthesized": true,
+    "productionAutoPromotion": 0
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "fixtureVersion": "1.0",
+  "purpose": "Synthetic offline structured handoff cases. Score judgment/context inputs are injected by the test harness and are never placed in handoff facts.",
+  "radars": ["AI", "DEV", "APP", "SEC"],
+  "casesPerRadar": 8,
+  "cases": [
+    { "caseId": "candidate-score-ready", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "SCORE_READY", "expectedDisposition": "WOULD_ACTION" },
+    { "caseId": "source-url-missing", "expectedCandidate": "RECEIPT_ONLY", "expectedScore": "RECEIPT_ONLY", "expectedDisposition": "RECEIPT_ONLY" },
+    { "caseId": "event-identity-incomplete", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "RECEIPT_ONLY", "expectedDisposition": "RECEIPT_ONLY" },
+    { "caseId": "score-judgment-missing", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "RECEIPT_ONLY", "expectedDisposition": "RECEIPT_ONLY" },
+    { "caseId": "unrelated-low-impact-filter", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "SCORE_READY", "expectedDisposition": "WOULD_FILTER" },
+    { "caseId": "first-discovery-test", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "SCORE_READY", "expectedDisposition": "WOULD_ACTION" },
+    { "caseId": "other-event-read", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "SCORE_READY", "expectedDisposition": "WOULD_ACTION" },
+    { "caseId": "active-human-validation-adopt", "expectedCandidate": "CANDIDATE_READY", "expectedScore": "SCORE_READY", "expectedDisposition": "WOULD_ACTION", "expectedAction": "adopt" }
+  ],
+  "additionalCases": [
+    { "radar": "SEC", "caseId": "security-classification-unresolved", "expectedSecurity": "UNRESOLVED", "expectedScore": "RECEIPT_ONLY", "expectedDisposition": "RECEIPT_ONLY" },
+    { "radar": "SKILL", "caseId": "skill-structured-input-unavailable", "expectedCandidate": "RECEIPT_ONLY", "expectedScore": "RECEIPT_ONLY", "expectedDisposition": "RECEIPT_ONLY", "reason": "SKILL_STRUCTURED_INPUT_UNAVAILABLE" }
+  ]
+}

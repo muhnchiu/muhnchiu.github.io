@@ -1,0 +1,315 @@
+{
+  "artifact": "score-input-generation-conformance-fixtures-v1",
+  "status": "IMPLEMENTATION_TEST_FIXTURES",
+  "calibrationGroundTruth": "NOT_PRESENT",
+  "caseCount": 30,
+  "radars": {
+    "AI": 6,
+    "DEV": 6,
+    "APP": 6,
+    "SEC": 6,
+    "SKILL": 6
+  },
+  "cases": [
+    {
+      "caseId": "AI-01",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "AI",
+      "sourceName": "OpenAI News",
+      "eventType": "model-release",
+      "scenario": "complete-conformance",
+      "expectedDisposition": "SCORE_READY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "AI-02",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "AI",
+      "sourceName": "OpenAI News",
+      "eventType": "model-release",
+      "scenario": "missing-source-evidence",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "AI-03",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "AI",
+      "sourceName": "OpenAI News",
+      "eventType": "model-release",
+      "scenario": "missing-human-validation",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "AI-04",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "AI",
+      "sourceName": "OpenAI News",
+      "eventType": "model-release",
+      "scenario": "missing-committed-registry-result",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "AI-05",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "AI",
+      "sourceName": "OpenAI News",
+      "eventType": "model-release",
+      "scenario": "unmapped-source",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "AI-06",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "AI",
+      "sourceName": "OpenAI News",
+      "eventType": "model-release",
+      "scenario": "missing-event-identity",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "DEV-01",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "DEV",
+      "sourceName": "Claude Code Changelog",
+      "eventType": "version-update",
+      "scenario": "complete-conformance",
+      "expectedDisposition": "SCORE_READY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "DEV-02",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "DEV",
+      "sourceName": "Claude Code Changelog",
+      "eventType": "version-update",
+      "scenario": "missing-source-evidence",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "DEV-03",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "DEV",
+      "sourceName": "Claude Code Changelog",
+      "eventType": "version-update",
+      "scenario": "missing-human-validation",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "DEV-04",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "DEV",
+      "sourceName": "Claude Code Changelog",
+      "eventType": "version-update",
+      "scenario": "missing-committed-registry-result",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "DEV-05",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "DEV",
+      "sourceName": "Claude Code Changelog",
+      "eventType": "version-update",
+      "scenario": "unmapped-source",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "DEV-06",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "DEV",
+      "sourceName": "Claude Code Changelog",
+      "eventType": "version-update",
+      "scenario": "missing-event-identity",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "APP-01",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "eventType": "release",
+      "scenario": "complete-conformance",
+      "expectedDisposition": "SCORE_READY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "APP-02",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "eventType": "release",
+      "scenario": "missing-source-evidence",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "APP-03",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "eventType": "release",
+      "scenario": "missing-human-validation",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "APP-04",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "eventType": "release",
+      "scenario": "missing-committed-registry-result",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "APP-05",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "eventType": "release",
+      "scenario": "unmapped-source",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "APP-06",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "APP",
+      "sourceName": "Product Hunt",
+      "eventType": "release",
+      "scenario": "missing-event-identity",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SEC-01",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "eventType": "security-cve",
+      "scenario": "complete-conformance",
+      "expectedDisposition": "SCORE_READY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SEC-02",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "eventType": "security-cve",
+      "scenario": "missing-source-evidence",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SEC-03",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "eventType": "security-cve",
+      "scenario": "missing-human-validation",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SEC-04",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "eventType": "security-cve",
+      "scenario": "missing-committed-registry-result",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SEC-05",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "eventType": "security-cve",
+      "scenario": "unmapped-source",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SEC-06",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SEC",
+      "sourceName": "GitHub Security Advisories",
+      "eventType": "security-cve",
+      "scenario": "missing-event-identity",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SKILL-01",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "eventType": "skill-release",
+      "scenario": "complete-conformance",
+      "expectedDisposition": "SCORE_READY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SKILL-02",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "eventType": "skill-release",
+      "scenario": "missing-source-evidence",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SKILL-03",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "eventType": "skill-release",
+      "scenario": "missing-human-validation",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SKILL-04",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "eventType": "skill-release",
+      "scenario": "missing-committed-registry-result",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SKILL-05",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "eventType": "skill-release",
+      "scenario": "unmapped-source",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    },
+    {
+      "caseId": "SKILL-06",
+      "fixtureKind": "synthetic-implementation-conformance",
+      "radar": "SKILL",
+      "sourceName": "ClawHub",
+      "eventType": "skill-release",
+      "scenario": "missing-event-identity",
+      "expectedDisposition": "RECEIPT_ONLY",
+      "groundTruthLabels": "NOT_PRESENT"
+    }
+  ]
+}

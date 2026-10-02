@@ -1,0 +1,217 @@
+{
+  "artifact": "radar-prior-validation-lifecycle-fixtures-v1",
+  "fixtureVersion": "candidate-1.0",
+  "status": "REVIEW_DRAFT",
+  "normative": false,
+  "fixtureCount": 23,
+  "projectionInvariant": "ACTIVE=true; STALE/REVOKED/NONE=false; unresolved authority is not coerced to false and blocks scoring/adoption.",
+  "cases": [
+    {
+      "fixtureId": "L01",
+      "name": "human-validation-creates-active",
+      "initialStatus": "NONE",
+      "inputTrigger": "EXPLICIT_HUMAN_VALIDATION_WITH_EVIDENCE",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "Only human transition to ACTIVE."
+    },
+    {
+      "fixtureId": "L02",
+      "name": "ordinary-patch-remains-active",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "PATCH_VERSION_IN_SCOPE",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "No material trigger; stays within declared version scope."
+    },
+    {
+      "fixtureId": "L03",
+      "name": "ordinary-minor-remains-active",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "MINOR_VERSION_IN_SCOPE",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "No material trigger; stays within declared compatibility scope."
+    },
+    {
+      "fixtureId": "L04",
+      "name": "major-version-review",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "MAJOR_VERSION_CHANGE",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "Review required; candidate maps REVIEW_REQUIRED to non-active STALE pending human review."
+    },
+    {
+      "fixtureId": "L05",
+      "name": "major-capability-invalidates",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "MAJOR_CAPABILITY_CHANGE_AFFECTING_USAGE",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "Affected scope is no longer current."
+    },
+    {
+      "fixtureId": "L06",
+      "name": "security-regression-invalidates",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "SECURITY_REGRESSION_AFFECTING_USAGE",
+      "expectedStatus": "REVOKED",
+      "expectedPriorValidation": false,
+      "assertion": "Security regression affects validated use."
+    },
+    {
+      "fixtureId": "L07",
+      "name": "active-exploitation-invalidates",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "ACTIVE_EXPLOITATION_AFFECTING_USAGE",
+      "expectedStatus": "REVOKED",
+      "expectedPriorValidation": false,
+      "assertion": "Credible exploitation affects evaluated use."
+    },
+    {
+      "fixtureId": "L08",
+      "name": "license-change-invalidates-scope",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "LICENSE_CHANGE_CONFLICTS_WITH_DEPLOYMENT_ASSUMPTION",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "Scope no longer establishes approval; human may revoke after confirmation."
+    },
+    {
+      "fixtureId": "L09",
+      "name": "pricing-alone-no-invalidation",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "PRICING_CHANGE_NO_EXPLICIT_PRICE_CEILING",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "Default technical validation unaffected."
+    },
+    {
+      "fixtureId": "L10",
+      "name": "price-sensitive-approval-review",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "PRICE_EXCEEDS_EXPLICIT_APPROVAL_CEILING",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "Only explicit price-bound approval scope requires review."
+    },
+    {
+      "fixtureId": "L11",
+      "name": "api-availability-review",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "MATERIAL_API_AVAILABILITY_CHANGE",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "Material use/access change requires human review."
+    },
+    {
+      "fixtureId": "L12",
+      "name": "repeated-observation-no-change",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "REPEATED_OBSERVATION",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "Observation repetition is not validation evidence or invalidation."
+    },
+    {
+      "fixtureId": "L13",
+      "name": "radar-publication-no-activation",
+      "initialStatus": "NONE",
+      "inputTrigger": "RADAR_PUBLICATION",
+      "expectedStatus": "NONE",
+      "expectedPriorValidation": false,
+      "assertion": "Publication cannot create ACTIVE."
+    },
+    {
+      "fixtureId": "L14",
+      "name": "registry-observation-only",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "GENERIC_REGISTRY_OBSERVATION_NO_MATERIAL_TRIGGER",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "Registry observation alone cannot change validation or registry semantics."
+    },
+    {
+      "fixtureId": "L15",
+      "name": "registry-event-one-way-invalidation",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "REGISTRY_EVENT_FACT_SECURITY_REGRESSION_MATCHES_SCOPE",
+      "expectedStatus": "REVOKED",
+      "expectedPriorValidation": false,
+      "assertion": "Fact may invalidate validation; no reverse registry write edge."
+    },
+    {
+      "fixtureId": "L16",
+      "name": "revoked-false",
+      "initialStatus": "REVOKED",
+      "inputTrigger": "NO_NEW_HUMAN_VALIDATION",
+      "expectedStatus": "REVOKED",
+      "expectedPriorValidation": false,
+      "assertion": "REVOKED projection false."
+    },
+    {
+      "fixtureId": "L17",
+      "name": "stale-false",
+      "initialStatus": "STALE",
+      "inputTrigger": "NO_NEW_HUMAN_VALIDATION",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "STALE projection false."
+    },
+    {
+      "fixtureId": "L18",
+      "name": "human-revalidation-after-invalidation",
+      "initialStatus": "STALE",
+      "inputTrigger": "EXPLICIT_HUMAN_REVALIDATION_WITH_FRESH_EVIDENCE",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "New human record supersedes old record; automation did not activate it."
+    },
+    {
+      "fixtureId": "L19",
+      "name": "ownership-change-review",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "MATERIAL_OWNERSHIP_OR_MAINTAINER_CHANGE",
+      "expectedStatus": "STALE",
+      "expectedPriorValidation": false,
+      "assertion": "Human review required where trust/support assumption applies."
+    },
+    {
+      "fixtureId": "L20",
+      "name": "time-alone-no-invalidation",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "LONG_TIME_ELAPSED_NO_TTL_POLICY",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "No implicit expiry."
+    },
+    {
+      "fixtureId": "L21",
+      "name": "popularity-change-no-invalidation",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "POPULARITY_CHANGE",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "Popularity cannot mutate validation."
+    },
+    {
+      "fixtureId": "L22",
+      "name": "source-reporting-change-no-invalidation",
+      "initialStatus": "ACTIVE",
+      "inputTrigger": "SOURCE_REPORTING_CHANGE_ONLY",
+      "expectedStatus": "ACTIVE",
+      "expectedPriorValidation": true,
+      "assertion": "Metadata change alone not material."
+    },
+    {
+      "fixtureId": "L23",
+      "name": "conflicting-authority-fails-closed",
+      "initialStatus": "CONFLICT",
+      "inputTrigger": "CONFLICTING_ACTIVE_RECORDS",
+      "expectedStatus": "UNRESOLVED",
+      "expectedPriorValidation": null,
+      "assertion": "No boolean projection while authority conflicts; fail closed."
+    }
+  ]
+}
