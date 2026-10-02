@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Horizon Radar Shadow Record Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId", "recordId", "radar", "sourceFamily", "receivedAt", "inputDigest",
+    "candidateDisposition", "candidateReason", "evidenceDisposition", "evidenceReason",
+    "identityDisposition", "identityReason", "scoreEligibility", "scoreEligibilityReason",
+    "securityDisposition", "securityReason", "evaluationDisposition", "action",
+    "terminalOutcome", "persistenceClassification", "retryCount", "duplicate", "errorCode"
+  ],
+  "properties": {
+    "runId": { "type": "string", "minLength": 1 },
+    "recordId": { "type": ["string", "null"] },
+    "radar": { "enum": ["AI", "DEV", "APP", "SEC", null] },
+    "sourceFamily": { "type": ["string", "null"] },
+    "receivedAt": { "type": "string", "format": "date-time" },
+    "inputDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "candidateDisposition": { "enum": ["NOT_EVALUATED", "CANDIDATE_READY", "CANDIDATE_REJECTED"] },
+    "candidateReason": { "type": ["string", "null"] },
+    "evidenceDisposition": { "enum": ["NOT_EVALUATED", "READY", "INVALID"] },
+    "evidenceReason": { "type": ["string", "null"] },
+    "identityDisposition": { "enum": ["NOT_EVALUATED", "READY", "UNRESOLVED"] },
+    "identityReason": { "type": ["string", "null"] },
+    "scoreEligibility": { "enum": ["NOT_EVALUATED", "SCORE_READY", "SCORE_INPUT_INCOMPLETE"] },
+    "scoreEligibilityReason": { "type": ["string", "null"] },
+    "securityDisposition": { "enum": ["NOT_EVALUATED", "RESOLVED", "UNRESOLVED", "NOT_APPLICABLE"] },
+    "securityReason": { "type": ["string", "null"] },
+    "evaluationDisposition": { "enum": ["NOT_EVALUATED", "EVALUATED"] },
+    "action": { "type": ["string", "null"] },
+    "terminalOutcome": { "enum": ["CANDIDATE_REJECTED", "RECEIPT_ONLY", "IDENTITY_UNRESOLVED", "SCORE_INPUT_INCOMPLETE", "SECURITY_GATE_UNRESOLVED", "WOULD_FILTER", "WOULD_ACTION", "ERROR"] },
+    "persistenceClassification": { "enum": ["RECEIPT_ONLY", "SHADOW_RESULT"] },
+    "retryCount": { "type": "integer", "minimum": 0 },
+    "duplicate": { "type": "boolean" },
+    "errorCode": { "type": ["string", "null"] }
+  }
+}

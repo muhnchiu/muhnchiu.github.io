@@ -1,0 +1,26 @@
+{
+  "fixtureVersion": "1.0",
+  "syntheticOnly": true,
+  "purpose": "Phase 5A.6.9 Shadow transition coverage. Identity and score/security authority values are supplied only by explicit test adapters; no production state is read or written.",
+  "cases": [
+    { "id": "AI-valid-structured", "radar": "AI", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "AI-identity-unresolved", "radar": "AI", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "AI-score-incomplete", "radar": "AI", "expected": "SCORE_INPUT_INCOMPLETE" },
+    { "id": "AI-candidate-invalid", "radar": "AI", "expected": "RECEIPT_ONLY" },
+    { "id": "DEV-valid-structured", "radar": "DEV", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "DEV-identity-unresolved", "radar": "DEV", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "DEV-score-incomplete", "radar": "DEV", "expected": "SCORE_INPUT_INCOMPLETE" },
+    { "id": "DEV-candidate-invalid", "radar": "DEV", "expected": "RECEIPT_ONLY" },
+    { "id": "APP-valid-structured", "radar": "APP", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "APP-identity-unresolved", "radar": "APP", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "APP-score-incomplete", "radar": "APP", "expected": "SCORE_INPUT_INCOMPLETE" },
+    { "id": "APP-candidate-invalid", "radar": "APP", "expected": "RECEIPT_ONLY" },
+    { "id": "SEC-valid-structured", "radar": "SEC", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "SEC-identity-unresolved", "radar": "SEC", "expected": "IDENTITY_UNRESOLVED" },
+    { "id": "SEC-score-incomplete", "radar": "SEC", "expected": "SCORE_INPUT_INCOMPLETE" },
+    { "id": "SEC-candidate-invalid", "radar": "SEC", "expected": "RECEIPT_ONLY" },
+    { "id": "SEC-security-unresolved", "radar": "SEC", "expected": "SECURITY_GATE_UNRESOLVED" },
+    { "id": "SEC-security-context-resolved", "radar": "SEC", "expected": "SCORE_INPUT_INCOMPLETE" },
+    { "id": "SKILL-unavailable", "radar": "SKILL", "expected": "HANDOFF_MANIFEST_INVALID" }
+  ]
+}
