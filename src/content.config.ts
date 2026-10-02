@@ -1,15 +1,12 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-
 const date = z.coerce.date();
 const confidence = z.enum(['high', 'medium', 'low']);
 const signalLevel = z.enum(['critical', 'high', 'medium', 'low']);
 const signalAction = z.enum(['action', 'test', 'watch', 'read', 'explore', 'ignore']);
 
-const radar = defineCollection({
-  loader: glob({ base: './src/content/radar', pattern: '**/*.md' }),
-  schema: z.object({
+const radarV1 = z.object({
     title: z.string().min(1),
     description: z.string().min(1).optional(),
     date,
@@ -29,33 +26,20 @@ const radar = defineCollection({
       sourceLevel: z.enum(['official', 'ecosystem', 'community', 'media', 'research']),
       sourceName: z.string().min(1).optional(),
       sourceUrl: z.string().url().optional(),
-    }).strict()),
+    }).strict()).max(5),
     topics: z.array(z.string().min(1)),
     tags: z.array(z.string().min(1)).optional(),
     events: z.array(z.string().min(1)).optional(),
     topicCandidate: z.object({ slug: z.string().min(1), reason: z.string().min(1) }).optional(),
     confidence,
     publish: z.boolean(),
-  }).strict().refine(
-    ({ signalCount, highSignalCount, actionableCount, actionRequired }) =>
-      highSignalCount <= signalCount && actionableCount <= signalCount && actionRequired <= signalCount,
-    'Signal counts cannot exceed the total number of signals.',
-  ).refine(
-    ({ signalCount, highlights }) => highlights.length <= 5 && highlights.length <= signalCount,
-    'Highlights must contain at most five entries and cannot exceed the total signal count.',
-  ).refine(
-    ({ highlights, highSignalCount }) => highSignalCount === highlights.filter(({ signal }) => signal === 'critical' || signal === 'high').length,
-    'highSignalCount must equal the number of critical and high highlights.',
-  ).refine(
-    ({ highlights, actionableCount }) => actionableCount === highlights.filter(({ action }) => action === 'action' || action === 'test').length,
-    'actionableCount must equal the number of action and test highlights.',
-  ).refine(
-    ({ highlights, actionRequired }) => actionRequired === highlights.filter(({ action }) => action === 'action').length,
-    'actionRequired must equal the number of action-only highlights.',
-  ).refine(
-    ({ actionableCount, actionRequired }) => actionRequired <= actionableCount,
-    'actionRequired cannot exceed actionableCount.',
-  ),
+  }).strict();
+
+const radar = defineCollection({
+  loader: glob({ base: './src/content/radar', pattern: '**/*.md' }),
+  // This path contains the historical V1 Markdown corpus. Contract 2.0/2.1
+  // inputs must explicitly select normalizeRadarForContract by package context.
+  schema: radarV1,
 });
 
 const research = defineCollection({
