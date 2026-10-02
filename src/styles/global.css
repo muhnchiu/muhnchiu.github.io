@@ -147,11 +147,11 @@ html[data-theme='dark'] {
   --text-secondary: #b5c0c9;
   --text-tertiary: #91a0ad;
   --text-inverse: #19232e;
-  --text-body: #c4cbd0;
+  --text-body: #cbd2d7;
   --text-on-accent: #102337;
   --border-subtle: rgba(201, 220, 235, .11);
-  --border-default: rgba(201, 220, 235, .2);
-  --border-hover: rgba(201, 220, 235, .35);
+  --border-default: rgba(201, 220, 235, .16);
+  --border-hover: rgba(201, 220, 235, .27);
   --accent-tech: #88c8fa;
   --accent-text: #88c8fa;
   --accent-tech-soft: rgba(136, 200, 250, .13);
@@ -272,6 +272,22 @@ code, pre {
 
 blockquote {
   font-family: var(--font-kai);
+}
+
+/* Research long-form hierarchy: keep prose comfortable without competing with headings. */
+html[data-theme='dark'] .research-detail .prose h4,
+html[data-theme='dark'] .research-detail .prose strong {
+  color: var(--text-primary);
+}
+
+/* Core cards respond through a near-imperceptible surface shift and quiet border emphasis. */
+html[data-theme='dark'] .stack-page .core-card {
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
+html[data-theme='dark'] .stack-page .core-card:hover {
+  background: color-mix(in srgb, var(--bg-surface) 82%, var(--bg-surface-hover));
+  border-color: var(--border-default);
 }
 
 button {
