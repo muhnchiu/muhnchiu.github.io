@@ -11,7 +11,9 @@
     "test:phase3": "node --test tests/radar-validator.test.mjs",
     "test:registry": "node --test tests/radar-registry.test.mjs tests/radar-registry-atomic.test.mjs tests/radar-registry-lock-identity.test.mjs tests/radar-registry-quarantine.test.mjs",
     "test:evidence": "node --test tests/radar-evidence-pipeline.test.mjs",
+    "test:score-input-contract": "node --test tests/radar-score-input/*.test.mjs",
     "verify:score-policy": "node scripts/verify-radar-score-policy.mjs",
+    "verify:score-policy-v2.1-package": "node scripts/verify-score-policy-v2.1-package.mjs vendor/horizon-policies/radar/score/2.1.0",
     "test:phase4": "npm run verify:score-policy && node --test tests/radar-intelligence.test.mjs",
     "preview": "astro preview",
     "astro": "astro"
