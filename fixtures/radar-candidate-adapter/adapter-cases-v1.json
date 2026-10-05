@@ -91,7 +91,10 @@
       "radar": "AI",
       "sourceName": "arXiv cs.LG",
       "record": {
-        "title": "Research paper"
+        "title": "Research paper",
+        "id": "2610.02207v1",
+        "itemUrl": null,
+        "published": "2026-10-01T00:00:00Z"
       },
       "observedAt": "2026-10-01T00:00:00Z",
       "expectedStatus": "RECEIPT_ONLY",

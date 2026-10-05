@@ -1,0 +1,24 @@
+{
+  "type": "SYNTHETIC_TEST_AUTHORIZATION",
+  "role": "SIMULATED_OWNER_PROOFS_ONLY_NOT_REAL_SCORE_ACTION_OR_REGISTRY",
+  "gateFacts": {
+    "evaluation": "REQUESTED",
+    "structure": "VALID",
+    "candidate": "VALID",
+    "evidence": "VALID",
+    "identity": "READY",
+    "observation": "VALID",
+    "sourceAuthority": "official",
+    "registry": "COMMITTED",
+    "scoreInput": "SCORE_READY",
+    "score": "EXECUTED_VERIFIED",
+    "humanValidation": "BOUND_FROZEN_LOOKUP_VERIFIED",
+    "security": "DIRECTLY_EXPOSED",
+    "signal": "UNFILTERED",
+    "action": "read",
+    "trigger": "NEW_EVENT",
+    "publicationHistory": "CONFIRMED_UNPUBLISHED",
+    "review": "APPROVED_BOUND_REVIEW",
+    "authorization": "VALID_SCOPED_CURRENT"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "artifact": "claude-code-real-release-capture-v1",
+  "classification": "REAL_UPSTREAM_CAPTURE",
+  "source": {
+    "radar": "DEV",
+    "sourceFamily": "Claude Code Changelog",
+    "sourceIdentifier": "github.com/anthropics/claude-code",
+    "feedUrl": "https://github.com/anthropics/claude-code/blob/main/feed.xml",
+    "collectorApi": "https://api.github.com/repos/anthropics/claude-code/releases",
+    "collectorEvidence": "~/.local/state/horizon/radar-shadow-real-input-probe-v1.json",
+    "apiShapeReference": "https://docs.github.com/en/rest/releases/releases?apiVersion=latest",
+    "capturedDate": "2026-10-03",
+    "fieldMapping": "Atom entry id/link/title are preserved upstream release permalink/title; tag_name is the final tag path segment used by GitHub Releases API rows. No title-derived identity is used."
+  },
+  "items": [
+    {
+      "tagName": "v2.1.288",
+      "title": "Claude Code v2.1.288",
+      "itemUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.288",
+      "sourceUpdatedAt": "2026-10-02T20:19:38Z"
+    },
+    {
+      "tagName": "v2.1.287",
+      "title": "Claude Code v2.1.287",
+      "itemUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.287",
+      "sourceUpdatedAt": "2026-10-01T17:59:57Z"
+    },
+    {
+      "tagName": "v2.1.286",
+      "title": "Claude Code v2.1.286",
+      "itemUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.286",
+      "sourceUpdatedAt": "2026-09-30T19:09:53Z",
+      "apiPublishedAtFromCapturedProbe": "2026-09-30T19:10:13Z",
+      "apiReleaseIdFromCapturedProbe": "400266224"
+    },
+    {
+      "tagName": "v2.1.285",
+      "title": "Claude Code v2.1.285",
+      "itemUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.285",
+      "sourceUpdatedAt": "2026-09-29T19:27:09Z"
+    },
+    {
+      "tagName": "v2.1.284",
+      "title": "Claude Code v2.1.284",
+      "itemUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.284",
+      "sourceUpdatedAt": "2026-09-28T18:01:46Z"
+    }
+  ]
+}

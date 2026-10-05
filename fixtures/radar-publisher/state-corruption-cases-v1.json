@@ -1,0 +1,148 @@
+{
+  "version": "1.0",
+  "normative": false,
+  "role": "BOUNDED_PERSISTED_STATE_CORRUPTION_VERIFICATION",
+  "total": 35,
+  "cases": [
+    {
+      "name": "sink eventKey",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "sink observationId",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "sink instructionId",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "sink payloadHash",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "receipt eventKey",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "receipt observationId",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "receipt instructionId",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "receipt payloadHash",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "audit eventKey",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "audit observationId",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "audit instructionId",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "audit payloadHash",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "sink payload bytes",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "sink observationIds",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "sink target",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "receipt observationIds",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "instruction grant scope",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "idempotency instructionId key",
+      "reason": "IDEMPOTENCY_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "idempotency bound attempt",
+      "reason": "IDEMPOTENCY_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "idempotency payload hash",
+      "reason": "IDEMPOTENCY_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "missing sink",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "missing receipt",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "missing successful audit",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "duplicate conflicting sink",
+      "reason": "SINK_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "duplicate conflicting receipt",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "orphan receipt",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "orphan successful audit",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "orphan idempotency",
+      "reason": "IDEMPOTENCY_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "duplicate conflicting replay receipt",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "replay original attempt mismatch",
+      "reason": "IDEMPOTENCY_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "nested success receipt audit",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "nested replay receipt audit",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "replay grant scope mismatch",
+      "reason": "RECEIPT_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "idempotency explicit identity mismatch",
+      "reason": "IDEMPOTENCY_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "missing post-identity audit field",
+      "reason": "AUDIT_IDENTITY_MISMATCH"
+    }
+  ]
+}

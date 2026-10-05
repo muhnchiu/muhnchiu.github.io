@@ -60,10 +60,18 @@ async function currentHash(path: string): Promise<string> {
   return bytes ? sha256(bytes) : absentHash;
 }
 
-async function writeSynced(path: string, bytes: Buffer): Promise<void> {
+async function writeSynced(path: string, bytes: Buffer, injectPartialFailure = false): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
   const handle = await open(path, 'wx', 0o600);
-  try { await handle.writeFile(bytes); await handle.sync(); } finally { await handle.close(); }
+  try {
+    if (injectPartialFailure) {
+      const partialLength = Math.max(1, Math.floor(bytes.length / 2));
+      await handle.write(bytes, 0, partialLength, 0);
+      await handle.sync();
+      throw Object.assign(new Error('Injected partial staged Registry write.'), { code: 'REGISTRY_FAILURE_INJECTED' });
+    }
+    await handle.writeFile(bytes); await handle.sync();
+  } finally { await handle.close(); }
 }
 
 async function atomicWrite(path: string, bytes: Buffer): Promise<void> {
@@ -420,7 +428,11 @@ export class RegistryTransactionManager {
         events: events.sort((a, b) => a.eventKey.localeCompare(b.eventKey)),
         observations: observations.sort((a, b) => a.observationId.localeCompare(b.observationId)),
       };
-      await this.persistPair(nextPair, transactionId, now);
+      const nextValidation = validateRegistryPair(nextPair);
+      if (!nextValidation.valid) throw Object.assign(new Error(`Candidate would produce invalid Registry pair: ${nextValidation.errors.map(({ code }) => code).join(',')}`), { code: 'REGISTRY_VALIDATION_FAILED', details: nextValidation.errors });
+      await this.runtime.beforeCommit?.({ stateDir: this.stateDir, pair, transactionId, at: now });
+      await this.persistPair(nextPair, transactionId, now, () => this.runtime.onCommitted?.({ stateDir: this.stateDir, transactionId, eventKey, observationId: observationIdentity.observationId, eventCreated: priorEvent === undefined, observationCreated: observationResult.inserted }));
+      this.failIf('after-durable-before-response');
       return {
         eventKey,
         observationId: observationIdentity.observationId,
@@ -464,6 +476,22 @@ export class RegistryTransactionManager {
     } finally { await lock.release(); }
   }
 
+  /** Restore an exact validated Event/Observation pair through the normal atomic transaction protocol. */
+  async replacePair(pair: RegistryPair, transactionId?: string): Promise<{ transactionId: string; eventCount: number; observationCount: number }> {
+    const tx = transactionId ?? this.runtime.transactionIdFactory?.() ?? randomUUID();
+    await mkdir(this.stateDir, { recursive: true });
+    const lock = await acquireRegistryLock(this.stateDir, tx, this.runtime);
+    try {
+      await recoverUnlocked(this.stateDir, this.runtime);
+      const validation = validateRegistryPair(pair);
+      if (!validation.valid) throw Object.assign(new Error(`Restore Registry pair failed validation: ${validation.errors.map(({ code }) => code).join(',')}`), { code: 'REGISTRY_RESTORE_PAIR_INVALID', details: validation.errors });
+      const current = await loadPairUnlocked(this.stateDir, this.runtime);
+      await this.runtime.beforeCommit?.({ stateDir: this.stateDir, pair: current, transactionId: tx, at: (this.runtime.clock?.() ?? new Date()).toISOString() });
+      await this.persistPair(pair, tx, (this.runtime.clock?.() ?? new Date()).toISOString());
+      return { transactionId: tx, eventCount: pair.events.length, observationCount: pair.observations.length };
+    } finally { await lock.release(); }
+  }
+
   private validateAtomicInput(input: AtomicObservationCommitInput): void {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw Object.assign(new TypeError('Atomic Registry input must be an object.'), { code: 'REGISTRY_ATOMIC_INPUT_INVALID' });
     const forbidden = ['eventState', 'duplicate', 'materialChange'];
@@ -495,7 +523,7 @@ export class RegistryTransactionManager {
     catch (error) { throw Object.assign(new TypeError(`Invalid Observation input: ${error instanceof Error ? error.message : String(error)}`), { code: 'REGISTRY_ATOMIC_OBSERVATION_INVALID' }); }
   }
 
-  private async persistPair(nextPair: RegistryPair, transactionId: string, now: string): Promise<void> {
+  private async persistPair(nextPair: RegistryPair, transactionId: string, now: string, onCommitted?: () => void): Promise<void> {
     const validation = validateRegistryPair(nextPair);
     if (!validation.valid) throw Object.assign(new Error(`Candidate would produce invalid Registry pair: ${validation.errors.map(({ code }) => code).join(',')}`), { code: 'REGISTRY_VALIDATION_FAILED', details: validation.errors });
     const eventBytes = registryBytes(nextPair.events, 'eventKey');
@@ -505,9 +533,11 @@ export class RegistryTransactionManager {
     const eventTempPath = join(staging, 'events.next.jsonl');
     const observationTempPath = join(staging, 'observations.next.jsonl');
     try {
-      await writeSynced(eventTempPath, eventBytes);
+      if (this.runtime.failurePoint === 'before-event-write') this.failIf('before-event-write');
+      await writeSynced(eventTempPath, eventBytes, this.runtime.failurePoint === 'during-event-write');
       this.failIf('after-event-temp-write');
-      await writeSynced(observationTempPath, observationBytes);
+      if (this.runtime.failurePoint === 'between-event-observation') this.failIf('between-event-observation');
+      await writeSynced(observationTempPath, observationBytes, this.runtime.failurePoint === 'during-observation-write');
       await fsyncDirectory(staging);
       this.failIf('after-observation-temp-write');
       const eventFinalPath = join(this.stateDir, EVENT_FILE);
@@ -544,6 +574,7 @@ export class RegistryTransactionManager {
       this.failIf('before-committed');
       const committedAt = (this.runtime.clock?.() ?? new Date()).toISOString();
       await atomicWrite(journalPath, Buffer.from(`${JSON.stringify({ ...journal, state: 'COMMITTED', committedAt })}\n`));
+      onCommitted?.();
       this.failIf('after-committed-before-snapshot');
       await createSnapshot(join(this.stateDir, SNAPSHOT_DIR), committedAt.slice(0, 10), transactionId, committedAt, committedPair, committedEventBytes, committedObservationBytes);
     } catch (error) {

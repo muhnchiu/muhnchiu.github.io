@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/CmTxYxREm79M90xtsBea5xS3bRg</id>
+  <title>arXiv Query: search_query=cat:cs.LG&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-10-03T09:59:30Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=cat:cs.LG&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>289945</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2610.02207v1</id>
+    <title>One Basis to Animate Them All: Gaussian Blendshape Distillation for Real-Time Avatars</title>
+    <updated>2026-10-01T17:59:58Z</updated>
+    <link href="https://arxiv.org/abs/2610.02207v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.02207v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>3D Gaussian avatars support fast rendering, however, their real-time animation is often challenged by the costly neural inference. We address this bottleneck and show that the animation of pretrained avatar models can be closely approximated by a linear combination of identity-independent blendshapes. Building on this finding, we introduce GALA (Gaussian Animation via Linear Approximation), a distillation method that replaces per-frame heavy neural decoding with a shallow coefficient predictor and a linear blend. To improve fidelity and reduce memory requirements, we propose to construct the basis using block-local PCA under a rendering-aware metric and a memory budget. Our method learns a shallow MLP network to predict blendshape coefficients and applies to various animation architectures without retraining original models. We validate GALA by accelerating the inference of three distinct avatar models for 3D animation of facial expressions and full-bodies with clothing dynamics. Across these models, our distillation generalizes to held-out identities and reduces CPU animation cost by up to three orders of magnitude while preserving most of the rendering quality. Excellent results of our method confirm the shared linear structure of learned avatar representations and enable highly efficient and accurate animation at frame rates reaching up to 60fps on mobile devices. Project page: https://ramazan793.github.io/gala/</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-01T17:59:58Z</published>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Ramazan Fazylov</name>
+    </author>
+    <author>
+      <name>Stamatis Lefkimmiatis</name>
+    </author>
+    <author>
+      <name>Ivan Laptev</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.02203v1</id>
+    <title>Embedding Prediction Helps Image Generation</title>
+    <updated>2026-10-01T17:59:49Z</updated>
+    <link href="https://arxiv.org/abs/2610.02203v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.02203v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In diffusion transformers, a class label or a text prompt is embedded once, and the same condition is reused at every denoising step. We ask whether predicted embeddings can serve as this condition instead. Next-Embedding Predictive Autoregression (NEPA) trains a Transformer to predict the next continuous embedding in a sequence. In generation, the clean image follows the noisy image, so its embeddings are the next embeddings after the condition and the noisy image. We train a NEPA model to predict them all at once with Multi-Embedding Prediction, and in Embedding Conditioned Generation, a DiT generator is conditioned on these predictions, recomputed at every denoising step, so the conditioning signal adapts to the current noisy state. Experiments on class-conditional ImageNet $256\times256$ study the condition of the generator, the design of Multi-Embedding Prediction, and the scaling of both models. The NEPA model adds a second network to every sampling step; with it, and combined with REPA, our final model, NEPA-DiT-XL, reaches an FID of 1.32 using about a third of the training compute of REPA.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-01T17:59:49Z</published>
+    <arxiv:comment>Project page: https://sihanxu.me/nepa-dit</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Sihan Xu</name>
+    </author>
+    <author>
+      <name>Ji Xie</name>
+    </author>
+    <author>
+      <name>Zilin Wang</name>
+    </author>
+    <author>
+      <name>Hui Shen</name>
+    </author>
+    <author>
+      <name>Stella X. Yu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.02201v1</id>
+    <title>SILSA: Sliding-Window Slice Latents for Topology-Preserving High-Resolution 3D Generation</title>
+    <updated>2026-10-01T17:59:46Z</updated>
+    <link href="https://arxiv.org/abs/2610.02201v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.02201v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>High-resolution 3D generation increasingly relies on voxel latents and multi-stage pipelines that first predict active structure and then synthesize local geometry. While effective, this design fragments continuous surfaces into many local tokens, inflates generation cost, and often weakens topological consistency for thin or highly connected shapes. We introduce SILSA, a topology-aware 3D generation framework that represents shapes with compact sliding-window slice latents. Instead of generating expensive voxel tokens, SILSA uses a fixed set of overlapping slices along the three canonical axes, where each token summarizes a local depth window to preserve cross-sectional continuity and support single-stage rectified-flow generation. A Slice VAE encodes oriented surface samples into multi-axis slice latents and reconstructs them with a sparse volumetric decoder, while a Volumetric Anchor Lattice coordinates directional slice streams through a shared 3D workspace. To preserve structural correctness, we introduce slice-level topology supervision that matches persistence diagrams and aligns Betti transitions across neighboring slices. Experiments show that SILSA improves structural fidelity while substantially reducing generation cost. SILSA improves PSNR by $8.7\%$, coverage by $5.96$ absolute points, and Betti error by $9.2\%$ over the strongest baseline, while using $70.0\%$ fewer tokens than the next-most compact baseline and over $98\%$ fewer tokens than sparse or hierarchical tokenizers, effectively reducing training memory by $40.4\%$ and inference time by $58.5\%$. Qualitative results further show improved preservation of thin structures, repeated components, and long-range connectivity.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-01T17:59:46Z</published>
+    <arxiv:comment>Accepted at NeurIPS 2026. Project link: https://plan-lab.github.io/silsa</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Tianjiao Yu</name>
+    </author>
+    <author>
+      <name>Xinzhuo Li</name>
+    </author>
+    <author>
+      <name>Yifan Shen</name>
+    </author>
+    <author>
+      <name>Ying Shen</name>
+    </author>
+    <author>
+      <name>Kiet A. Nguyen</name>
+    </author>
+    <author>
+      <name>Adheesh Sunil Juvekar</name>
+    </author>
+    <author>
+      <name>Ismini Lourentzou</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.02199v1</id>
+    <title>TACO: Ternary Absolute-max Column-wise One-sparse Optimizer for LLM Fine-Tuning</title>
+    <updated>2026-10-01T17:59:42Z</updated>
+    <link href="https://arxiv.org/abs/2610.02199v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.02199v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Full-parameter fine-tuning of large language models (LLMs) incurs substantial optimizer state memory overhead, limiting the model sizes that fit on modern GPUs. Existing approaches either compress optimizer state, abandon first-order gradients, or change the update geometry while retaining dense state. The recently introduced Muon optimizer reduces optimizer memory through matrix-valued updates. Still, its geometry differs from AdamW and can lead to performance degradation when fine-tuning AdamW-pretrained models. To reduce optimizer memory without sacrificing accuracy or computational efficiency in LLM fine-tuning, we propose Ternary Absolute-max Column-wise One-sparse optimizer, or TACO, which follows Muon's operator-norm steepest-descent view but takes the geometric route further. TACO computes the exact steepest-descent direction under a dimension-normalized $1\to1$ operator norm by selecting the sign of the largest magnitude entry in each column of two-dimensional weight matrices. This retains first-order gradients while making optimizer state memory nearly negligible. Our practical TACO optimizer maintains only a small set of low precision gradient components per column, reducing persistent optimizer state by $174\times$ relative to AdamW8bit (from 27.7 GB to 0.16 GB) and peak training memory by $2.9\times$ (from 80.6 GB to 27.5 GB) on OPT-13B, while achieving comparable accuracy and runtime. TACO further enables full-parameter fine-tuning of 30-32B-parameter models on a single 80 GB H100 GPU across multiple model families and tasks.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math.OC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-01T17:59:42Z</published>
+    <arxiv:comment>24 pages, 7 figures, 10 tables. Code available at https://github.com/Jichao2357/TACO_optimizer</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Jichao Jiang</name>
+      <arxiv:affiliation>University of Central Florida</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Cristian McGee</name>
+      <arxiv:affiliation>University of Central Florida</arxiv:affiliation>
+    </author>
+    <author>
+      <name>El Houcine Bergou</name>
+      <arxiv:affiliation>Mohammed VI Polytechnic University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Hanqin Cai</name>
+      <arxiv:affiliation>University of Central Florida</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Aritra Dutta</name>
+      <arxiv:affiliation>University of Central Florida</arxiv:affiliation>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.02198v1</id>
+    <title>FERPO: Forward Entropy-Regularized Policy Optimization</title>
+    <updated>2026-10-01T17:59:41Z</updated>
+    <link href="https://arxiv.org/abs/2610.02198v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.02198v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Several state-of-the-art methods for online reinforcement learning in continuous control improve policies using action gradients of a learned critic. However, critics are typically trained to predict returns, and accurate value predictions do not necessarily yield accurate action derivatives, potentially leading to unreliable policy updates. We propose Forward Entropy-Regularized Policy Optimization (FERPO), an on-policy maximum entropy reinforcement learning algorithm that performs policy improvement using critic values without differentiating the critic with respect to actions. FERPO derives an optimal target action distribution from a policy-improvement objective regularized by entropy and Kullback-Leibler (KL) divergence. We then fit the actor to this target by minimizing a forward-KL objective, estimated using self-normalized importance sampling (SNIS) with actions drawn from the rollout policy. By limiting the target distribution's deviation from the rollout policy, the KL regularization helps keep these importance weights well behaved. In contrast to reverse-KL objectives, which can favor a subset of the target distribution's modes, the forward-KL objective encourages coverage of multiple high-value modes and thereby promotes exploration. Experiments and ablations on MuJoCo Playground and ManiSkill show competitive performance and sample-efficiency gains. Computational benchmarks also demonstrate faster actor updates than Relative Entropy Pathwise Policy Optimization (REPPO).</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.RO" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="stat.ML" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-01T17:59:41Z</published>
+    <arxiv:comment>Code: https://github.com/Atarilab/FERPO</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Sebastian Sanokowski</name>
+    </author>
+    <author>
+      <name>Alireza Sarmadi</name>
+    </author>
+    <author>
+      <name>Majid Khadiv</name>
+    </author>
+  </entry>
+</feed>

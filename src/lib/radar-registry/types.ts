@@ -109,7 +109,11 @@ export interface RegistryRuntime {
   processIdentityResolver?: (pid: number) => import('./process-identity.mjs').ProcessIdentityResolution;
   lockTimeoutMs?: number;
   staleThresholdMs?: number;
-  failurePoint?: 'after-lock' | 'after-event-temp-write' | 'after-observation-temp-write' | 'after-prepare' | 'after-event-rename' | 'after-observation-rename' | 'before-committed' | 'after-committed-before-snapshot';
+  failurePoint?: 'before-event-write' | 'during-event-write' | 'between-event-observation' | 'during-observation-write' | 'after-durable-before-response' | 'after-lock' | 'after-event-temp-write' | 'after-observation-temp-write' | 'after-prepare' | 'after-event-rename' | 'after-observation-rename' | 'before-committed' | 'after-committed-before-snapshot';
+  /** Optional fail-closed operational backup hook, invoked under the global Registry lock before mutation. */
+  beforeCommit?: (context: { stateDir: string; pair: RegistryPair; transactionId: string; at: string }) => Promise<void> | void;
+  /** Optional in-process accounting callback fired only after the paired transaction is committed. */
+  onCommitted?: (context: { stateDir: string; transactionId: string; eventKey: string; observationId: string; eventCreated: boolean; observationCreated: boolean }) => void;
   /** Test-only failures for proving corruption evidence writes fail closed. */
   quarantineFailurePoint?: 'before-directory' | 'after-first-evidence-file' | 'before-metadata';
   /** Test-only collision seam; production uses timestamp + evidence digest names. */

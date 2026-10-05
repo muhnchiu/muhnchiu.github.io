@@ -1,0 +1,282 @@
+{
+  "version": "1.0",
+  "scope": "ISOLATED_PUBLISHER_CANARY",
+  "normative": false,
+  "total": 52,
+  "cases": [
+    {
+      "name": "valid authorization",
+      "expectedDisposition": "EXECUTED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "missing authorization",
+      "expectedDisposition": "REJECTED_NOT_AUTHORIZED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "malformed authorization",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "expired authorization",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_EXPIRED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "revoked authorization",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_REVOKED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "wrong eventKey",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "wrong observationIds",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "wrong instructionId",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "wrong targetChannel",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "wrong policyVersion",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "broken provenance",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "forged provenance signature",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "wrong authority identity",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "not allowlisted issuer",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "conflicting grants",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "incomplete authorization history",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "future issue",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "invalid UTC instant",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "Publisher disabled",
+      "expectedDisposition": "REJECTED_PUBLISHER_DISABLED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "supplied instruction mismatch",
+      "expectedDisposition": "REJECTED_INSTRUCTION_ID_MISMATCH",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "payload mismatch",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "receipt-only never authorizes",
+      "expectedDisposition": "REJECTED_NOT_AUTHORIZED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "unsigned owner assertions",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "production-looking Event rejected",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "synthetic marker missing",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "missing healthy lookup",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "scope proof stale",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "sink failure",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "partial-sink failure",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "audit failure",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "idempotency-store failure",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "authorization-store failure",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "policy integrity payload",
+      "expectedDisposition": "REJECTED_POLICY_INTEGRITY",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "policy integrity dependency",
+      "expectedDisposition": "REJECTED_POLICY_INTEGRITY",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "policy integrity version",
+      "expectedDisposition": "REJECTED_POLICY_INTEGRITY",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "policy integrity candidate",
+      "expectedDisposition": "REJECTED_POLICY_INTEGRITY",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "policy integrity outer-integrity",
+      "expectedDisposition": "REJECTED_POLICY_INTEGRITY",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "happy path lifecycle and canonical duplicate",
+      "expectedDisposition": [
+        "EXECUTED",
+        "DUPLICATE_EXECUTION",
+        "DUPLICATE_EXECUTION",
+        "REJECTED_PUBLISHER_DISABLED"
+      ],
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "concurrent duplicate",
+      "expectedDisposition": [
+        "EXECUTED x1",
+        "DUPLICATE_EXECUTION x9"
+      ],
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "kill during execution",
+      "expectedDisposition": "REJECTED_PUBLISHER_DISABLED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "corrupted state",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "offline determinism 10/10",
+      "expectedDisposition": [
+        "EXECUTED",
+        "DUPLICATE_EXECUTION"
+      ],
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "same content changed observations",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "committed response failure restart",
+      "expectedDisposition": [
+        "EXECUTION_FAILED",
+        "DUPLICATE_EXECUTION"
+      ],
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "same authorizationId redundant grant",
+      "expectedDisposition": "EXECUTED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "UTC representations",
+      "expectedDisposition": "EXECUTED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "submillisecond future issue rejected",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_INVALID",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "unknown gate field",
+      "expectedDisposition": "REJECTED_NOT_AUTHORIZED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "sourceLevel cannot substitute sourceAuthority",
+      "expectedDisposition": "REJECTED_NOT_AUTHORIZED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "expiry during execution",
+      "expectedDisposition": "REJECTED_AUTHORIZATION_EXPIRED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "abandoned lock",
+      "expectedDisposition": "EXECUTION_FAILED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    },
+    {
+      "name": "scope observation set ordering",
+      "expectedDisposition": "EXECUTED",
+      "fixtureType": "SYNTHETIC_TEST_ONLY"
+    }
+  ]
+}

@@ -253,12 +253,18 @@ test('would-publish requests are forbidden; ADOPT remains a non-publication acti
   assert.notEqual('ADOPT', 'WOULD_PUBLISH');
 }));
 
-test('real adapter maps exact source-owned release URL without inventing event identity', () => {
-  const adapted = adaptProductionCandidate({ radar: 'DEV', sourceName: 'Claude Code Changelog', record: { tag_name: 'v2.1.286', name: 'Claude Code v2.1.286', link: 'https://github.com/anthropics/claude-code/releases/tag/v2.1.286' } }, { observedAt });
-  assert.equal(adapted.status, 'RECEIPT_ONLY');
-  assert.ok(adapted.receiptReasons.includes('MISSING_ITEM_URL'));
-  assert.equal(adapted.candidate.itemUrl, undefined);
+test('real adapter maps GitHub Releases API html_url and publication time without inventing event identity', () => {
+  const url = 'https://github.com/anthropics/claude-code/releases/tag/v2.1.286';
+  const adapted = adaptProductionCandidate({ radar: 'DEV', sourceName: 'Claude Code Changelog', record: { tag_name: 'v2.1.286', name: 'Claude Code v2.1.286', html_url: url, published_at: '2026-09-30T19:10:13Z' } }, { observedAt });
+  assert.equal(adapted.status, 'CANDIDATE_READY');
+  assert.equal(adapted.candidate.itemUrl, url);
+  assert.equal(adapted.candidate.publishedAt, '2026-09-30T19:10:13Z');
   assert.equal(adapted.candidate.eventIdentity, undefined);
+
+  const unsupportedAlias = adaptProductionCandidate({ radar: 'DEV', sourceName: 'Claude Code Changelog', record: { tag_name: 'v2.1.286', name: 'Claude Code v2.1.286', link: url } }, { observedAt });
+  assert.equal(unsupportedAlias.status, 'RECEIPT_ONLY');
+  assert.ok(unsupportedAlias.receiptReasons.includes('MISSING_ITEM_URL'));
+  assert.equal(unsupportedAlias.candidate.itemUrl, undefined);
 });
 
 test('V1 normalized result is byte-identical around disabled and enabled Shadow calls', async () => withRoot(async (root) => {
