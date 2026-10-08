@@ -1,0 +1,11 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
+import {canonical,sha256} from '../src/lib/radar-judgment/provider.mjs';
+import {grantProfile,enrollmentProfileContext} from '../src/lib/radar-bootstrap/index.mjs';import {testKeyBinding} from '../src/lib/radar-capability/test-key-storage.mjs';
+const S='/Users/qiuwenbo/.local/state/horizon',id='horizon-principal:isolated-profile-check';
+for(const name of ['human-validator','domain-reviewer']){const p=JSON.parse(await readFile(S+'/radar-'+name+'-root-profile-v1.json'));const bindings=name==='human-validator'?{validatorId:'test-validator',principalId:id}:{reviewerId:'test-reviewer',validatorId:'test-reviewer-auth',principalId:id};const request={requestedRoles:p.requestedRoles,requestedScopes:[],roleBindings:bindings,principalId:id};const context={profileId:p.profileId,profileVersion:p.profileVersion,constraintPayloadHash:p.constraintPayloadHash,requestHash:sha256(canonical(request))};
+ test(name+' exact frozen scope/context',()=>{assert.equal(grantProfile(p.requestedRoles,[],bindings,id,context),p.requestedRoles[0]);assert.deepEqual(enrollmentProfileContext(request,context),context);});
+ for(const [label,change]of [['scope',r=>r.requestedScopes=['SCORE']],['role',r=>r.requestedRoles=['HORIZON_RADAR_OWNER']],['binding',r=>r.roleBindings={...bindings,principalId:'horizon-principal:other'}]])test(name+' rejects '+label,()=>{const r=structuredClone(request);change(r);assert.throws(()=>grantProfile(r.requestedRoles,r.requestedScopes,r.roleBindings,id,context));});
+ test(name+' missing context rejected',()=>assert.throws(()=>grantProfile(p.requestedRoles,[],bindings,id)));
+ test(name+' mismatched request context rejected',()=>assert.throws(()=>enrollmentProfileContext({...request,principalId:'horizon-principal:other'},context)));
+}
+test('test key tuple differs by every binding component',()=>{const base={subjectType:'HUMAN_VALIDATOR',principalId:id,keyId:'horizon-principal-key:test'},a=testKeyBinding(base);for(const altered of [{...base,subjectType:'DOMAIN_REVIEWER'},{...base,principalId:id+'2'},{...base,keyId:base.keyId+'2'}])assert.notEqual(a.account,testKeyBinding(altered).account);assert.match(a.account,/^horizon:p92:npt:hv:[a-f0-9]{64}$/);});

@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+import {loadRubric} from '../src/lib/radar-judgment/provider.mjs';
+import {QualificationStore} from '../src/lib/radar-qualification/store.mjs';
+import {FixtureAuthority} from '../src/lib/radar-qualification/approval.mjs';
+import {QualificationRunner} from '../src/lib/radar-qualification/runner.mjs';
+
+const [area,operation,...args]=process.argv.slice(2),options={};
+if(args.length%2)throw Error('INVALID_COMMAND');
+for(let i=0;i<args.length;i+=2){if(!args[i].startsWith('--')||Object.hasOwn(options,args[i]))throw Error('INVALID_COMMAND');options[args[i]]=args[i+1];}
+const allowed=['--candidate','--owner-id','--key-id','--signer-ref','--authentication-binding-revision'];
+if(Object.keys(options).some(k=>!allowed.includes(k))||!options['--candidate'])throw Error('INVALID_COMMAND');
+const store=new QualificationStore(),service=new FixtureAuthority({store,rubric:await loadRubric()});
+const actor={ownerId:options['--owner-id'],keyId:options['--key-id']};
+if(operation!=='verify'&&options['--signer-ref']!==actor.keyId)throw Error('EXACT_KEYCHAIN_SIGNER_REFERENCE_REQUIRED');
+let result;
+if(area==='fixture'&&operation==='approve')result=await service.approve(options['--candidate'],actor);
+else if(area==='fixture'&&operation==='verify')result=await service.verify(options['--candidate']);
+else if(area==='qualification'&&operation==='run')result=await new QualificationRunner({service}).run(options['--candidate'],{...actor,authenticationBindingRevision:options['--authentication-binding-revision']});
+else throw Error('UNSUPPORTED_COMMAND');
+console.log(JSON.stringify(result,null,2));
