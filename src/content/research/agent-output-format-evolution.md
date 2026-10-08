@@ -1,4 +1,39 @@
-# 「Agent 输出格式」— 从纯文本到富媒体到可执行的演进
+---
+title: Agent 输出格式的演进——从纯文本到富媒体到可执行
+subtitle: 当 Agent Skill 开始用 HTML 回答问题，输出方式正在从纯文本变为结构化页面
+slug: agent-output-format-evolution
+type: research
+category:
+  - AI编程
+  - Agent Skill
+topics:
+  - agent-systems
+  - ai-coding
+tags:
+  - answer-me-with-html
+  - agent-skill
+  - html-output
+  - leviathan
+  - superpowers
+  - live-panel-skill
+  - mortiflix
+  - rich-media
+events: []
+source: Dev Radar 2026-10-08
+created: 2026-10-08
+updated: 2026-10-08
+status: evolving
+confidence: high
+featured: false
+publish: true
+radar:
+  - dev
+related:
+  - leviathan-agent-deep-memory
+  - superpowers-agent-dev-methodology
+---
+
+# Agent 输出格式的演进——从纯文本到富媒体到可执行
 
 > **知识来源**：Dev Radar 2026-10-08
 >

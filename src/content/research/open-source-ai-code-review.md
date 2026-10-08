@@ -1,4 +1,41 @@
-# 「openqodex」— 开源 AI 代码审查：push 前的最后一道防线
+---
+title: 开源 AI 代码审查的兴起——push 前的最后一道防线
+subtitle: openqodex 的出现标志着 AI 代码审查从闭源 SaaS 走向开源本地工具
+slug: open-source-ai-code-review
+type: research
+category:
+  - AI安全
+  - 开发者效率
+topics:
+  - ai-coding
+  - ai-security
+tags:
+  - openqodex
+  - ai-code-review
+  - claude-code
+  - codex
+  - sast
+  - secret-scanning
+  - pre-commit
+  - open-source
+events: []
+source: AI Radar + Dev Radar 2026-10-08
+created: 2026-10-08
+updated: 2026-10-08
+status: evolving
+confidence: high
+featured: false
+publish: true
+radar:
+  - ai
+  - dev
+related:
+  - ai-coding-agent-secret-leakage
+  - mcp-server-security-vulnerability-pattern
+  - macos-full-disk-access-ai-agent-security
+---
+
+# 开源 AI 代码审查的兴起——push 前的最后一道防线
 
 > **知识来源**：AI Radar + Dev Radar 2026-10-08
 >
