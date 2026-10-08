@@ -1,33 +1,51 @@
-# Phase 6.4 Score / Action execution closure
+# Phase 6.4 Score 与 Action 执行闭环
 
-This explicit read-only runner uses Contract 2.1.2, Score 2.1.1, Action Decision 2.1.0 and Security Gate 1.0.0. Frozen artifacts and pins remain unchanged.
+[返回流水线手册](04-pipeline.md)
 
-## Configured provider
+本文记录 Phase 6.4 的显式只读输入 runner：Contract 2.1.2、Score 2.1.1、Action Decision 2.1.0、Security Gate 1.0.0。Runner 会写隔离输出，不修改冻结 artifact 或 pin。
 
-The adapter reads the existing Radar model selection from the local OpenClaw config, validates its provider/model membership and HTTPS endpoint, and binds the configuration to a fingerprint that excludes credentials. The secret stays in the private transport closure. The adapter requests exactly one structured tool result and delegates strict schema, provenance, proof and rubric selection checks to the accepted provider runtime. No raw model response is persisted. HTTP failures, invalid JSON, duplicate tool results, incomplete provenance and timeouts fail closed.
+下文 30 个 capture、零调用、空 ready set 和 authority 未配置均是本阶段记录，不能代替后续 Phase 9.2 的最新状态。
 
-Protocol references: [Alibaba Cloud Anthropic-compatible Messages API](https://www.alibabacloud.com/help/tc/model-studio/anthropic-api-messages), [Claude tool schema and tool-choice contract](https://platform.claude.com/docs/claude/docs/tool-use).
+## 已配置 Provider
 
-Configuration does not prove endpoint connectivity or real model quality. A provider call is permitted only after complete, immutable, field-specific evidence passes the frozen evidence gate. Source identity metadata is not silently promoted into tracked workload, applicability or bounded before/after comparison evidence. The current 30 captures all fail this completeness gate; configured transport receives no calls. No test adapter is used for these real records.
+Adapter 读取本地 OpenClaw 既有 Radar 模型选择，验证 provider / model membership 与 HTTPS endpoint，绑定不含凭据的配置 fingerprint。Secret 只留在私有 transport closure。
 
-## Committed Registry context
+请求恰好一个结构化 tool result，将严格 Schema、provenance、proof 与 rubric selection 交给已接受的 Provider runtime。原始模型响应不持久化；HTTP 失败、无效 JSON、重复 tool result、provenance 不完整与 timeout 均拒绝继续。
 
-`readCommittedRegistryContext` performs no writes. It validates the Registry pair, COMMITTED journal and final file hashes, then binds each Event/Observation to its latest successful post-commit WRITE_RESULT audit receipt. It verifies transaction identity, source scope, event/observation IDs, disposition and current event state. Registry presence alone is insufficient. The existing `security` Observation Radar value is mapped to the already-approved Score `SEC` value; identity bytes are unchanged. The audited receipt is outer Registry provenance and is not relabeled as native source evidence.
+配置存在不能证明 endpoint 连通或真实模型质量。只有完整、不可变、字段专属 evidence 通过冻结 gate 才可调用 Provider。Source identity 元数据不能静默晋升为 workload、applicability 或有界 before/after comparison evidence。
 
-## Immutable execution set
+当时 30 个 capture 全部未通过 completeness gate，已配置 transport 没有收到调用；真实记录不使用 test adapter。
 
-Only the existing generator's complete inputs and provenance enter the lock. Eligibility, value/provenance equality, Registry state and duplicate binding, and resolved Security scope are checked before locking. Content and individual input/provenance/security/Registry hashes are verified for the entire set before any terminal Score/Action evaluator call. Policy hashes are the byte hashes in the frozen manifest. Unknown actions cannot bypass the frozen vocabulary. No Registry writer, Publisher or scheduler is imported.
+原文协议参考保留供查阅：[阿里云 Anthropic-compatible Messages API](https://www.alibabacloud.com/help/tc/model-studio/anthropic-api-messages)、[Claude tool schema 与 tool-choice](https://platform.claude.com/docs/claude/docs/tool-use)。这些链接不授予调用权限。
 
-The manifest is created exclusively and read back before execution. Replay compares exact deterministic results and throws on disagreement. An empty set has zero Score/Action calls and determinism NOT_APPLICABLE; it does not demonstrate production decision quality or close real execution/calibration debt. Isolated synthetic tests exercise nonempty success and failure cases and are never included in real-record counts.
+## 已提交 Registry 上下文
 
-## Security and Human Validation
+`readCommittedRegistryContext` 不写入。它验证 Registry pair、COMMITTED journal 和最终文件 hash，再将每个 Event / Observation 绑定到最新成功的 post-commit WRITE_RESULT audit receipt。
 
-Missing approved NVD environment/component/relationship context stays UNRESOLVED. Without SCORE_READY inputs no incoming signal, cap or hard-filter outcome is invented. The frozen classification matrix is queried for the actual missing-state vector; these SEC records cannot enter execution. Non-SEC N/A is the existing frozen applicability rule.
+校验 transaction identity、source scope、Event / Observation ID、disposition 与当前 Event state。Registry 中存在记录本身不足以证明上下文有效。
 
-An unconfigured Human Validation store yields AUTHORITY_UNAVAILABLE in the real-record report. It is not a complete healthy empty store and cannot create priorValidation=false. No human records are created. Operational unavailability and missing source/context evidence remain OPEN debt under their existing frozen owners; they do not introduce replacement policy authority.
+Observation 的 `security` 映射为已批准 Score 的 `SEC`，identity 字节不变。Audit receipt 属于外层 Registry provenance，不重新标为 native source evidence。
 
-## Invocation
+## 不可变执行集合
 
-`node scripts/run-radar-score-action-closure.mjs /explicit/isolated/run-directory`
+只有既有 generator 的完整输入和 provenance 才能进入 lock。Lock 前检查 eligibility、value / provenance 一致性、Registry state / duplicate binding 及 Security scope。
 
-The directory must be new because its manifest cannot be overwritten. Production and Canary output namespaces are rejected. Every accepted capture, Registry pair and disabled ingestion/scheduler control is checked. Reports must distinguish configured provider from live provider calls, and isolated test executions from production executions. Phase 6 receipt-based evaluation closure can complete with an empty ready set under the current task rule. Full V2 production remains NOT_READY and publication NOT_AUTHORIZED.
+首次调用最终 Score / Action evaluator 前，验证全集 content 和逐项 input / provenance / security / Registry hash。Policy hash 使用冻结 manifest 的字节 hash；未知 action 不能绕过冻结词表。不导入 Registry writer、Publisher 或 scheduler。
+
+Manifest 独占创建并读回后才执行；Replay 精确比较确定性结果，不一致抛错。空集合的 Score / Action 调用为 0，determinism 为 NOT_APPLICABLE，不能证明生产判断质量或关闭真实 execution / calibration 债务。
+
+隔离 synthetic 测试覆盖非空成功与失败，不计入真实记录数量。
+
+## Security 与人工验证
+
+缺失已批准 NVD environment / component / relationship context 保持 UNRESOLVED。没有 SCORE_READY 输入时不创造 incoming signal、cap 或 hard-filter outcome；按实际 missing-state vector 查询冻结 classification matrix，相关 SEC 记录不能执行。非 SEC N/A 使用既有冻结 applicability 规则。
+
+当时未配置 Human Validation store，在真实报告中返回 AUTHORITY_UNAVAILABLE，不当作健康完整空 store，不能产生 priorValidation=false，也不创建 human record。运行不可用和来源 / context 缺失按既有 owner 保持 OPEN，不引入替代 Policy authority。
+
+## 调用与授权边界
+
+入口：`node scripts/run-radar-score-action-closure.mjs <新建的隔离运行目录>`。
+
+目录必须是新的，manifest 不可覆盖；拒绝 Production 与 Canary namespace。检查 capture、Registry pair，以及 disabled ingestion / scheduler control。执行需遵守当前任务授权，本次翻译未调用 runner。
+
+报告区分 configured provider 与 live call、synthetic test 与 production execution。Phase 6 当时任务允许空 ready set 完成 receipt-based evaluation closure；这不代表完整 V2 production ready 或 publication authorized。

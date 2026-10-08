@@ -1,27 +1,41 @@
-# Horizon Radar V2 Phase 5A.3 — Identity Engine
+# Event 与 Observation 身份引擎
 
-This implementation is pinned to Contract 2.1.2 at distribution commit `5ac615eda0de0b0fa1d2cc398309fc2657bacc49`, Event Policy 1.0, Event Replay 1.0, Observation Policy 1.0, Observation Fixture 1.0, and Score Policy 2.0. The Contract 2.1.2 `schemaVersion` remains `2`; no contract, policy, replay, fixture, or production registry artifact is changed.
+[返回流水线手册](04-pipeline.md)
 
-## Event identity
+本文记录 Phase 5A.3 的实现边界。该阶段使用 Contract 2.1.2，分发提交 `5ac615eda0de0b0fa1d2cc398309fc2657bacc49`，以及 Event Policy 1.0、Event Replay 1.0、Observation Policy 1.0、Observation Fixture 1.0、Score Policy 2.0。Score Policy 2.0 是本阶段的历史验证上下文，不表示后续评分包未升级。
 
-`buildEventKey` accepts explicit entity, canonical event type, and event identifier segments. It validates the frozen Contract 2.1.2 grammar and Event Policy 1.0 event type registry. It does not extract identifiers from titles or silently rewrite entity names. This is required for exact replay of dotted identifiers such as `deepseek-v4.1` and `glm-5.2-openrouter`.
+Contract 2.1.2 的 schemaVersion 仍为 2；本实现不修改契约、冻结策略、回放、fixture 或生产 Registry artifact。
 
-`buildEventFingerprint` hashes a JSON object containing only non-null Event Policy 1.0 fact fields: `version`, `cveId`, `activeExploitation`, `supplyChainImpact`, `reachableDependency`, and `officialEmergencyAdvisory`. Keys are sorted before JSON serialization. Text and intelligence metadata do not enter the hash. Pricing terms, API availability, and license are not frozen fingerprint fields; changes limited to those properties cannot produce UPDATE and are reported as `POLICY_FIELD_NOT_FROZEN` at the decision boundary.
+## Event 身份
 
-`resolveEventState` compares a caller-provided in-memory prior-event collection. An unseen key is NEW; an existing key with the same frozen fingerprint is DUPLICATE; a changed fingerprint under the same canonical event type is UPDATE. A cross-type match cannot become UPDATE. The module does not access a registry, filesystem, network, clock, or random source.
+`buildEventKey` 接收显式 entity、canonicalEventType 和 eventIdentifier，校验冻结 grammar 与 Event Policy 1.0 类型注册表。它不从标题推断标识，也不静默改写 entity。这样才能精确回放 `deepseek-v4.1`、`glm-5.2-openrouter` 等既有身份。
 
-The frozen Event Replay records fingerprints as opaque expected values and does not include the underlying fact payload. Replay therefore feeds those exact fingerprint values into the state resolver and separately tests fingerprint construction from fact objects. This preserves the 50-row baseline without reverse engineering or fabricating facts.
+`buildEventFingerprint` 只对 Event Policy 1.0 中非 null 的事实字段构造 JSON 并计算 hash：`version`、`cveId`、`activeExploitation`、`supplyChainImpact`、`reachableDependency`、`officialEmergencyAdvisory`。键先排序；文本与 intelligence 元数据不参与 hash。
 
-## Observation identity
+`pricingTerms`、`apiAvailability`、`license` 不是冻结 fingerprint 字段，仅这些字段变化不能产生 UPDATE，决策边界报告 `POLICY_FIELD_NOT_FROZEN`。
 
-`canonicalizeSourceUrl` applies only Observation Policy 1.0: lowercase HTTP(S) scheme and hostname, remove fragments and default ports, remove trailing slash from non-root paths, preserve path and query. `buildObservationIdentity` hashes UTF-8 `eventKey + "\\n" + canonicalSourceUrl + "\\n" + radar` and returns the first 16 lowercase SHA-256 hex characters. Source metadata and all time fields remain outside identity. `resolveObservationTimes` derives first/last observed times from explicit `observedAt` values only.
+`resolveEventState` 比较调用者提供的内存 prior-event 集合：未出现的 key 为 NEW；已有 key 且 fingerprint 相同为 DUPLICATE；同 canonicalEventType 下 fingerprint 改变为 UPDATE；跨类型匹配不能成为 UPDATE。模块不访问 Registry、文件系统、网络、时钟或随机源。
 
-Observation Fixture 1.0 is independent of the Event Replay. No source URL or observedAt is inferred from the Event Replay's report date.
+Frozen Event Replay 将 fingerprint 作为不透明预期值，不包含原始事实 payload。回放直接将这些值送入 state resolver，另行从事实对象测试 fingerprint 构造，保留 50 行基线，不反推或伪造事实。
 
-## Contract and scoring boundary
+## Observation 身份
 
-Event Identity output maps to Contract 2.1.2 fields `eventKey`, `canonicalEventType`, `eventState`, `materialChange`, `observedAt`, and `duplicate`; observations remain represented by the Contract's source/time fields. Contract semantics enforce the state invariants. Phase 4 owns score behavior: `duplicate: true` continues to trigger the existing duplicate hard filter, while NEW/UPDATE continue through the existing score path. No score rule is reimplemented here.
+`canonicalizeSourceUrl` 只应用 Observation Policy 1.0：HTTP(S) scheme 和 hostname 转小写，移除 fragment 与默认端口，移除非根路径末尾斜线，保留其余 path 和 query。
 
-## Verification entrypoints
+`buildObservationIdentity` 按冻结分隔规则将 eventKey、canonicalSourceUrl、radar 拼接后，以 UTF-8 计算 SHA-256，返回前 16 个小写十六进制字符。分隔符是单个换行字节（LF，0x0A），不是反斜线与字母 n 两个字符；实现中的模板字符串为 `${eventKey}\n${canonicalSourceUrl}\n${radar}`。来源元数据和所有时间字段不参与身份。
 
-`npm run test:contract` runs frozen Event Replay, Event Policy fingerprint/update checks, Observation Fixture identity and invalid-input checks, and the Contract package tests. `npm run test:phase4` runs the frozen score policy replay. `npm run build` runs contract and Phase 3 prebuild checks before generating the site.
+`resolveObservationTimes` 仅从显式 observedAt 推导 first/last observed 时间。Observation Fixture 1.0 独立于 Event Replay；不得由报告日期推断 sourceUrl 或 observedAt。
+
+## 契约与评分边界
+
+Event 输出映射到 Contract 2.1.2 的 eventKey、canonicalEventType、eventState、materialChange、observedAt、duplicate；Observation 由来源与时间字段表示。契约负责状态 invariants。
+
+该阶段由 Phase 4 负责评分行为：duplicate 为 true 继续触发现有重复硬过滤，NEW / UPDATE 继续进入既有评分路径。身份引擎不重新实现评分规则。
+
+## 验证入口
+
+- `npm run test:contract`：Event Replay、fingerprint / UPDATE、Observation identity 与 invalid-input，以及契约包测试。
+- `npm run test:phase4`：冻结 Score Policy 回放。
+- `npm run build`：执行 package.json 的 prebuild 后构建网站；现行 prebuild 还包括 Registry 检查，完整清单以 package.json 为准。
+
+这些是验证入口说明，本次文档翻译未运行测试或构建。

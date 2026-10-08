@@ -1,47 +1,53 @@
-# Radar Production Evidence Pipeline 1.0
+# 生产证据流水线 1.0
 
-This adapter boundary turns source-derived candidate metadata into validated evidence and a dry `AtomicObservationCommitInput`. It does not run fetchers, write receipts, touch Registry files, or call `commitObservation`.
+[返回流水线手册](04-pipeline.md)
 
-## Evidence boundary
+本文保留 Phase 5A.6.4 的 adapter 边界与来源审计记录。下文的调度未验证、重复实现和 blocker 是该阶段的检查结果，不能直接作为后续所有阶段的当前状态。
 
-The caller supplies `observedAt` once as an explicit ISO timestamp. The value is propagated unchanged to `ObservationInput`; this module has no wall clock fallback. `retrievedAt` is optional local metadata and is not part of Observation identity. Original `sourceUrl` and optional source `sourcePublishedAt` must come from the parser's item-level upstream fields. The pipeline never constructs a URL from a title/entity. HTTPS is required for production admission. Missing or invalid evidence remains receipt-eligible with structured error codes and cannot enter Registry preparation.
+该 adapter 将来源 Candidate 元数据转换为已验证 Evidence 与尚未提交的 `AtomicObservationCommitInput`。它不运行 fetcher、不写 receipt、不访问 Registry 文件、不调用 `commitObservation`。
 
-Source classifications are fixed in `SOURCE_EVIDENCE_MAP`; an unmapped source yields `SOURCE_AUTHORITY_UNDEFINED` and remains Registry-ineligible. These production admission rules are stricter than the frozen Contract where appropriate, without changing Contract 2.1.2 or Observation Policy 1.0. A `sourcePublishedAt` later than `observedAt` yields `TIME_ORDER_POLICY_UNDEFINED`, surfaced without an invented ordering rule.
+## 证据边界
 
-## Parser audit and authority boundary
+调用者一次性提供显式 ISO observedAt，原样传入 ObservationInput，无系统时钟 fallback。retrievedAt 是可选本地元数据，不参与 Observation identity。原始 sourceUrl 和可选 sourcePublishedAt 必须来自 parser 的单条上游记录，不能由标题或 entity 拼接。
 
-The README-designated script-manager parsers are intended candidates, not confirmed production authorities. Runtime scheduling remains unverified. AI, DEV, APP and SEC each have a second mac-env-sync implementation; the App LaunchAgent points to that second copy. These four Radar production integrations are blocked with `RADAR_IMPLEMENTATION_AUTHORITY_UNDEFINED` until Phase 5A.6.5 resolves which parser/config is authoritative. Skill has one inspected implementation, but scheduler activation is still unverified.
+生产准入要求 HTTPS。缺失或无效证据仍可用于结构化错误 receipt，但不能进入 Registry preparation。
 
-| Radar / source family | Item URL | Publication time | Audit result |
+来源分类由 `SOURCE_EVIDENCE_MAP` 固定；未映射来源返回 `SOURCE_AUTHORITY_UNDEFINED`，不能入 Registry。生产准入可以比 Contract 更严格，但不改变 Contract 2.1.2 或 Observation Policy 1.0。sourcePublishedAt 晚于 observedAt 时返回 `TIME_ORDER_POLICY_UNDEFINED`，不自行创造时间顺序规则。
+
+## 历史 parser 与权威检查
+
+当时 README 指定的 script-manager parser 只是候选实现，生产 authority 与调度尚未确认。AI、DEV、APP、SEC 各存在另一份环境同步仓库实现，APP LaunchAgent 指向第二份副本，因此记录 `RADAR_IMPLEMENTATION_AUTHORITY_UNDEFINED`，待 Phase 5A.6.5 裁决。SKILL 当时仅检查到一份实现，但调度激活仍未验证。
+
+| Radar / 来源 | 单条 URL | 发布时间 | 当时检查结论 |
 | --- | --- | --- | --- |
-| AI RSS/Atom (TechCrunch, official feeds) | item link parsed and printed | pubDate/published parsed and printed | available; current Markdown boundary drops typed structure |
-| HuggingFace papers/models | item/model URL emitted | papers timestamp available; models often absent | source-dependent; missing time is allowed |
-| GitHub AI repositories / OpenRouter | upstream html_url or API item URL | not consistently exposed | URL available on parsed records, publication time often unavailable |
-| arXiv | item id/link printed | published parsed | available; Markdown-only boundary |
-| DEV GitHub Trending / HN / Show HN | repository or item URL emitted | trending/count feeds have none; HN has API timestamps | mixed; metrics sources cannot yield item publication time |
-| DEV Marketplace / changelogs/releases | extension/release URL emitted | parser-dependent | available where upstream field exists |
-| DEV npm Downloads | package API is aggregate counts | not an item publication record | `FIELD_NOT_AVAILABLE_FROM_SOURCE` |
-| Skill Skills.sh | item href when extracted; fallback previously used aggregate trending URL | no item time | fallback URL corrected to empty; receipt-only if missing |
-| Skill Linkly / GitHub | item href/html_url retained in snapshot | not consistently available | candidate URL available for individual source rows; merged multi-source row cannot be treated as one Observation |
-| Skill OfficialSkills / ClawHub / SkillsMP / LobeHub | varies by CLI/page output | not consistently available | must preserve per-source row; aggregate-only rows remain receipt-only |
-| APP RSS feeds (Product Hunt, 少数派, 小众软件) | RSS link parsed | published/updated parsed | available; typed handoff still needs to use raw parser output |
-| APP HN | item URL available | API timestamps may exist | parser-dependent |
-| APP GitHub Trending | repository URL emitted | not available from daily ranking | item URL available, publication time unavailable |
-| APP AlternativeTo | source exposes `urlName`, parser forms site permalink | no item time | source-derived slug; retain only where slug is explicitly present |
-| SEC NVD | feed has third-party references but no NVD item permalink | NVD published field available | references remain labeled as references; never misattribute them as the NVD item URL |
-| SEC GitHub Advisories | upstream `html_url` available | `published_at` available | parser had labeled URL as `reference`; output normalized to `url` |
-| SEC CISA KEV | feed entry has CVE/dateAdded but no item permalink | dateAdded is available | `FIELD_NOT_AVAILABLE_FROM_SOURCE` for item URL; no URL is fabricated |
-| SEC FIRST EPSS | aggregate probability API keyed by CVE | no publication timestamp | no item evidence URL/time; cannot become Registry Observation alone |
-| SEC HN | story URL or HN item URL | API timestamp available | available when parser preserves item row |
+| AI RSS / Atom | 已解析并输出 item link | 已解析 pubDate / published | 字段可用，但 Markdown 边界丢失类型结构 |
+| Hugging Face Papers / Models | 输出论文或模型 URL | Papers 有时间，Models 常缺失 | 随来源变化；时间缺失可允许 |
+| GitHub AI / OpenRouter | html_url 或 API item URL | 未稳定暴露 | URL 可用，发布时间常不可用 |
+| arXiv | 输出 item id / link | published 已解析 | 字段可用，交接仅 Markdown |
+| DEV Trending / HN / Show HN | repository 或 item URL | 排行无时间，HN 有 API 时间 | 指标源不能充当发布记录 |
+| DEV Marketplace / changelog / release | extension 或 release URL | 取决于 parser | 上游字段存在时可用 |
+| DEV npm Downloads | aggregate package API | 不是单条发布记录 | FIELD_NOT_AVAILABLE_FROM_SOURCE |
+| SKILL Skills.sh | 提取到时为 item href | 无 item 时间 | 聚合 URL fallback 已改为空；缺失时仅 receipt |
+| SKILL Linkly / GitHub | snapshot 保留 href / html_url | 不稳定 | 单来源记录 URL 可用，合并行不能当作单个 Observation |
+| SKILL OfficialSkills / ClawHub / SkillsMP / LobeHub | 随 CLI / 页面输出变化 | 不稳定 | 保留逐来源行；聚合行仅 receipt |
+| APP RSS | RSS link | published / updated | 可用，但需直接交接 parser 原始结构 |
+| APP HN | item URL | API 可能有时间 | 取决于 parser |
+| APP Trending | repository URL | 日排行无发布时间 | URL 可用，时间不可用 |
+| APP AlternativeTo | 上游 urlName 转 permalink | 无 item 时间 | 只有明确 slug 才保留来源派生 URL |
+| SEC NVD | 有第三方 references，无 NVD item permalink | NVD published 可用 | references 不得误标为 NVD item URL |
+| SEC GitHub Advisories | html_url | published_at | parser 原先标 reference，输出归一为 url |
+| SEC CISA KEV | CVE / dateAdded，无 item permalink | dateAdded 可用 | item URL 不可用，不伪造 |
+| SEC FIRST EPSS | 以 CVE 为键的聚合概率 API | 无发布时间 | 无单条证据 URL / 时间，不能独自成为 Observation |
+| SEC HN | story URL 或 HN item URL | API 时间 | parser 保留单条记录时可用 |
 
-`FIELD_AVAILABLE_AND_DROPPED` applies to parser metadata that is already upstream and parsed but only rendered into prose/Markdown (notably RSS links/timestamps and SEC reference fields). `FIELD_NOT_AVAILABLE_FROM_SOURCE` applies to aggregate feeds such as npm downloads, daily GitHub Trending timestamps, FIRST EPSS and CISA item permalinks. A future adapter must preserve the former and must not synthesize the latter.
+`FIELD_AVAILABLE_AND_DROPPED` 表示上游已提供且 parser 已解析，但只渲染为文字而丢失结构的字段。`FIELD_NOT_AVAILABLE_FROM_SOURCE` 表示上游没有该字段，例如下载指标、排行发布时间、EPSS、CISA item permalink。Adapter 应保留前者，不得合成后者。
 
-## Processing order
+## 处理顺序
 
-1. Parser provides a raw item row with source name, upstream item URL, optional publication time, and event facts.
-2. `normalizeEvidence` applies static source mapping and validates evidence.
-3. Ineligible candidates may be included in diagnostic receipts only; no Event/Observation identity is prepared.
-4. `prepareEvidenceCommit` calls the frozen Event Identity and Observation Identity engines and returns the atomic Registry request shape.
-5. Integration boundary ends before `RegistryLayer.commitObservation`.
+1. Parser 提供 sourceName、上游 item URL、可选发布时间和事件事实。
+2. `normalizeEvidence` 应用静态来源映射并验证。
+3. 不合格 Candidate 只进入诊断 receipt，不准备 Event / Observation identity。
+4. `prepareEvidenceCommit` 调用冻结身份引擎，返回原子 Registry 请求结构。
+5. 边界结束于 `RegistryLayer.commitObservation` 之前。
 
-Synthetic UPDATE behavior remains governed only by Event Policy 1.0's frozen fingerprint fields. This module does not add material fields or decide Event state.
+Synthetic UPDATE 仅由冻结 fingerprint 字段约束；此模块不新增 material 字段，也不决定 Event state。
