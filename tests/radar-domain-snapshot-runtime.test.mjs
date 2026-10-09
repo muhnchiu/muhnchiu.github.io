@@ -1,5 +1,5 @@
 import {test}from'node:test';import assert from'node:assert/strict';import fs from'node:fs/promises';
-import {context,T,read,digest,same}from'/private/tmp/phase92-domain-resume/context.mjs';
+import {context,T,read,digest,same}from'./radar-domain-snapshot-test-support.mjs';
 import {verifyDomainContent,verifyDomainCohort,domainSnapshotIdentity,domainHistoryEntry}from'../src/lib/radar-capability/domain-snapshot-profile.mjs';
 const {store,profile,administration,authority}=await context(),snapshot=await store.load(),pkg=snapshot.package,admin=await administration.load();
 test('actual Domain profile pinned immutable',()=>assert.equal(profile.constraintPayloadHash,digest(profile.constraintPayload)));
