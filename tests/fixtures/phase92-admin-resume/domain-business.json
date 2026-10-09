@@ -1,0 +1,157 @@
+{
+  "enrollment": {
+    "payload": {
+      "profile": "DOMAIN_REVIEWER_ENROLLMENT_1.0",
+      "schemaVersion": 1,
+      "operationId": "919e5624-7b05-4db7-a436-519e54936590",
+      "operationNonce": "a91e4e19-6b1a-4f58-80b2-6491a2415e1b",
+      "previousAuthorityHeadHash": null,
+      "adminPrincipalId": "horizon-principal:c07803ed-989e-4444-961b-1043d8de427d",
+      "adminKeyId": "horizon-principal-key:a4328c4e-ee03-4287-a814-f0533689e1df",
+      "signedAt": "2026-10-07T06:05:43.863Z",
+      "createdAt": "2026-10-07T06:05:43.863Z",
+      "actionType": "REVIEWER_ENROLL",
+      "targetIdentity": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+      "targetKey": null,
+      "scope": [
+        "DOMAIN_REVIEWER_ENROLLMENT",
+        "DOMAIN_REVIEW_TRUST_REGISTRY_ADMIN"
+      ],
+      "authorityOwner": "HORIZON_RADAR_OWNER",
+      "reviewerId": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+      "validatorId": "horizon-test-validator:aca5d962-8a56-4c1f-b352-9b0ce5fe0778",
+      "subjectPrincipalId": "horizon-principal:a052029f-ed16-4b8f-8686-6a899bf6327a",
+      "rootEnrollmentReceiptHash": "fe9ee0d3f469efff4357854c878e2af2b33969173e4c3ba484f6b0a1f733e790",
+      "businessRole": "DOMAIN_REVIEWER",
+      "authenticationProfile": "DOMAIN_REVIEW_REFERENCE_1.0",
+      "allowedScopes": [
+        {
+          "sourceFamily": "NON_PRODUCTION_TEST",
+          "eventType": "NON_PRODUCTION_TEST",
+          "domain": "NON_PRODUCTION_TEST",
+          "rubricId": "SCORE_INPUT_RUBRIC_1.0",
+          "rubricVersion": "1.0",
+          "reviewType": "DOMAIN_QUALITY_REFERENCE"
+        }
+      ],
+      "validFrom": "2026-10-07T06:05:43.863Z",
+      "validUntil": null
+    },
+    "canonicalPayloadHash": "f5ec2f3aa549d7b1b68d44cd6ed7357c2b608ca48e3626ed631f1c67a27a1b12",
+    "signature": "mldaQQXNhzyIozUzA17Fo8H038myKvS0fLgV13cOjEvw+aXIFIbOv3GkebQneWHRzmK29K0Be+O/TxRbnguqBg=="
+  },
+  "registration": {
+    "payload": {
+      "profile": "DOMAIN_REVIEWER_KEY_REGISTRATION_1.0",
+      "schemaVersion": 1,
+      "operationId": "ed8e984a-1884-483c-bd89-0269267d1771",
+      "operationNonce": "9982cd74-a157-4122-af02-cd019350e3b5",
+      "previousAuthorityHeadHash": "8a0829cbbef330167fbb463bc8752f2f2822d171273878992d9faa600462bfe9",
+      "adminPrincipalId": "horizon-principal:c07803ed-989e-4444-961b-1043d8de427d",
+      "adminKeyId": "horizon-principal-key:a4328c4e-ee03-4287-a814-f0533689e1df",
+      "signedAt": "2026-10-07T06:05:44.653Z",
+      "createdAt": "2026-10-07T06:05:44.653Z",
+      "actionType": "REVIEWER_KEY_REGISTER",
+      "targetIdentity": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+      "targetKey": "horizon-principal-key:58820017-9ddf-4fbc-8bab-7a3bd1392903",
+      "scope": [
+        "DOMAIN_REVIEWER_KEY_REGISTRATION",
+        "DOMAIN_REVIEW_TRUST_REGISTRY_ADMIN"
+      ],
+      "authorityOwner": "HORIZON_RADAR_OWNER",
+      "reviewerId": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+      "validatorId": "horizon-test-validator:aca5d962-8a56-4c1f-b352-9b0ce5fe0778",
+      "subjectPrincipalId": "horizon-principal:a052029f-ed16-4b8f-8686-6a899bf6327a",
+      "subjectKeyId": "horizon-principal-key:58820017-9ddf-4fbc-8bab-7a3bd1392903",
+      "algorithm": "Ed25519",
+      "publicKey": "MCowBQYDK2VwAyEA+4fmKFvk0QT9LwFxm+YMRrZXNLPDtvUuTrmZDT9dnJ4=",
+      "publicKeyFingerprint": "e41d373410df55418d452f4405591c7e59de4f26040b3fa41a9d15a4ae419dd2",
+      "rootKeyRegistrationReceiptHash": "fe9ee0d3f469efff4357854c878e2af2b33969173e4c3ba484f6b0a1f733e790",
+      "authenticationProfile": "DOMAIN_REVIEW_REFERENCE_1.0",
+      "allowedScopes": [
+        {
+          "sourceFamily": "NON_PRODUCTION_TEST",
+          "eventType": "NON_PRODUCTION_TEST",
+          "domain": "NON_PRODUCTION_TEST",
+          "rubricId": "SCORE_INPUT_RUBRIC_1.0",
+          "rubricVersion": "1.0",
+          "reviewType": "DOMAIN_QUALITY_REFERENCE"
+        }
+      ],
+      "validFrom": "2026-10-07T06:05:44.653Z",
+      "validUntil": null,
+      "proofOfPossession": {
+        "payload": {
+          "profile": "DOMAIN_REVIEWER_KEY_POSSESSION_1.0",
+          "reviewerId": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+          "validatorId": "horizon-test-validator:aca5d962-8a56-4c1f-b352-9b0ce5fe0778",
+          "subjectPrincipalId": "horizon-principal:a052029f-ed16-4b8f-8686-6a899bf6327a",
+          "subjectKeyId": "horizon-principal-key:58820017-9ddf-4fbc-8bab-7a3bd1392903",
+          "publicKey": "MCowBQYDK2VwAyEA+4fmKFvk0QT9LwFxm+YMRrZXNLPDtvUuTrmZDT9dnJ4=",
+          "rootKeyReceiptHash": "fe9ee0d3f469efff4357854c878e2af2b33969173e4c3ba484f6b0a1f733e790",
+          "operationId": "ed8e984a-1884-483c-bd89-0269267d1771",
+          "operationNonce": "9982cd74-a157-4122-af02-cd019350e3b5"
+        },
+        "signature": "z690XFRCKA/BAtGPhQJbzMmLF6lsiQ+FIwe+zQM+lazfq+yFfy0tLT3agvNZociJbA0y+WDInU04zGZQg1wSAA=="
+      }
+    },
+    "canonicalPayloadHash": "090775e1ceb28d6d8311d798468a6c862d180d005fd257abba18fdeb16cdcfb0",
+    "signature": "r2XDADOuD5n81eMpM19LbBI/ZoTmHmyknzIXFyW5aRM75vWfRgOmB35Q6DLeQaTLgHtf28+DtWAnS3oVIEIIAw=="
+  },
+  "grant": {
+    "payload": {
+      "profile": "DOMAIN_REVIEWER_GRANT_1.0",
+      "schemaVersion": 1,
+      "operationId": "9bbe4deb-1f22-4d0b-a6c5-5d3e287360b1",
+      "operationNonce": "5c295c2b-d839-46ae-b98b-8a0abb4592d7",
+      "previousAuthorityHeadHash": "112036b0798319a033f4cf3eecd103b013044095b181a3f91a979057b812a492",
+      "adminPrincipalId": "horizon-principal:c07803ed-989e-4444-961b-1043d8de427d",
+      "adminKeyId": "horizon-principal-key:a4328c4e-ee03-4287-a814-f0533689e1df",
+      "signedAt": "2026-10-07T06:05:45.930Z",
+      "createdAt": "2026-10-07T06:05:45.930Z",
+      "actionType": "REVIEWER_GRANT",
+      "targetIdentity": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+      "targetKey": "horizon-principal-key:58820017-9ddf-4fbc-8bab-7a3bd1392903",
+      "scope": [
+        "DOMAIN_REVIEWER_SCOPE_GRANT",
+        "DOMAIN_REVIEW_TRUST_REGISTRY_ADMIN"
+      ],
+      "authorityOwner": "HORIZON_RADAR_OWNER",
+      "reviewerId": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+      "validatorId": "horizon-test-validator:aca5d962-8a56-4c1f-b352-9b0ce5fe0778",
+      "reviewerPrincipalId": "horizon-principal:a052029f-ed16-4b8f-8686-6a899bf6327a",
+      "reviewerKeyId": "horizon-principal-key:58820017-9ddf-4fbc-8bab-7a3bd1392903",
+      "sourceFamily": "NON_PRODUCTION_TEST",
+      "eventType": "NON_PRODUCTION_TEST",
+      "domain": "NON_PRODUCTION_TEST",
+      "rubricId": "SCORE_INPUT_RUBRIC_1.0",
+      "rubricVersion": "1.0",
+      "reviewType": "DOMAIN_QUALITY_REFERENCE",
+      "referenceAuthorityScope": {
+        "referenceAuthorityId": "NON_PRODUCTION_TEST_REFERENCE",
+        "referenceProfile": "DOMAIN_REVIEW_REFERENCE_1.0",
+        "referenceVersion": 1
+      },
+      "revokedAt": null,
+      "role": "DOMAIN_REVIEWER",
+      "grantVersion": 1,
+      "supersedesGrantId": null,
+      "validFrom": "2026-10-07T06:05:45.930Z",
+      "validUntil": null,
+      "grantId": "domain-reviewer-grant:sha256:691817ebf8f4a53150cc47aa70f8d35318ad577052e439255a41b5fbd61217fb"
+    },
+    "canonicalPayloadHash": "895abaccaae3ccb9fd826c3942507e56ea33836abe265617d3b0c8c893f9dcda",
+    "signature": "4RxNOmB+HFa7FVFPwRpTg7Q2ihROLvt6KLGpO2QUCMnlLjGFhbOiHTKkm8r8H49HzoSmg/uLqXSofe/AEUqXCg=="
+  },
+  "subjectPrincipalId": "horizon-principal:a052029f-ed16-4b8f-8686-6a899bf6327a",
+  "subjectKeyId": "horizon-principal-key:58820017-9ddf-4fbc-8bab-7a3bd1392903",
+  "alias": "horizon-test-reviewer:be5b2647-17ca-4b97-b277-44dd50cc999c",
+  "scope": {
+    "sourceFamily": "NON_PRODUCTION_TEST",
+    "eventType": "NON_PRODUCTION_TEST",
+    "domain": "NON_PRODUCTION_TEST",
+    "rubricId": "SCORE_INPUT_RUBRIC_1.0",
+    "rubricVersion": "1.0",
+    "reviewType": "DOMAIN_QUALITY_REFERENCE"
+  }
+}
