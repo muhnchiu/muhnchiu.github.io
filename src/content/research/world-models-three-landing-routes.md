@@ -31,7 +31,7 @@ updated: 2026-10-11
 status: evolving
 confidence: high
 featured: false
-publish: true
+publish: false
 radar:
   - ai
 related:
