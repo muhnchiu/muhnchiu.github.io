@@ -34,3 +34,7 @@ export function evaluateFrozenPolicy(policy,facts) {
   }
   return {disposition:'PUBLICATION_AUTHORIZED',reasonCodes:['PUBLICATION_AUTHORIZED']};
 }
+
+// [C3-D2A candidate] PP 2.0.0 DAILY_DIGEST gate re-export — single policy evaluation entrypoint.
+// The gate module performs scope/format validation; PP 1.0.0 frozen-table semantics are unchanged.
+export {evaluateDailyDigestGate} from './policy-v2-daily-digest.mjs';

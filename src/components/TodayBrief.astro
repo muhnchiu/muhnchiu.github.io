@@ -1,15 +1,17 @@
 ---
+import { getTopicLabel } from '../data/topics';
+const actionLabels = { action: '需处理', test: '试用', watch: '观察', read: '阅读', explore: '探索', ignore: '略过' };
 const { briefs } = Astro.props;
 ---
 
-<section class="section brief-section">
+<section id="brief" class="section brief-section">
   <div class="container">
-    <div class="section-header"><div><h2>今日判断</h2><p class="section-sub">基于今日雷达信号，提炼最值得关注的变化与行动建议。</p></div><a href="/radar" class="all-link">查看全部信号　→</a></div>
+    <div class="section-header"><div><h2>今日精选</h2><p class="section-sub">先看需要处理或值得验证的信号，再深入阅读。</p></div><a href="/radar" class="all-link">查看全部信号　→</a></div>
     <div class="briefs">
       {briefs.length ? briefs.map((brief, index) => (
         <article class="brief-item">
-          <span class="brief-num">{String(index + 1).padStart(2, '0')}</span><span class={`brief-action ${brief.action}`}>{brief.action.toUpperCase()}</span><span class="brief-tag">{brief.radarName.toUpperCase()} / {brief.type.toUpperCase()}</span>
-          <div class="brief-content"><h3>{brief.title}</h3><p>{brief.topic ? `关注方向：${brief.topic}` : `来源：${brief.radarName} Radar`}</p></div><time>{brief.dateLabel}</time><a href={brief.href} class="brief-arrow" aria-label={`查看 ${brief.title}`}>→</a>
+          <span class="brief-num">{String(index + 1).padStart(2, '0')}</span><span class={`brief-action ${brief.action}`}>{actionLabels[brief.action]}</span><span class="brief-tag">{brief.radarName.toUpperCase()} / {brief.type.toUpperCase()}</span>
+          <div class="brief-content"><h3><a href={brief.href}>{brief.title}</a></h3><p>{brief.topic ? `${getTopicLabel(brief.topic)} · ${brief.sourceName ?? brief.radarName}` : `来源：${brief.radarName} Radar`}</p></div><time>{brief.dateLabel}</time><a href={brief.href} class="brief-arrow" aria-label={`查看 ${brief.title}`}>→</a>
         </article>
       )) : <p class="empty">今日暂无需要特别关注的高优先级信号。</p>}
     </div>
@@ -18,4 +20,12 @@ const { briefs } = Astro.props;
 
 <style>
 .brief-section { padding-top: 0; padding-bottom: 56px; }.all-link { font-size: .72rem; color: var(--ink-blue); }.briefs { border-top: 1px solid var(--border-subtle); }.brief-item { display: grid; grid-template-columns: 32px 96px 158px minmax(0, 1fr) 78px 16px; align-items: center; gap: 11px; min-height: 72px; border-bottom: 1px solid var(--border-subtle); transition: background var(--transition), padding var(--transition); }.brief-item:hover { padding: 0 8px; background: var(--accent-tech-soft); }.brief-num { font-family: var(--font-mono); font-size: .86rem; color: var(--ink-blue-soft); }.brief-action { display: inline-flex; justify-content: center; width: fit-content; min-width: 57px; padding: 4px 8px; border-radius: 5px; font-family: var(--font-mono); font-size: .64rem; letter-spacing: .05em; font-weight: 600; }.brief-action.action { color: var(--action); background: var(--action-bg); }.brief-action.test { color: var(--test); background: var(--test-bg); }.brief-action.watch { color: var(--watch); background: var(--watch-bg); }.brief-action.read,.brief-action.ignore { color: var(--read); background: var(--read-bg); }.brief-action.explore { color: var(--explore); background: var(--explore-bg); }.brief-tag { font-family: var(--font-mono); font-size: .61rem; letter-spacing: .03em; color: var(--text-secondary); }.brief-content h3 { font-size: .84rem; font-weight: 720; line-height: 1.35; }.brief-content p { margin-top: 3px; font-size: .76rem; color: var(--text-secondary); line-height: 1.4; }time { font-family: var(--font-mono); font-size: .61rem; color: var(--text-tertiary); white-space: nowrap; }.brief-arrow { color: var(--ink-blue); }.empty { padding: 28px 0; color: var(--text-secondary); font-size: .86rem; }@media (max-width: 720px) { .brief-item { grid-template-columns: 28px 65px 1fr 14px; gap: 8px; padding: 10px 0; }.brief-tag,time { display: none; }.brief-content p { font-size: .65rem; } }
+
+.brief-item { grid-template-columns: 28px 68px minmax(0, 1fr) 24px; min-height: 88px; padding: 16px 0; }
+.brief-tag, .brief-item time { display: none; }
+.brief-content h3 { font-size: 1rem; line-height: 1.5; }
+.brief-content p { font-size: .82rem; line-height: 1.6; margin-top: 6px; }
+.brief-action { font-size: .78rem; font-family: var(--font-sans); }
+.brief-content h3 a { color: inherit; }
+@media (max-width: 520px) { .brief-item { grid-template-columns: 24px minmax(0, 1fr) 20px; gap: 8px; } .brief-num { grid-row: 1 / span 2; } .brief-action { grid-column: 2; } .brief-content { grid-column: 2; } .brief-arrow { grid-column: 3; grid-row: 1 / span 2; } }
 </style>

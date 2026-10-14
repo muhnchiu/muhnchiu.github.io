@@ -16,12 +16,12 @@ const { status } = Astro.props;
       <p class="hero-tagline">追踪技术变化，辨识趋势信号，沉淀长期判断。</p>
       <p class="hero-tags">AI <i>•</i> 开发工具 <i>•</i> 安全 <i>•</i> 软件 <i>•</i> Agent Skills</p>
       <div class="hero-cta">
-        <a href="#signals" class="btn btn-primary">查看今日雷达 <span>→</span></a>
+        <a href="#brief" class="btn btn-primary">查看今日精选 <span>→</span></a>
         <a href="#research" class="btn btn-secondary">进入深度研究</a>
       </div>
     </div>
     <div class="hero-aside">
-      <p class="hero-manifesto">从噪声中识别<br />信号，在变化中<br />形成长期判断。</p>
+
       <div class="system-status">
         <span class="status-label mono-label">情报系统</span>
         <div class="status-row"><span class="status-dot"></span><span class="status-text">{status.activeRadarCount ? `${status.activeRadarCount} 个雷达运行中` : '今日雷达尚未完成更新'}</span></div>
@@ -61,4 +61,10 @@ const { status } = Astro.props;
 .status-text { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; color: var(--ink-blue-deep); }
 .status-scan { margin-top: 9px; font-family: var(--font-mono); font-size: .56rem; letter-spacing: .04em; color: var(--ink-blue-soft); }
 @media (max-width: 768px) { .hero { min-height: 500px; padding: 56px 0 44px; } .hero-inner { flex-direction: column; } .hero-aside { width: 100%; min-height: 112px; margin-top: 42px; padding-left: 0; border-left: 0; border-top: 1px solid var(--border-default); padding-top: 15px; } .hero-sun { right: 4%; } .hero-mountain { width: 120%; right: -40%; height: 34%; } }
+
+.hero { min-height: 0; padding: 44px 0; }
+.hero-inner { min-height: 220px; }
+.hero-aside { justify-content: flex-end; width: 220px; border: 0; }
+.status-scan { font-size: .75rem; }
+@media (max-width: 768px) { .hero { min-height: 0; padding: 32px 0; } .hero-inner { min-height: 0; align-items: flex-start; } .hero-copy { align-self: flex-start; } .hero-aside { min-height: 0; margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border-subtle); } .status-label { display: none; } .system-status { padding: 0; } .status-scan { margin-top: 6px; } .hero-tags { line-height: 1.8; font-size: .75rem; } .hero-title { font-size: clamp(2.8rem, 10vw, 4.5rem); } }
 </style>

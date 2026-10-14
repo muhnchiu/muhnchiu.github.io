@@ -6,6 +6,7 @@ const navItems = [
   { label: '工具栈', href: '/stack' },
   { label: '关于', href: '/about' },
 ];
+const activePath = Astro.url.pathname.replace(/^\/zh-hans(?=\/)/, '').replace(/\/$/, '');
 ---
 
 <header class="site-header">
@@ -15,11 +16,17 @@ const navItems = [
       <span class="logo-dot"></span>
       <span class="logo-live">LIVE</span>
     </a>
-    <nav class="nav">
+    <nav class="nav" aria-label="主导航">
       {navItems.map(item => (
-        <a href={item.href} class="nav-link">{item.label}</a>
+        <a href={item.href} class="nav-link" aria-current={activePath === item.href || activePath.startsWith(`${item.href}/`) ? 'page' : undefined}>{item.label}</a>
       ))}
     </nav>
+    <details class="mobile-navigation">
+      <summary aria-label="展开主导航">菜单</summary>
+      <nav aria-label="主导航">
+        {navItems.map(item => <a href={item.href} aria-current={activePath === item.href || activePath.startsWith(`${item.href}/`) ? 'page' : undefined}>{item.label}</a>)}
+      </nav>
+    </details>
     <div class="header-tools" aria-label="站点工具">
       <nav class="language-switch" aria-label="文字版本">
         <a href="/" data-language="zh-Hant" aria-label="繁体中文"><span data-no-convert>繁</span></a>
@@ -41,12 +48,22 @@ const navItems = [
           <button type="button" data-theme-choice="system" aria-pressed="true">跟随系统</button>
         </div>
       </div>
-      <span class="header-slogan">Scan. Understand. Build a clearer tomorrow.</span>
+
     </div>
   </div>
 </header>
 
 <script>
+  const mobileNavigation = document.querySelector<HTMLDetailsElement>('.mobile-navigation');
+  document.addEventListener('click', event => {
+    if (event.target instanceof Node && !mobileNavigation?.contains(event.target) && mobileNavigation) mobileNavigation.open = false;
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && mobileNavigation?.open) {
+      mobileNavigation.open = false;
+      mobileNavigation.querySelector('summary')?.focus();
+    }
+  });
   const themeRoot = document.documentElement;
   const themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
   const themeTrigger = document.querySelector<HTMLButtonElement>('.theme-trigger');
@@ -187,7 +204,7 @@ const navItems = [
   transition: color var(--transition);
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-link[aria-current="page"] {
   color: var(--text-primary);
 }
 
@@ -196,11 +213,18 @@ const navItems = [
   50% { opacity: 0.4; }
 }
 
+ .mobile-navigation { display: none; position: relative; margin-left: auto; }
+.mobile-navigation summary { cursor: pointer; padding: 10px; font-size: .82rem; color: var(--text-secondary); }
+.mobile-navigation nav { position: absolute; top: calc(100% + 10px); right: 0; width: 180px; padding: 8px; border: 1px solid var(--border-default); border-radius: 8px; background: var(--bg-elevated); box-shadow: var(--shadow-lg); }
+.mobile-navigation nav a { display: block; padding: 12px; font-size: .9rem; }
+.mobile-navigation nav a[aria-current="page"] { color: var(--accent-text); background: var(--accent-tech-soft); border-radius: 4px; }
 @media (max-width: 1024px) {
+  .mobile-navigation { display: block; }
+
   .nav {
     display: none;
   }
   .header-slogan { display: none; }
-  .header-tools { margin-left: auto; }
+  .header-tools { margin-left: 8px; }
 }
 </style>

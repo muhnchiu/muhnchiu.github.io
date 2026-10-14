@@ -39,7 +39,7 @@ export async function loadHomeData() {
       if (seenHighlights.has(key)) return false;
       seenHighlights.add(key);
       return true;
-    }).slice(0, 5).map((highlight) => ({
+    }).slice(0, 3).map((highlight) => ({
       ...highlight,
       radarName: radarCatalog.find((radar) => radar.id === highlight.radar)?.name ?? highlight.radar,
       dateLabel: displayRadarDate(highlight.date),

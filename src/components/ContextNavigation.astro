@@ -34,7 +34,7 @@ const dateLabel = (date: Date) => date.toISOString().slice(5, 10).replace('-', '
       <h3>相关雷达</h3>
       {radars.length ? (
         <div class="relation-list">
-          {radars.map((item) => <a class="relation" href={item.href}>
+          {radars.slice(0, 3).map((item) => <a class="relation" href={item.href}>
             <span class="meta"><time datetime={item.date.toISOString().slice(0, 10)}>{dateLabel(item.date)}</time><span>{item.source}</span></span>
             <strong>{item.summary || item.title}</strong>
             {item.summary && <small class="source-title">{item.title}</small>}
@@ -50,7 +50,7 @@ const dateLabel = (date: Date) => date.toISOString().slice(5, 10).replace('-', '
     <h3>{isResearch ? '延伸研究' : '相关研究'}</h3>
     {research.length ? (
       <div class="relation-list">
-        {research.map((item) => <a class="relation" href={item.href}>
+        {research.slice(0, 3).map((item) => <a class="relation" href={item.href}>
           <span class="meta"><time datetime={item.date.toISOString().slice(0, 10)}>{dateLabel(item.date)}</time><span>RESEARCH</span></span>
           <strong>{item.title}</strong>
           <small class="summary">{item.summary}</small>
@@ -87,4 +87,7 @@ const dateLabel = (date: Date) => date.toISOString().slice(5, 10).replace('-', '
   .relation strong, .relation small { grid-column: 1; }
   .relation .arrow { grid-column: 2; }
 }
+
+.relation .summary { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.relation .meta, .relation .reason { font-size: .78rem; }
 </style>

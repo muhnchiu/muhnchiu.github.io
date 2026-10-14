@@ -13,12 +13,12 @@ const { data } = entry;
   data-categories={data.category.join('|')}
 >
   <div class="card-cats">
-    {data.category.map((category) => <span class="cat">{category}</span>)}
+    {data.category.slice(0, 2).map((category) => <span class="cat">{category}</span>)}
   </div>
   <h3 class="card-title">{data.title}</h3>
   <p class="card-sub">{data.subtitle}</p>
   {getCanonicalTopicSlugs(data.topics).length > 0 && <div class="card-topics">
-    {getCanonicalTopicSlugs(data.topics).slice(0, 4).map((topic) => <span class="topic">{getTopicName(topic)}</span>)}
+    {getCanonicalTopicSlugs(data.topics).slice(0, 2).map((topic) => <span class="topic">{getTopicName(topic)}</span>)}
   </div>}
   <div class="card-meta">
     <span class="meta-date">{formatDate(data.created)}</span>
@@ -87,4 +87,8 @@ const { data } = entry;
 .meta-sep { color: var(--border-default); }
 .card-arrow { margin-top: 14px; color: var(--accent-text); font-size: .77rem; }
 @media (max-width: 600px) { .research-card { min-height: 0; padding: 21px; } }
+
+.card-title { font-family: var(--font-sans); font-weight: 600; font-size: 1.15rem; line-height: 1.5; letter-spacing: 0; }
+.card-sub { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta, .cat { font-size: .78rem; }
 </style>

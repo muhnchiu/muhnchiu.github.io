@@ -14,7 +14,8 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+const sections = headings.filter(h => h.depth === 2);
 const date = entry.data.date.toISOString().slice(0, 10);
 const topicSlugs = topicSlugsForRadar(entry);
 const canonicalTopics = topicSlugs.filter(isCanonicalTopic);
@@ -32,9 +33,10 @@ const relatedTopics = getRelatedTopics(entry);
       <p class="description">{entry.data.description ?? entry.data.verdict}</p>
       {canonicalTopics.length > 0 && (
         <nav class="topic-tags" aria-label="长期议题">
-          {canonicalTopics.map((slug) => <a href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
+          {canonicalTopics.slice(0, 2).map((slug) => <a href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
         </nav>
       )}
+      <details class="article-info"><summary>内容标签与事件标记</summary>
       {(historicalTopics.length > 0 || (entry.data.tags?.length ?? 0) > 0 || (entry.data.events?.length ?? 0) > 0) && (
         <div class="secondary-metadata" aria-label="内容标记">
           {historicalTopics.map((slug) => <a href={`/topics/${slug}/`} title="历史主题标记">{slug}</a>)}
@@ -42,9 +44,10 @@ const relatedTopics = getRelatedTopics(entry);
           {entry.data.events?.map((event) => <code>{event}</code>)}
         </div>
       )}
-      <dl class="metrics"><div><dt>SIGNALS</dt><dd>{entry.data.signalCount}</dd></div><div><dt>HIGH SIGNALS</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>ACTION REQUIRED</dt><dd>{entry.data.actionRequired}</dd><small>CONFIDENCE {entry.data.confidence.toUpperCase()}</small></div></dl>
+      </details>
+      <dl class="metrics"><div><dt>信号</dt><dd>{entry.data.signalCount}</dd></div><div><dt>重点</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>需处理</dt><dd>{entry.data.actionRequired}</dd></div></dl>
     </header>
-    {entry.data.highlights.length > 0 && <section class="highlight-list" aria-label="重点信号"><h2>重点信号</h2>{entry.data.highlights.map((highlight) => <article class="highlight-row"><div><span class:list={['highlight-level', `level-${highlight.signal}`]}>{highlight.signal.toUpperCase()}</span><span class:list={['highlight-action', `action-${highlight.action}`]}>{highlight.action}</span></div><h3>{highlight.title}</h3>{highlight.topic && <a class="highlight-topic" href={`/topics/${highlight.topic}`}>{getTopicLabel(highlight.topic)}　→</a>}</article>)}</section>}
+    {sections.length > 0 && <details class="report-contents" open><summary>本期目录</summary><nav aria-label="日报目录">{sections.map(h => <a href={`#${h.slug}`}>{h.text} <span aria-hidden="true">↓</span></a>)}</nav></details>}
     <div class="prose"><Content /></div>
     <ContextNavigation kind="radar" topics={relatedTopics} research={relatedResearch} />
   </article>
@@ -70,4 +73,27 @@ const relatedTopics = getRelatedTopics(entry);
 .highlight-action.action-watch { color: var(--watch); }
 .highlight-action.action-read { color: var(--read); }
 .highlight-action.action-explore { color: var(--explore); }
+
+.radar-report { padding-top: 40px; }
+.radar-report h1 { font-size: clamp(1.85rem, 4vw, 2.8rem); line-height: 1.35; }
+.metrics { margin-top: 22px; background: transparent; border: 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); border-radius: 0; }
+.metrics div { padding: 14px 16px; }
+.metrics dt { font-size: .78rem; }
+.metrics dd { font-size: 1.3rem; }
+.article-info { margin-top: 12px; color: var(--text-secondary); font-size: .8rem; }
+.article-info summary { cursor: pointer; padding: 6px 0; }
+.secondary-metadata { font-size: .75rem; }
+.report-contents { margin-top: 24px; padding: 16px 0; border-bottom: 1px solid var(--border-subtle); }
+.report-contents summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
+.report-contents nav { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 12px; }
+.report-contents a { color: var(--text-secondary); font-size: .85rem; }
+.report-contents a:hover { color: var(--accent-text); }
+.report-contents span { color: var(--accent-text); }
+.prose :global(h3) { margin: 28px 0 12px; line-height: 1.5; }
+.prose :global(ol) { margin: 14px 0 14px 24px; }
+.prose :global(li) { margin: 8px 0; }
+.prose :global(blockquote) { padding: 12px 16px; margin: 16px 0; background: var(--bg-surface); border-left: 2px solid var(--accent-tech); color: var(--text-secondary); }
+.prose :global(hr) { margin: 32px 0; border: 0; border-top: 1px solid var(--border-subtle); }
+.prose :global(a) { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 560px) { .metrics { flex-direction: row; } .metrics div { border-bottom: 0; border-right: 1px solid var(--border-subtle); } .metrics div:last-child { border-right: 0; } }
 </style>

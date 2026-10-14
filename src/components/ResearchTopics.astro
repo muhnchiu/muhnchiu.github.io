@@ -15,12 +15,10 @@ const { topics } = Astro.props as { topics: Array<TopicAggregate & { updatedLabe
     </div>
     {topics.length ? (
       <div class="topics-grid">
-        {topics.map((topic, index) => (
+        {topics.map((topic) => (
           <a class="topic-card" href={`/topics/${topic.slug}/`}>
-            <span class="topic-kicker">{String(index + 1).padStart(2, '0')} / TOPIC</span>
             <h3>{topic.name}</h3>
-            <code>{topic.slug}</code>
-            <p><b>{topic.radarCount}</b> Radar <span aria-hidden="true">·</span> <b>{topic.researchCount}</b> Research</p>
+            <p><b>{topic.radarCount}</b> 期日报 <span aria-hidden="true">·</span> <b>{topic.researchCount}</b> 篇研究</p>
             <span class="topic-updated">最近更新 <time>{topic.updatedLabel}</time></span>
           </a>
         ))}
@@ -49,4 +47,9 @@ const { topics } = Astro.props as { topics: Array<TopicAggregate & { updatedLabe
 .topics-empty { padding: 30px 0; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: .86rem; }
 @media (max-width: 900px) { .topics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .topics-grid { grid-template-columns: 1fr; } }
+
+.topic-card { min-height: 110px; padding: 16px; background: transparent; }
+.topic-card h3 { margin-top: 0; font-family: var(--font-sans); font-size: 1rem; font-weight: 600; }
+.topic-card p, .topic-updated { font-size: .78rem; }
+@media (max-width: 560px) { .topic-card { min-height: 0; border: 0; border-bottom: 1px solid var(--border-subtle); border-radius: 0; padding: 16px 0; } }
 </style>

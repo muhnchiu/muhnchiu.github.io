@@ -45,9 +45,12 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
       <p class="subtitle">{entry.data.subtitle}</p>
       {canonicalTopics.length > 0 && (
         <nav class="topic-tags" aria-label="长期议题">
-          {canonicalTopics.map((slug) => <a class="topic" href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
+          {canonicalTopics.slice(0, 2).map((slug) => <a class="topic" href={`/topics/${slug}/`}>{getTopicLabel(slug)}</a>)}
         </nav>
       )}
+      <p class="reading-meta">更新 {updatedStr} · 约 {Math.max(1, Math.ceil((entry.body?.length ?? 0) / 500))} 分钟阅读</p>
+      <details class="article-info">
+        <summary>文章信息与来源</summary>
       {(historicalTopics.length > 0 || entry.data.tags.length > 0) && (
         <div class="secondary-tags" aria-label="内容标记">
           {historicalTopics.map((slug) => <a href={`/topics/${slug}/`} title="历史主题标记">{slug}</a>)}
@@ -76,6 +79,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
           <span class="meta-val">{sourceRadarHref ? <a href={sourceRadarHref}>{entry.data.source}</a> : entry.data.source}</span>
         </div>
       </div>
+      </details>
     </header>
 
     {isArchived && (
@@ -121,7 +125,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 .breadcrumb a:hover { color: var(--accent-text); }
 .sep { margin: 0 8px; }
 
-.research-header h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.75rem, 4vw, 2.8rem); line-height: 1.1; letter-spacing: -.03em; margin-bottom: 12px; }
+.research-header h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.75rem, 4vw, 2.8rem); line-height: 1.35; letter-spacing: -.02em; margin-bottom: 12px; }
 .subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; }
 .topic-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
 .topic { font-size: .75rem; color: var(--text-secondary); padding: 3px 10px; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 4px; }
@@ -163,6 +167,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 .toc-item:hover { color: var(--accent-text); border-left-color: var(--accent-tech); }
 .toc-h3 { padding-left: 24px; font-size: .78rem; }
 
+.toc-mobile { display: none; }
 @media (max-width: 1024px) {
   .content-layout { grid-template-columns: minmax(0, 1fr); }
   .toc-desktop { display: none; }
@@ -170,14 +175,26 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
   .prose { grid-row: 2; }
 }
 
-.toc-mobile { display: none; }
 .toc-mobile summary { cursor: pointer; font-weight: 600; color: var(--text-secondary); }
 .toc-mobile nav { margin-top: 12px; }
 .toc-mobile[open] { padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); }
 .toc-mobile .toc-item { color: var(--text-secondary); }
 
 @media (max-width: 768px) {
-  .meta-grid { flex-direction: column; gap: 12px; }
+  .meta-grid { gap: 12px 24px; }
   .prose { font-size: .95rem; }
 }
+
+.research-header { max-width: 850px; }
+.research-detail { padding-top: 40px; }
+.topic-tags { margin-bottom: 14px; }
+.reading-meta { color: var(--text-secondary); font-size: .82rem; margin-bottom: 12px; }
+.article-info summary { cursor: pointer; color: var(--text-secondary); font-size: .82rem; padding: 8px 0; }
+.article-info .secondary-tags { margin: 14px 0; font-size: .75rem; }
+.article-info .meta-grid { gap: 16px 24px; padding: 14px 0; }
+.article-info .meta-key { font-size: .75rem; }
+.content-layout { margin-top: 24px; gap: 40px; }
+.prose :global(h2:first-child) { margin-top: 12px; }
+.toc-label { font-size: .78rem; }
+@media (max-width: 768px) { .research-header h1 { font-size: 1.85rem; } .subtitle { font-size: 1rem; line-height: 1.7; } }
 </style>

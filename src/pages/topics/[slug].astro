@@ -1,17 +1,17 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { loadTopicRoutes, topicGroups } from '../../data/topics';
-import { getTopicFlow, getTopicTimeline, loadRelationContext } from '../../lib/relations';
+
 
 export async function getStaticPaths() {
-  const [topics, relations] = await Promise.all([loadTopicRoutes(), loadRelationContext()]);
+  const topics = await loadTopicRoutes();
   return topics.map((topic) => ({
     params: { slug: topic.slug },
-    props: { topic, timeline: getTopicTimeline(topic.slug, relations), flow: getTopicFlow(topic.slug, relations) },
+    props: { topic },
   }));
 }
 
-const { topic, timeline, flow } = Astro.props;
+const { topic } = Astro.props;
 const displayDate = (date?: Date) => date ? date.toISOString().slice(0, 10) : '—';
 const isEmpty = topic.radarCount === 0 && topic.researchCount === 0;
 const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
@@ -23,69 +23,34 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
       <a class="back-link" href="/topics/">← 长期议题</a>
       <p class="eyebrow">{topic.canonical ? `TOPIC FILE / ${groupName}` : 'HISTORICAL TOPIC / ARCHIVE'}</p>
       <h1>{topic.name}</h1>
-      <code class="slug">{topic.slug}</code>
+
       <p class="description">{topic.description}</p>
       {!topic.canonical && <p class="historical-note">这是旧内容中的历史标记，未纳入正式长期议题。</p>}
       <div class="overview">
-        <div><b>{topic.radarCount}</b><span>Radar Signals</span></div>
-        <div><b>{topic.researchCount}</b><span>Research</span></div>
-        <div><b>{displayDate(topic.latestActivity)}</b><span>Last Updated</span></div>
+        <div><b>{topic.radarCount}</b><span>期相关日报</span></div>
+        <div><b>{topic.researchCount}</b><span>篇研究</span></div>
+        <div><b>{displayDate(topic.latestActivity)}</b><span>最近更新</span></div>
       </div>
     </header>
-
-    {flow.length > 0 && (
-      <section class="content-section topic-flow" aria-labelledby="topic-flow-heading">
-        <header class="section-heading">
-          <div><p class="eyebrow">SIGNAL / RESEARCH / STATE</p><h2 id="topic-flow-heading">议题脉络</h2></div>
-        </header>
-        <ol class="flow-list">
-          {flow.map((step) => <li>
-            <span class="flow-stage">{step.stage}</span>
-            <span class="flow-date">{step.date ? displayDate(step.date).replaceAll('-', '.') : '当前'}</span>
-            {step.href ? <a href={step.href}>{step.title} <span aria-hidden="true">↗</span></a> : <strong>{step.title}</strong>}
-            <small>{step.source}</small>
-          </li>)}
-        </ol>
-      </section>
-    )}
-
-    {timeline.length > 0 && (
-      <section class="content-section timeline-section" aria-labelledby="topic-timeline-heading">
-        <header class="section-heading">
-          <div><p class="eyebrow">SIGNAL / RESEARCH / CONTEXT</p><h2 id="topic-timeline-heading">近期演进</h2></div>
-          <span>最新 {timeline.length} 条</span>
-        </header>
-        <div class="timeline-list">
-          {timeline.map((item) => (
-            <a class="timeline-row" href={item.href}>
-              <time>{displayDate(item.date)}</time>
-              <span class="timeline-kind">{item.kind === 'radar' ? '情报' : '研究'}</span>
-              <span class="timeline-copy"><strong>{item.title}</strong><small>{item.summary}</small></span>
-              <span class="timeline-source">{item.source}</span>
-              <span class="timeline-arrow" aria-hidden="true">→</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
 
     {isEmpty && <div class="topic-empty">这个议题正在观察中，尚未形成足够的研究记录。</div>}
 
     {!isEmpty && <section class="content-section" aria-labelledby="topic-research-heading">
       <header class="section-heading">
-        <div><p class="eyebrow">RESEARCH / LONG-TERM VIEW</p><h2 id="topic-research-heading">研究专题</h2></div>
+        <div><p class="eyebrow">RESEARCH / LONG-TERM VIEW</p><h2 id="topic-research-heading">精选研究</h2></div>
         <span>{topic.researchCount} 篇</span>
       </header>
       {topic.relatedResearch.length ? (
-        <div class="content-list">
-          {topic.relatedResearch.map((entry) => (
+        <><div class="content-list">
+          {topic.relatedResearch.slice(0, 3).map((entry) => (
             <a class="content-row" href={`/research/${entry.data.slug}/`}>
               <div class="row-meta"><span>RESEARCH</span><time>{displayDate(entry.data.updated)}</time></div>
-              <div class="row-copy"><h3>{entry.data.title}</h3><p>{entry.data.subtitle}</p><small>{entry.data.category.join(' · ')} · {entry.data.source}</small></div>
+              <div class="row-copy"><h3>{entry.data.title}</h3><p>{entry.data.subtitle}</p><small>{entry.data.category.join(' · ')}</small></div>
               <span class="arrow" aria-hidden="true">→</span>
             </a>
           ))}
         </div>
+        {topic.relatedResearch.length > 3 && <details class="archive-list"><summary>查看其余 {topic.relatedResearch.length - 3} 篇研究</summary>{topic.relatedResearch.slice(3).map(entry => <a class="archive-row" href={`/research/${entry.data.slug}/`}><time>{displayDate(entry.data.updated)}</time><span>{entry.data.title}</span><span aria-hidden="true">→</span></a>)}</details>}</>
       ) : (
         <p class="section-empty">这个主题尚无已发布研究，先从每日情报观察信号。</p>
       )}
@@ -93,12 +58,12 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
 
     {!isEmpty && <section class="content-section" aria-labelledby="topic-radar-heading">
       <header class="section-heading">
-        <div><p class="eyebrow">RADAR / DAILY SIGNALS</p><h2 id="topic-radar-heading">每日情报</h2></div>
+        <div><p class="eyebrow">RADAR / DAILY SIGNALS</p><h2 id="topic-radar-heading">近期雷达</h2></div>
         <span>{topic.radarCount} 期</span>
       </header>
       {topic.relatedRadarReports.length ? (
-        <div class="content-list">
-          {topic.relatedRadarReports.map((report) => (
+        <><div class="content-list">
+          {topic.relatedRadarReports.slice(0, 5).map((report) => (
             <a class="content-row" href={report.href}>
               <div class="row-meta"><span>RADAR</span><time>{displayDate(report.date)}</time></div>
               <div class="row-copy"><h3>{report.title}</h3><p>{report.verdict}</p><small>{report.radarLabel}{report.matchedHighlights.length > 0 && ` · ${report.matchedHighlights.length} 条相关重点信号`}</small></div>
@@ -106,6 +71,7 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
             </a>
           ))}
         </div>
+        {topic.relatedRadarReports.length > 5 && <details class="archive-list"><summary>查看其余 {topic.relatedRadarReports.length - 5} 期日报</summary>{topic.relatedRadarReports.slice(5).map(report => <a class="archive-row" href={report.href}><time>{displayDate(report.date)}</time><span>{report.radarLabel} · {report.title}</span><span aria-hidden="true">→</span></a>)}</details>}</>
       ) : (
         <p class="section-empty">这个主题尚无已发布 Radar 日报。</p>
       )}
@@ -168,4 +134,15 @@ const groupName = topicGroups.find((group) => group.id === topic.group)?.name;
 @media (max-width: 720px) { .flow-list { grid-template-columns: 1fr; gap: 0; padding: 0; }.flow-list li, .flow-list li:first-child { padding: 17px 0 17px 18px; border-left: 1px solid var(--border-subtle); }.flow-list li:not(:last-child)::after { content: ''; position: absolute; top: 100%; left: -2px; width: 3px; height: 18px; background: var(--accent-tech-border); } }
 @media (max-width: 460px) { .overview { grid-template-columns: 1fr; }.overview div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.overview div:last-child { border-bottom: 0; } }
 @media (max-width: 720px) { .timeline-row { grid-template-columns: 1fr auto; gap: 6px 12px; }.timeline-row time { grid-column: 1; }.timeline-kind { grid-column: 2; grid-row: 1; text-align: right; }.timeline-copy { grid-column: 1 / -1; }.timeline-source { grid-column: 1; text-align: left; }.timeline-arrow { grid-column: 2; grid-row: 3; text-align: right; } }
+
+.archive-list { margin-top: 16px; }
+.archive-list summary { padding: 12px 0; cursor: pointer; font-size: .85rem; color: var(--accent-text); }
+.archive-row { display: grid; grid-template-columns: 100px minmax(0, 1fr) 16px; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); font-size: .85rem; }
+.archive-row time { font-size: .78rem; color: var(--text-secondary); }
+.row-copy p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.overview { background: transparent; border: 0; }
+.overview span, .row-meta, .row-copy small { font-size: .78rem; }
+.related-list code { display: none; }
+.related-list a { grid-template-columns: 1fr auto; }
+@media (max-width: 460px) { .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); } .overview div { border: 0; padding-left: 0; } .overview div:last-child { grid-column: 1 / -1; } .archive-row { grid-template-columns: minmax(0, 1fr) 16px; gap: 6px; } .archive-row time { grid-column: 1; } .archive-row > span:first-of-type { grid-column: 1; } .archive-row > span:last-child { grid-column: 2; grid-row: 1 / span 2; } }
 </style>

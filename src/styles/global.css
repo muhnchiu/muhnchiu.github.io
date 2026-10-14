@@ -405,3 +405,9 @@ a:hover {
   .section { padding: 52px 0; }
   .collection-index { padding-top: 48px; padding-bottom: 80px; }
 }
+
+/* Reading navigation remains visible below the sticky header. */
+:where(h2, h3, section[id]) { scroll-margin-top: calc(var(--header-height) + 24px); }
+:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
+@media (max-width: 640px) { .section-header { align-items: flex-start; flex-wrap: wrap; gap: 12px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

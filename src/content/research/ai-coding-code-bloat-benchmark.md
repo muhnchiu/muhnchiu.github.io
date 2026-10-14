@@ -22,7 +22,7 @@ source: Dev Radar 2026-10-14 / Skill Radar 2026-10-14 / App Radar 2026-10-14
 created: 2026-10-14
 updated: 2026-10-14
 status: evolving
-confidence: high
+confidence: medium
 featured: false
 publish: true
 radar:
@@ -45,7 +45,7 @@ related:
 
 **一句话定义**：Parsimony（La5u/Parsimony，MIT）是一个不运行任何代码、直接解析编码代理在公开基准上发布的 patch，用 AST 层 coding units（语句/调用/比较/名称/字面量）计算净增量并排名「谁默认多写代码」的离线度量工具与排行榜。
 
-**为什么值得关注**：solve rate 相同的两个模型，长期维护成本可能差数倍。代码膨胀是「功能可用」与「代码库可维护」之间此前没有公开可量化度量的缺口。
+**为什么值得关注**：solve rate 相同的两个模型，长期维护成本可能差数倍。代码膨胀是「功能可用」与「代码库可维护」之间此前缺乏公开可量化度量的缺口（Parsimony 是当前已知首个公开的此类排行榜，不排他性陈述）。
 
 **最重要的发现**：
 1. 它复用 SWE-bench Verified / Live / DeepSWE 已发布的逐 attempt patch 与 pass/fail 结果，零运行成本，任何人可离线重算每个数字。
@@ -73,7 +73,7 @@ related:
 
 ### 一个具体例子
 
-官方示例：一段 `for` 循环求和（5 个 coding units）被替换成 `sum(items)`（3 个 units），净 −10。同一个 bug，甲模型写 800 行修好、乙模型 200 行修好——传统基准只看「测试过没过」，两者同分；Parsimony 给乙打低膨胀分。
+官方示例：一段 `for` 循环求和（5 个 coding units）被替换成 `sum(items)`（3 个 units），净增量 −2（新 − 删）。同一个 bug，甲模型写 800 行修好、乙模型 200 行修好——传统基准只看「测试过没过」，两者同分；Parsimony 给乙打低膨胀分。
 
 ### 专业解释
 
@@ -132,13 +132,13 @@ SWE-bench 系列自 2025 年起成为编码代理的事实标准：发布 patch�
 
 ### 3.2 决定性差异
 
-1. **唯一不依赖运行时、无需人介入、可离线复算的膨胀观测手段**——gap-trap 与代码审查回答「这次 diff 是否合格」，Parsimony 回答「这个模型默认多写多少代码」。
+1. **不依赖运行时、无需人介入、可离线复算的膨胀观测手段**——gap-trap 与代码审查回答「这次 diff 是否合格」，Parsimony 回答「这个模型默认多写多少代码」。注：不排除存在同类未公开工具。
 2. **复用现有基准数据**——不要求模型厂商配合，数据天然公开。
 3. **局限同源于设计**：不重跑测试意味着继承基准发布质量；单位口径固定 5 类，无法表达设计质量。
 
 ### 3.3 生态位
 
-主要替代：无直接替代（此前没有公开膨胀排行榜）。增强/依赖：SWE-bench、DeepSWE 的 patch 数据发布。可能被反过来替代：若 Artificial Analysis 等头部机构内置「net units」类指标，独立小工具将并入报告维度。
+主要替代：当前检索范围内未见直接替代（Parsimony 是已知首个公开膨胀排行榜，不排除存在未收录的同类工具）。增强/依赖：SWE-bench、DeepSWE 的 patch 数据发布。可能被反过来替代：若 Artificial Analysis 等头部机构内置「net units」类指标，独立小工具将并入报告维度。
 
 ## 04. 横纵交汇：位置、价值与未来
 
@@ -208,17 +208,17 @@ Parsimony 是这一维度的最小可用实现：方法可信、边界诚实、�
 
 **决策：测试验证。** 主要原因：方法有一手来源支撑且零运行成本；但共识未形成、热度早期。适用条件：模型横向对比场景。重新评估条件：① 头部机构内置类指标；② 多语言 track 验证通过；③ 团队级 diff 审查开始要求膨胀指标；④ 出现「净 units 与质量强相关」的独立证据。
 
-## 08. 行动与后续观察
+## 07. 行动与后续观察
 
-### 8.1 Action Items
+### 7.1 Action Items
 
 | 行动 | 目的 | 优先级 |
 |---|---|---|
 | 下次 OpenRouter 免费通道模型对比时记录各模型 added/removed 行数或 AST 单元数 | 给 solve rate 加膨胀对照列 | 高 |
 | 人工审阅发现某模型 patch 普遍偏长时，拉取对应 model board 数据核对 | 区分模型默认偏好 vs 任务复杂度 | 中 |
-| 团队 diff 审查开始讨论膨胀时，评估 `parsimony analyze` 接入 CI（观测非门控） | 低 | 低 |
+| 团队 diff 审查开始讨论膨胀时，评估 `parsimony analyze` 接入 CI（观测非门控） | 提供团队级膨胀观测报告 | 低 |
 
-### 8.2 后续观察信号
+### 7.2 后续观察信号
 
 - Parsimony 仓库 examples/ 历史 cohort（README 指向 `examples/README.md`）——膨胀随模型代际的变化；
 - 「coding units」口径是否被其他 benchmark 采纳；

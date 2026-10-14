@@ -7,13 +7,13 @@ const icons = ['✦', '</>', '♢', '◇', '⌘'];
   <div class="container">
     <div class="section-header">
       <div><h2>今日信号</h2><p class="section-sub">从噪声中，识别真正值得关注的变化。</p></div>
-      <div class="signals-heading-right"><span class="section-date">{date ?? '暂无日报'}</span><span class="pager" aria-hidden="true">‹　›</span></div>
+      <div class="signals-heading-right"><span class="section-date">{date ?? '暂无日报'}</span></div>
     </div>
     <div class="signals-grid">
       {radars.map((radar, index) => (
         <a href={`/radar/${radar.id}`} class={`signal-card ${radar.accent}`}>
           <div class="signal-name"><span class="signal-icon">{icons[index]}</span>{radar.name}</div>
-          {radar.signalCount !== undefined ? <><strong class="radar-count">{String(radar.signalCount).padStart(2, '0')}</strong><span class="radar-label">SIGNALS</span><div class="signal-states"><span>{radar.highSignalCount} HIGH</span><span>{radar.actionRequired} ACTION</span></div></> : <><strong class="radar-count unavailable">—</strong><span class="radar-label">未更新</span><div class="signal-states"><span>暂无数据</span></div></>}
+          {radar.signalCount !== undefined ? <><strong class="radar-count">{String(radar.signalCount).padStart(2, '0')}</strong><span class="radar-label">条信号</span><div class="signal-states"><span>{radar.highSignalCount} 重点</span><span>{radar.actionRequired} 需处理</span></div></> : <><strong class="radar-count unavailable">—</strong><span class="radar-label">未更新</span><div class="signal-states"><span>暂无数据</span></div></>}
           <span class="card-arrow">→</span>
         </a>
       ))}
@@ -23,4 +23,13 @@ const icons = ['✦', '</>', '♢', '◇', '⌘'];
 
 <style>
 .signals-section { padding-top: 29px; padding-bottom: 58px; }.section-header { margin-bottom: 15px; }.section-header h2 { font-size: 1.32rem; }.section-sub { margin-top: -1px; }.signals-heading-right { display: flex; align-items: center; gap: 24px; }.section-date { font-family: var(--font-mono); font-size: .71rem; letter-spacing: .07em; color: var(--ink-blue-soft); }.pager { padding: 6px 10px; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-secondary); font-size: 1rem; letter-spacing: .14em; }.signals-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }.signal-card { position: relative; display: flex; flex-direction: column; min-height: 151px; padding: 16px 14px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--tint) 33%, var(--surface-blue-border)); border-radius: 7px; background: linear-gradient(135deg, var(--bg-surface), var(--tint)); transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); }.signal-card:hover { color: inherit; border-color: var(--tone); box-shadow: 0 9px 20px color-mix(in srgb, var(--tone) 15%, transparent); transform: translateY(-2px); }.signal-card.blue { --tone: var(--signal-blue); --tint: var(--signal-blue-bg); }.signal-card.green { --tone: var(--signal-green); --tint: var(--signal-green-bg); }.signal-card.red { --tone: var(--signal-red); --tint: var(--signal-red-bg); }.signal-card.purple { --tone: var(--signal-purple); --tint: var(--signal-purple-bg); }.signal-card.orange { --tone: var(--signal-orange); --tint: var(--signal-orange-bg); }.signal-name { display: flex; align-items: center; gap: 9px; font-size: .65rem; font-weight: 700; color: color-mix(in srgb, var(--tone) 70%, var(--text-primary)); }.signal-icon { display: grid; place-items: center; width: 18px; height: 18px; font-family: var(--font-mono); font-size: .82rem; color: var(--tone); }.radar-count { margin-top: 15px; font-family: var(--font-mono); font-size: 2rem; font-weight: 500; line-height: .9; color: color-mix(in srgb, var(--tone) 72%, var(--text-primary)); }.radar-count.unavailable { color: var(--text-tertiary); }.radar-label { margin-top: 7px; font-family: var(--font-mono); font-size: .57rem; letter-spacing: .1em; color: color-mix(in srgb, var(--tone) 70%, var(--text-secondary)); }.signal-states { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 12px; font-family: var(--font-mono); font-size: .62rem; font-weight: 550; color: var(--ink-blue-soft); }.signal-states span:first-child { color: var(--tone); }.card-arrow { position: absolute; right: 14px; bottom: 13px; color: var(--ink-blue-soft); }@media (max-width: 1024px) { .signals-grid { grid-template-columns: repeat(3, 1fr); } }@media (max-width: 640px) { .signals-grid { grid-template-columns: 1fr 1fr; }.signals-heading-right .pager { display: none; } }
+
+.signals-section { padding-top: 24px; padding-bottom: 32px; }
+.signal-card { min-height: 105px; padding: 14px; background: var(--bg-surface); }
+.signal-name { font-size: .82rem; }
+.radar-count { font-size: 1.5rem; margin-top: 12px; }
+.radar-label { font-size: .75rem; }
+.signal-states { font-size: .75rem; padding-top: 10px; gap: 8px; }
+.card-arrow { display: none; }
+@media (max-width: 640px) { .signals-grid { grid-template-columns: 1fr; gap: 0; } .signal-card { display: grid; grid-template-columns: minmax(0, 1fr) 30px 56px minmax(0, 1fr); align-items: center; gap: 8px; min-height: 54px; border: 0; border-bottom: 1px solid var(--border-subtle); border-radius: 0; background: transparent; } .radar-count, .radar-label, .signal-states { margin: 0; padding: 0; } .signal-states { justify-content: flex-end; } .radar-count { font-size: 1.1rem; } .signal-name { gap: 6px; font-size: .78rem; } }
 </style>
