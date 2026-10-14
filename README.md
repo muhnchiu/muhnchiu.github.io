@@ -31,16 +31,20 @@ flowchart LR
 
 ## 当前状态
 
-截至 **2026-10-08**，已有 Legacy 日报与 Pages 发布流程。网站 `src/content/radar/` 目前按 **V1 Schema** 校验；V2 的 Normalizer、Validator、Identity、Registry 等已有代码与验证材料，但这些材料不自动授予完整 V2 生产发布权限。
+截至 **2026-10-14**，日报发布运行在 V1 / V2 双轨归属机制下：
+
+- **V1 Publisher**（`script-manager/publish-radar.sh` + GitHub Actions）：AI / APP / SEC / SKILL 四个雷达的默认发布路径。构建经 Astro 校验与简繁本地化后 commit + push 触发 Pages 部署。
+- **V2 Personal Publisher**（`scripts/radar-personal-publish.mjs`）：DEV 雷达当前归属 `V2_PERSONAL`，发布前经 PP2 DAILY_DIGEST、Astro Schema、计数自洽、去重与归属门禁；commit + push 后由 Pages 部署。
+- **动态 Ownership Guard**（`scripts/v1-radar-ownership-skip.mjs`）：V1 发布器按 `~/.local/state/horizon/radar-publish-ownership.json` 逐雷达判定归属。`V2_PERSONAL` 雷达由 V1 自动跳过（fail-closed：配置缺失或损坏回落全 V1）。
+- **Research**：`src/content/research/` 按各自 `publish` 标志独立发布，不受雷达归属机制影响。
 
 | 路径或门禁 | 状态与边界 |
 | --- | --- |
-| Legacy Publisher → Actions → Pages | 既有日报发布路径；每批仍需验证构建和页面 |
-| Contract 2.1.2 | 当前版本化 Event Identity 契约；历史包不可重写 |
-| Domain Snapshot Profile 2.0 / Trusted Head | NOT_FROZEN / BLOCKED |
-| 受相关门禁约束的 Runtime Authorization / Provider Qualification | NOT_GRANTED / BLOCKED |
-| 完整受治理 V2 Publisher | 未解锁；Legacy 发布成功不构成授权 |
-| Phase 9.2 能力债务 | 3 OPEN / 0 CLOSED；整体 INCOMPLETE |
+| V1 Publisher → Actions → Pages（AI/APP/SEC/SKILL） | 既有日报发布路径；每批仍需验证构建和页面 |
+| V2 Personal Publisher → Actions → Pages（DEV） | 当前 DEV 归属 V2_PERSONAL；check/PP2/Schema/去重/计数自洽全通过方可 commit+push |
+| 动态 Ownership Guard | 按归属配置逐雷达判定；配置异常 fail-closed 回落全 V1 |
+| Research 发布 | 按 `publish` 标志独立，不受雷达归属机制影响 |
+| Contract 2.1.2 / Domain Snapshot / Runtime Authorization | 历史治理门禁保留在文档中，但不作为当前日报发布的阻断条件 |
 
 状态来源及尚待验收的项目见[路线图](docs/09-roadmap.md)。本说明是使用入口，不是运行授权。
 
