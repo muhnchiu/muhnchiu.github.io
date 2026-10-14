@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      gate_baseline:
+        description: "Explicit git baseline commit for the publish gate (required when auto-detection is not possible)"
+        required: false
+        default: ""
+      gate_all:
+        description: "Check ALL publish:true research articles (not just changed) — use only when explicitly needed"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,7 +24,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate:
+    # Publish Gate: 对本次新增/变更的 publish:true 研究文章做增量门禁
+    # 只执行确定性检查：frontmatter、必填字段、章节连续、空可选字段、
+    # Gate JSON 记录存在性、SHA-256 匹配、G1-G5 无 FAIL。
+    # 语义事实核查（G1/G3/G4 判断）由 Research/Verification/Agent 层负责，
+    # CI 验证的是"签署记录与内容一致"，不是"语义检查已执行"。
+    # 详见 publish-gate/NOTES.md。
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run publish gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BASELINE="${{ inputs.gate_baseline }}"
+            ALL="${{ inputs.gate_all }}"
+          else
+            BASELINE="${{ github.event.before }}"
+            ALL=""
+          fi
+          # 手动触发未提供 baseline 且 GATE_ALL=true 时，允许全量检查（显式选择）
+          if [ -z "$BASELINE" ] && [ -z "$ALL" ]; then
+            echo "::warning::No explicit baseline for workflow_dispatch; gate will attempt auto-detection."
+          fi
+          export GATE_BASELINE="$BASELINE"
+          if [ "$ALL" = "true" ] || [ "$ALL" = "True" ]; then
+            export GATE_MODE="all"
+          fi
+          node scripts/publish-gate.mjs
+      - name: Upload gate result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-gate-result
+          path: |
+            publish-gate/
+
   build:
+    needs: gate   # 硬依赖：gate 失败则 build 不执行
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +83,7 @@ jobs:
           path: ./dist
 
   deploy:
-    needs: build
+    needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
