@@ -1,0 +1,1 @@
+{"ts":"2026-10-14T09:35:00Z","type":"retraction","slug":"world-models-three-landing-routes","by":"editorial-agent","note":"撤销 0413498 提交中 hand-authored publish-gate/world-models-three-landing-routes.json。原 JSON 由生成文章的同一流程人工填写全部 G1-G5 PASS，缺少独立 Verification 证据；CI 脚本只验证记录格式与 SHA 匹配，不等于语义核验已完成。原 PASSED 状态无效。文章仍需独立核验（来源、数字、推断、适用边界）后方可重新申请 Publish Gate 验收。本行仅为审计线索，不构成 PASS。"}
