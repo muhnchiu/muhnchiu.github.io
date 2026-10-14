@@ -1,0 +1,14 @@
+---
+interface Props { href: string; label: string; edition: string; }
+const { href, label, edition } = Astro.props;
+---
+<div class="section-masthead"><div class="container section-masthead-inner"><a href={href}><b>H.</b><span>{label}</span></a><span class="section-edition">{edition}</span></div></div>
+<style>
+.section-masthead { border-bottom:1px solid var(--obs-line); }
+.section-masthead-inner { height:79px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.section-masthead a { display:flex; align-items:center; gap:18px; color:var(--obs-text); }
+.section-masthead b { color:var(--obs-gold); font:800 2rem/1 'Fraunces',serif; }
+.section-masthead a span { font:.82rem/1.5 var(--font-sans); }
+.section-edition { color:var(--obs-muted); font:.7rem/1.5 var(--font-sans); letter-spacing:.03em; }
+@media(max-width:720px) { .section-masthead-inner { height:63px; }.section-edition { display:none; }.section-masthead a span { font-size:.75rem; } }
+</style>

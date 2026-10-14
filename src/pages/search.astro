@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import SearchFrame from '../components/SearchFrame.astro';
 import { topicRegistry } from '../data/topics';
 
 const suggestedSlugs = ['agent-systems', 'local-ai', 'ai-coding', 'rag-knowledge', 'developer-tools', 'inference'];
@@ -7,6 +8,7 @@ const suggestions = suggestedSlugs.map((slug) => topicRegistry.find((topic) => t
 ---
 
 <Base title="搜索 | Horizon" description="在 Horizon 的技术情报、深度研究、长期议题与公开工作栈之间检索信号、判断与工具。" noindex>
+  <SearchFrame>
   <div class="search-page collection-index container">
     <header class="search-hero">
       <p class="eyebrow">SEARCH / HORIZON INDEX</p>
@@ -44,6 +46,7 @@ const suggestions = suggestedSlugs.map((slug) => topicRegistry.find((topic) => t
     </section>
     <p class="index-error" id="index-error" hidden>搜索索引暂时无法加载，请稍后重试。</p>
   </div>
+  </SearchFrame>
 </Base>
 
 <script>

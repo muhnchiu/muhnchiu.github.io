@@ -1,10 +1,11 @@
 ---
+import FieldIcon from './FieldIcon.astro';
 const navItems = [
   { label: '雷达', href: '/radar' },
-  { label: '深度研究', href: '/research' },
-  { label: '长期议题', href: '/topics' },
-  { label: '工具栈', href: '/stack' },
-  { label: '关于', href: '/about' },
+  { label: '洞见', href: '/research' },
+  { label: '脉络', href: '/topics' },
+  { label: '方略', href: '/stack' },
+  { label: '自省', href: '/about' },
 ];
 const activePath = Astro.url.pathname.replace(/^\/zh-hans(?=\/)/, '').replace(/\/$/, '');
 ---
@@ -18,13 +19,13 @@ const activePath = Astro.url.pathname.replace(/^\/zh-hans(?=\/)/, '').replace(/\
     </a>
     <nav class="nav" aria-label="主导航">
       {navItems.map(item => (
-        <a href={item.href} class="nav-link" aria-current={activePath === item.href || activePath.startsWith(`${item.href}/`) ? 'page' : undefined}>{item.label}</a>
+        <a href={item.href} class="nav-link" aria-current={activePath === item.href || activePath.startsWith(`${item.href}/`) ? 'page' : undefined}><FieldIcon name={item.href.slice(1)} />{item.label}</a>
       ))}
     </nav>
     <details class="mobile-navigation">
       <summary aria-label="展开主导航">菜单</summary>
       <nav aria-label="主导航">
-        {navItems.map(item => <a href={item.href} aria-current={activePath === item.href || activePath.startsWith(`${item.href}/`) ? 'page' : undefined}>{item.label}</a>)}
+        {navItems.map(item => <a href={item.href} aria-current={activePath === item.href || activePath.startsWith(`${item.href}/`) ? 'page' : undefined}><FieldIcon name={item.href.slice(1)} />{item.label}</a>)}
       </nav>
     </details>
     <div class="header-tools" aria-label="站点工具">
@@ -34,7 +35,7 @@ const activePath = Astro.url.pathname.replace(/^\/zh-hans(?=\/)/, '').replace(/\
         <a href="/zh-hans/" data-language="zh-Hans" aria-label="简体中文"><span data-no-convert>简</span></a>
       </nav>
       <a class="icon-button" href="/search/" aria-label="搜索">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="5.8"></circle><path d="m16 16 4 4"></path></svg>
+        <FieldIcon name="search" />
       </a>
       <div class="theme-control">
         <button class="icon-button theme-trigger" type="button" aria-label="切换主题" aria-haspopup="true" aria-expanded="false" aria-controls="theme-options">

@@ -1,0 +1,10 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ResearchFrame from '../../../components/ResearchFrame.astro';
+import ResearchIndex from '../../../components/ResearchIndex.astro';
+import {loadResearchIndex} from '../../../data/research-index';
+import {researchPage} from '../../../lib/research-pagination.mjs';
+export async function getStaticPaths(){const all=await loadResearchIndex();return Array.from({length:researchPage(all).totalPages-1},(_,i)=>({params:{page:String(i+2)},props:{all,page:i+2}}));}
+const {all,page}=Astro.props;
+---
+<Base title={`洞见 · 第${page}页 — Horizon`}><ResearchFrame><ResearchIndex {all} {page}/></ResearchFrame></Base>

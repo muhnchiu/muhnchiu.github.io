@@ -1,0 +1,48 @@
+<div class="reading-progress" aria-hidden="true" hidden><span></span></div>
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const sections = [...document.querySelectorAll<HTMLElement>('.about-section, .stack-section, .topic-group, .content-section, .observatory-home > section, .research-index > section')];
+  let observer: IntersectionObserver | undefined;
+  function setupReveals() {
+    observer?.disconnect();
+    sections.forEach(section => section.classList.remove('field-reveal', 'is-visible'));
+    if (reduced.matches || !('IntersectionObserver' in window)) return;
+    observer = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer?.unobserve(entry.target);
+      }
+    }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
+    sections.forEach(section => {
+      if (section.getBoundingClientRect().top > innerHeight) {
+        section.classList.add('field-reveal'); observer?.observe(section);
+      }
+    });
+  }
+  setupReveals(); reduced.addEventListener('change', setupReveals);
+  const prose = document.querySelector<HTMLElement>('.research-detail .prose, .radar-report .prose');
+  const progress = document.querySelector<HTMLElement>('.reading-progress');
+  const bar = progress?.querySelector<HTMLElement>('span');
+  if (prose && progress && bar) {
+    progress.hidden = false;
+    const headings = [...prose.querySelectorAll<HTMLElement>('h2[id],h3[id]')];
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc-item, .report-contents a')];
+    let pending = false;
+    const update = () => {
+      pending = false;
+      const rect = prose.getBoundingClientRect();
+      const fraction = Math.max(0, Math.min(1, (innerHeight - rect.top) / Math.max(1, rect.height)));
+      bar.style.transform = `scaleX(${fraction})`;
+      let current = headings[0];
+      for (const heading of headings) if (heading.getBoundingClientRect().top <= 140) current = heading;
+      for (const link of links) {
+        const active = Boolean(current && link.getAttribute('href') === `#${current.id}`);
+        link.classList.toggle('is-current', active);
+        if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
+      }
+    };
+    const schedule = () => { if (!pending) { pending = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule); update();
+  }
+</script>

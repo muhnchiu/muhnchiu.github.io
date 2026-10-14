@@ -1,0 +1,10 @@
+---
+import Base from '../../../../../layouts/Base.astro';
+import ResearchFrame from '../../../../../components/ResearchFrame.astro';
+import ResearchIndex from '../../../../../components/ResearchIndex.astro';
+import {loadResearchIndex} from '../../../../../data/research-index';
+import {categorySlug,researchPage} from '../../../../../lib/research-pagination.mjs';
+export async function getStaticPaths(){const all=await loadResearchIndex();return [...new Set(all.flatMap(e=>e.data.category))].flatMap(category=>Array.from({length:researchPage(all,category).totalPages-1},(_,i)=>({params:{category:categorySlug(category),page:String(i+2)},props:{all,category,page:i+2}})));}
+const {all,category,page}=Astro.props;
+---
+<Base title={`${category}研究 · 第${page}页｜洞见 — Horizon`}><ResearchFrame><ResearchIndex {all} {category} {page}/></ResearchFrame></Base>

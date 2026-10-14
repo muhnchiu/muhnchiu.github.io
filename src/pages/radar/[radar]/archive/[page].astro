@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../../../layouts/Base.astro';
+import RadarFrame from '../../../../components/RadarFrame.astro';
+import RadarViewNav from '../../../../components/RadarViewNav.astro';
+import RadarArchive from '../../../../components/RadarArchive.astro';
+import { radarCatalog } from '../../../../data/radar';
+import { paginateReports } from '../../../../lib/radar-pagination.mjs';
+export async function getStaticPaths() {
+  const entries = await getCollection('radar', ({data}) => data.publish);
+  return radarCatalog.flatMap(radar => {
+    const reports = entries.filter(report => report.data.radar === radar.id).sort((a,b) => b.data.date.getTime() - a.data.date.getTime());
+    return Array.from({length:paginateReports(reports).totalPages - 1},(_,index) => ({params:{radar:radar.id,page:String(index + 2)},props:{radar,reports,page:index + 2}}));
+  });
+}
+const { radar, reports, page } = Astro.props;
+---
+<Base title={`${radar.name}历史记录 · 第${page}页 — Horizon`} description={`${radar.name} Radar 历史日报档案，第 ${page} 页。`}><RadarFrame><section class="category-page container"><header class="category-hero"><a class="report-back" href={`/radar/${radar.id}/`}>← 返回分类雷达</a><p class="eyebrow">{radar.id.toUpperCase()} RADAR / ARCHIVE</p><h1>{radar.name}观测档案</h1><p>按日期回看技术信号与当时的判断。</p></header><RadarViewNav /><RadarArchive {reports} radar={radar.id} {page}/></section></RadarFrame></Base>

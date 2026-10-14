@@ -1,0 +1,12 @@
+---
+interface Props { title: string; eyebrow: string; description: string; }
+const { title, eyebrow, description } = Astro.props;
+---
+<header class="column-cover"><p class="column-kicker">{eyebrow}</p><h1>{title}</h1><p class="column-description">{description}</p></header>
+<style>
+.column-cover { height:224px; padding:0 0 32px; border-bottom:1px solid var(--obs-line); background:transparent; }
+.column-kicker { color:var(--obs-gold); font:.75rem/1.6 var(--font-sans); letter-spacing:.035em; }
+.column-cover h1 { margin:12px 0 0; color:var(--obs-text); font:600 3.5rem/1.5 var(--field-serif); letter-spacing:.02em; }
+.column-description { max-width:680px; margin:12px 0 0; color:var(--obs-muted); font:.95rem/1.85 var(--font-sans); }
+@media(max-width:720px) { .column-cover { height:auto; min-height:196px; padding-bottom:28px; }.column-cover h1 { font-size:2.7rem; }.column-description { font-size:.9rem; } }
+</style>

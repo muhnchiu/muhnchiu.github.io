@@ -1,7 +1,9 @@
 ---
+import RadarViewNav from '../../components/RadarViewNav.astro';
 import { getCollection } from 'astro:content';
+import RadarFrame from '../../components/RadarFrame.astro';
 import Base from '../../layouts/Base.astro';
-import CollectionHero from '../../components/CollectionHero.astro';
+import ColumnCover from '../../components/ColumnCover.astro';
 import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from '../../data/radar';
 
 const actionLabels = { action: '需处理', test: '试用', watch: '观察', read: '阅读', explore: '探索', ignore: '略过' };
@@ -28,8 +30,10 @@ const activityMax = Math.max(...sevenDayActivity.map((day) => day.count), 1);
 ---
 
 <Base title="Radar — Horizon" description="Continuous Technology Scanning">
+  <RadarFrame>
   <section class="radar-dashboard collection-index container">
-    <CollectionHero eyebrow="RADAR / DAILY SIGNALS" title="雷达" description="持续扫描 AI、开发者工具、安全、软件与 Agent Skills 的变化。" count={radarCatalog.length} countLabel="雷达视角" />
+    <ColumnCover title="雷达" eyebrow="RADAR / 每日观测" description="捕捉技术世界的变化，辨认值得留意的信号。" />
+    <RadarViewNav />
 
     <section class="dashboard-section overview">
       <div class="collection-section-heading"><div><p class="section-label">LATEST SNAPSHOT</p><h2>今日概览</h2></div><span>{latestDate ? displayRadarDate(latestDate) : '等待日报'}</span></div>
@@ -39,7 +43,7 @@ const activityMax = Math.max(...sevenDayActivity.map((day) => day.count), 1);
     <section class="dashboard-section"><div class="collection-section-heading"><div><p class="section-label">RADAR SYSTEM</p><h2>五个视角，持续观察</h2></div><span>{radarCatalog.length} 个视角</span></div><div class="radar-grid">
       {radarCatalog.map((radar) => {
         const latest = reports.find((report) => report.data.radar === radar.id);
-        return <a class="radar-card" href={`/radar/${radar.id}`}><p>{radar.name}</p><strong>{latest ? String(latest.data.signalCount).padStart(2, '0') : '—'}</strong><span>{latest ? 'SIGNALS' : 'NO REPORT'}</span><small>{latest ? `${latest.data.highSignalCount} HIGH · ${latest.data.actionRequired} ACTION` : 'Waiting for published data'}</small></a>;
+        return <a class="radar-card" href={`/radar/${radar.id}`}><p>{radar.name}</p><strong>{latest ? String(latest.data.signalCount).padStart(2, '0') : '—'}</strong><span>{latest ? '条信号' : '暂无日报'}</span><small>{latest ? `${latest.data.highSignalCount} 重点 · ${latest.data.actionRequired} 需处理` : 'Waiting for published data'}</small></a>;
       })}
     </div></section>
 
@@ -55,6 +59,7 @@ const activityMax = Math.max(...sevenDayActivity.map((day) => day.count), 1);
       {radarCatalog.map((radar) => <div><span>{radar.name} Radar</span><b class={reports.some((report) => report.data.radar === radar.id) ? 'active' : 'pending'}>{reports.some((report) => report.data.radar === radar.id) ? 'ACTIVE' : 'PENDING'}</b></div>)}
     </div></div></section>
   </section>
+  </RadarFrame>
 </Base>
 
 <style>

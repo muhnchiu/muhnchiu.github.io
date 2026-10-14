@@ -134,13 +134,23 @@ function updateLinks(node, route, language, knownRoutes) {
       if (href?.startsWith('/') && !href.startsWith('//') && !href.startsWith(simplifiedPrefix)) {
         const pathname = new URL(href, siteUrl).pathname;
         const normalized = pathname.endsWith('/') || path.extname(pathname) ? pathname : `${pathname}/`;
-        if (knownRoutes.has(normalized)) setAttr(node, 'href', `${simplifiedPrefix}${href}`);
+        if (knownRoutes ? knownRoutes.has(normalized) : !path.extname(pathname)) setAttr(node, 'href', `${simplifiedPrefix}${href}`);
       }
     }
   }
   for (const child of node.childNodes ?? []) updateLinks(child, route, language, knownRoutes);
 }
 
+// Shared by the production build and Astro's development response middleware.
+export function localizeHtml(source, route, language, knownRoutes = null) {
+  const document = parse(source);
+  if (language === 'traditional') convertVisibleText(document);
+  updateMetadata(document, route, language);
+  updateLinks(document, route, language, knownRoutes);
+  return serialize(document);
+}
+
+export async function buildLocales() {
 const htmlFiles = await collectHtml(distRoot);
 const routeFiles = htmlFiles.map((absolute) => ({
   absolute,
@@ -152,18 +162,14 @@ const knownRoutes = new Set(routeFiles.map(({ route }) => route));
 for (const { absolute, relative, route } of routeFiles) {
   const source = await readFile(absolute, 'utf8');
 
-  const traditional = parse(source);
-  convertVisibleText(traditional);
-  updateMetadata(traditional, route, 'traditional');
-  updateLinks(traditional, route, 'traditional', knownRoutes);
-  await writeFile(absolute, serialize(traditional));
-
-  const simplified = parse(source);
-  updateMetadata(simplified, route, 'simplified');
-  updateLinks(simplified, route, 'simplified', knownRoutes);
+  await writeFile(absolute, localizeHtml(source, route, 'traditional', knownRoutes));
+  const simplified = localizeHtml(source, route, 'simplified', knownRoutes);
   const simplifiedPath = path.join(distRoot, 'zh-hans', relative);
   await mkdir(path.dirname(simplifiedPath), { recursive: true });
-  await writeFile(simplifiedPath, serialize(simplified));
+  await writeFile(simplifiedPath, simplified);
 }
 
 console.log(`Localized ${routeFiles.length} pages: traditional default and simplified under ${simplifiedPrefix}/.`);
+
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await buildLocales();

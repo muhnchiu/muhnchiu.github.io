@@ -1,24 +1,14 @@
 ---
+import '@fontsource/fraunces/latin-800.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/noto-serif-tc/600.css';
+import '@fontsource/noto-serif-sc/600.css';
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import TodaySignals from '../components/TodaySignals.astro';
-import TodayBrief from '../components/TodayBrief.astro';
-import LatestResearch from '../components/LatestResearch.astro';
-import ResearchTopics from '../components/ResearchTopics.astro';
-import StackPreview from '../components/StackPreview.astro';
+import ObservatoryHome from '../components/ObservatoryHome.astro';
+import '../styles/observatory.css';
 import { loadHomeData } from '../data/home';
-
 const home = await loadHomeData();
 ---
-
-<Base
-  title="Horizon — Technology Intelligence & Research"
-  description="扫描变化，理解技术，沉淀判断。AI · Developer · Security · Software · Agent Skills"
->
-  <Hero status={home.hero} />
-  <TodaySignals radars={home.radarCards} date={home.latestRadarDate} />
-  <TodayBrief briefs={home.briefs} />
-  <LatestResearch featured={home.featuredResearch} recent={home.recentResearch} />
-  <ResearchTopics topics={home.topics} />
-  <StackPreview />
+<Base title="Horizon — Technology Intelligence & Research" description="独立技术观测站。每日扫描技术变化，从短暂的信号走向长期研究。">
+  <ObservatoryHome {home} />
 </Base>

@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import ResearchFrame from '../../components/ResearchFrame.astro';
 import Base from '../../layouts/Base.astro';
 import ContextNavigation from '../../components/ContextNavigation.astro';
 import { statusLabel, confidenceLabel, formatDate } from '../../data/research';
@@ -34,6 +35,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.subtitle} type="article">
+  <ResearchFrame>
   <article class="research-detail container">
     <header class="research-header">
       <p class="breadcrumb">
@@ -116,6 +118,7 @@ const historicalTopics = topicSlugs.filter((slug) => !isCanonicalTopic(slug));
 
     <ContextNavigation kind="research" topics={relatedTopics} radars={relatedRadars} research={relatedResearch} />
   </article>
+  </ResearchFrame>
 </Base>
 
 <style>

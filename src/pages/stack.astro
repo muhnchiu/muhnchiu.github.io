@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import ColumnCover from '../components/ColumnCover.astro';
+import StackFrame from '../components/StackFrame.astro';
 import stack from '../data/stack.json';
 
 const categoryNames: Record<string, string> = {
@@ -79,26 +81,22 @@ const pipeline = [
 ];
 ---
 
-<Base title="工作栈 | Horizon" description="记录个人工作环境中的开发工具、AI Coding、终端与知识管理，以及通过 Homebrew、Brewfile 和 chezmoi 维护的可重建环境。">
+<Base title="方略｜工具与工作环境 — Horizon" description="记录个人工作环境中的开发工具、AI Coding、终端与知识管理，以及通过 Homebrew、Brewfile 和 chezmoi 维护的可重建环境。">
+  <StackFrame>
   <div class="stack-page collection-index container">
-    <header class="stack-hero">
-      <p class="eyebrow">STACK / WORK ENVIRONMENT</p>
-      <h1>工作栈</h1>
-      <p class="hero-lede">软件会变，工作环境应该可以重建。</p>
-      <p class="hero-description">这里记录真正构成我日常工作流的工具，以及一套持续维护、可以重建的个人计算环境。</p>
-      <dl class="hero-stats">
-        {stats.map((stat) => <div><dd>{stat.value}</dd><dt>{stat.label}</dt></div>)}
-      </dl>
-    </header>
+    <ColumnCover title="方略" eyebrow="STACK / 工具与方法" description="让工具进入实践，让工作环境可以持续维护与重建。" />
+    <dl class="hero-stats stack-summary">{stats.map(stat => <div><dd>{stat.value}</dd><dt>{stat.label}</dt></div>)}</dl>
+    <p class="stack-intro">软件会变，工作环境应该可以重建。这里记录真正构成我日常工作流的工具，以及一套持续维护、可以重建的个人计算环境。</p>
+    <nav class="stack-nav" aria-label="工作栈章节"><a href="#core-heading"><span>01</span> 核心工具</a><a href="#environment-code-heading"><span>02</span> 环境即代码</a><a href="#browser-heading"><span>03</span> 软件清单</a><a href="#about-stack-heading"><span>04</span> 关于清单</a></nav>
 
     <section class="stack-section core-section" aria-labelledby="core-heading">
-      <div class="section-heading"><div><p class="section-index">01 / CURATED TOOLS</p><h2 id="core-heading">核心工作栈</h2></div><p>真正构成日常工作流的 16 个工具。</p></div>
+      <div class="section-heading"><div><p class="section-index">01 / CURATED TOOLS</p><h2 id="core-heading">日常工具与用途</h2></div><p>真正构成日常工作流的 16 个工具。</p></div>
       <div class="core-groups">
         {groupedCore.map((group) => <section class="core-group" aria-labelledby={`core-${group.id}`}>
           <div class="group-heading"><div><small>{group.label}</small><h3 id={`core-${group.id}`}>{group.name}</h3></div><span>{String(group.tools.length).padStart(2, '0')}</span></div>
           <div class="core-grid">
             {group.tools.map((tool) => <article class:list={['core-card', { 'core-card-primary': primaryCore.has(tool.name) }]}>
-              <div class="core-card-top"><h4>{tool.name}</h4><span>{categoryNames[tool.category] ?? tool.category}</span></div>
+              <div class="core-card-top"><h4>{tool.name}</h4><span>{primaryCore.has(tool.name) ? '主力工具' : (categoryNames[tool.category] ?? tool.category)}</span></div>
               <p>{coreDescriptions[tool.name] ?? tool.description}</p>
               {management(tool).length > 0 && <div class="core-management" aria-label="管理方式">{management(tool).map((label) => <span>{label}</span>)}</div>}
             </article>)}
@@ -108,7 +106,7 @@ const pipeline = [
     </section>
 
     <section class="stack-section environment-code" aria-labelledby="environment-code-heading">
-      <div class="section-heading"><div><p class="section-index">02 / ENVIRONMENT AS CODE</p><h2 id="environment-code-heading">环境即代码</h2></div></div>
+      <div class="section-heading"><div><p class="section-index">02 / ENVIRONMENT AS CODE</p><h2 id="environment-code-heading">一套可以重建的环境</h2></div></div>
       <p class="section-intro">这套环境不是一次性配置，而是一套持续维护的系统。</p>
       <ol class="pipeline" aria-label="工作环境重建流程">
         {pipeline.map((step, index) => <li>
@@ -126,13 +124,13 @@ const pipeline = [
     </section>
 
     <section class="stack-section browser-section" aria-labelledby="browser-heading">
-      <div class="section-heading"><div><p class="section-index">03 / PUBLIC ENVIRONMENT</p><h2 id="browser-heading">软件环境</h2></div><p>{stack.summary.publicEnvironment} 个公开环境项，按工作用途浏览。</p></div>
+      <div class="section-heading"><div><p class="section-index">03 / PUBLIC ENVIRONMENT</p><h2 id="browser-heading">软件清单</h2></div><p>{stack.summary.publicEnvironment} 个公开环境项，按工作用途浏览。</p></div>
       <div class="browser-tools">
         <label class="search-field" for="stack-search"><span>搜索环境</span><input id="stack-search" type="search" placeholder="搜索名称、分类或类型" autocomplete="off" /></label>
-        <div class="category-filters" role="group" aria-label="按分类筛选">
+        <details class="stack-category-picker"><summary>按用途筛选 <span> / {categories.length} 个分类</span></summary><div class="category-filters" role="group" aria-label="按分类筛选">
           <button type="button" data-category="all" aria-pressed="true">全部</button>
           {categories.map((category) => <button type="button" data-category={category} aria-pressed="false">{categoryNames[category] ?? category}</button>)}
-        </div>
+        </div></details>
       </div>
       <div class="core-search-results" id="core-search-results" hidden>
         <p>核心工具匹配</p>
@@ -142,7 +140,7 @@ const pipeline = [
           data-search={`${item.name} ${item.category} ${categoryNames[item.category] ?? item.category} ${item.type} ${item.type === 'app' ? '应用 App' : item.type === 'cli' ? '命令行 CLI' : '服务 Service'} ${item.name === 'gh' ? 'git github' : ''}`.toLocaleLowerCase()}
           hidden
         >
-          <strong>{item.name}</strong>
+          <div class="item-identity"><strong>{item.name}</strong><small>{categoryNames[item.category] ?? item.category}</small></div>
           <span class="item-type">Core</span>
           <span class="item-management">{management(item).length ? management(item).join(' · ') : '其他来源'}</span>
         </div>)}
@@ -154,7 +152,7 @@ const pipeline = [
           data-search={`${item.name} ${item.category} ${categoryNames[item.category] ?? item.category} ${item.type} ${item.type === 'app' ? '应用 App' : '命令行 CLI'} ${item.name === 'gh' ? 'git github' : ''}`.toLocaleLowerCase()}
           hidden={index >= 24}
         >
-          <strong>{item.name}</strong>
+          <div class="item-identity"><strong>{item.name}</strong><small>{categoryNames[item.category] ?? item.category}</small></div>
           <span class="item-type">{item.type === 'app' ? 'App' : 'CLI'}</span>
           <span class="item-management">{management(item).length ? management(item).join(' · ') : '其他来源'}</span>
         </div>)}
@@ -173,6 +171,7 @@ const pipeline = [
       </div>
     </section>
   </div>
+  </StackFrame>
 </Base>
 
 <script>

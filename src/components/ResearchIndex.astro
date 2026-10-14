@@ -1,0 +1,104 @@
+---
+import ColumnCover from './ColumnCover.astro';
+import ResearchCard from './ResearchCard.astro';
+import { formatDate } from '../data/research';
+import { getCanonicalTopicSlugs } from '../data/topics';
+
+import { researchPage, researchPageHref } from '../lib/research-pagination.mjs';
+const { all, category = '', page = 1 } = Astro.props;
+const result = researchPage(all, category, page);
+const featured = result.featured;
+const rest = result.entries;
+// Extract unique categories
+const categories = [...new Set(all.flatMap((e) => e.data.category))].sort();
+
+// Stats
+const totalArticles = all.length;
+const totalTopics = getCanonicalTopicSlugs(all.flatMap((e) => e.data.topics)).length;
+const evolvingCount = all.filter((e) => e.data.status === 'evolving').length;
+const lastUpdate = all.length ? new Date(Math.max(...all.map(entry => entry.data.updated.getTime()))) : undefined;
+
+---
+
+
+  <section class="research-index collection-index container">
+    <ColumnCover title="洞见" eyebrow="RESEARCH / 深度研究" description="从短暂的信号，走向值得留下的判断。" />
+
+    <div class="stats-bar">
+      <div class="stat"><b>{String(totalArticles).padStart(2, '0')}</b><span>研究文章</span></div>
+      <div class="stat"><b>{String(totalTopics).padStart(2, '0')}</b><span>长期议题</span></div>
+      <div class="stat"><b>{String(evolvingCount).padStart(2, '0')}</b><span>持续演进</span></div>
+      <div class="stat"><b>{lastUpdate ? formatDate(lastUpdate) : '—'}</b><span>最近更新</span></div>
+    </div>
+
+    {categories.length > 0 && (
+      <details class="category-filter" open={Boolean(category)}><summary>按研究类别筛选</summary><nav class="filter-bar" aria-label="研究类别">
+        <span class="filter-label">分类：</span>
+        <a class:list={["filter-cat", {active: !category}]} href="/research/" aria-current={!category ? "page" : undefined}>全部</a>
+        {categories.map((name) => (
+          <a class:list={["filter-cat", {active: category === name}]} href={researchPageHref(name)} data-category={name} aria-current={category === name ? "page" : undefined}>{name}</a>
+        ))}
+      </nav></details>
+    )}
+
+    {featured.length > 0 && (
+      <section class="featured-section">
+        <div class="collection-section-heading"><div><p class="section-label">FEATURED RESEARCH</p><h2>精选研究</h2></div><span data-result-count>{featured.length} 篇</span></div>
+        <div class="cards-grid">
+          {featured.map((entry) => <ResearchCard entry={entry} />)}
+        </div>
+      </section>
+    )}
+
+    {rest.length > 0 && (
+      <section class="rest-section">
+        <div class="collection-section-heading"><div><p class="section-label">RESEARCH ARCHIVE</p><h2>{category ? `${category}研究` : "研究档案"}</h2></div><span data-result-count>共 {result.total} 篇 · 第 {page} / {result.totalPages} 页</span></div>
+        <div class="cards-grid">
+          {rest.map((entry) => <ResearchCard entry={entry} />)}
+        </div>
+      </section>
+    )}
+
+    {rest.length === 0 && featured.length === 0 && (
+      <div class="empty-state">
+        <p>暂无公开研究</p>
+        <p class="empty-sub">每日深度研究正在持续积累中。</p>
+      </div>
+    )}
+    {result.totalPages > 1 && <nav class="archive-pagination" aria-label="研究分页">{page > 1 && <a href={researchPageHref(category, page - 1)}>← 上一页</a>}<span aria-current="page">{page} / {result.totalPages}</span>{page < result.totalPages && <a href={researchPageHref(category, page + 1)}>下一页 →</a>}</nav>}
+  </section>
+
+
+<script>
+  import { researchPageHref } from '../lib/research-pagination.mjs';
+  const legacyCategory = new URLSearchParams(location.search).get('category');
+  if (legacyCategory) {
+    const localized = document.documentElement.lang === 'zh-Hans' ? '/zh-hans' : '';
+    const names = [...document.querySelectorAll<HTMLElement>('.filter-cat')].map(link => link.dataset.category);
+    if (names.includes(legacyCategory)) location.replace(localized + researchPageHref(legacyCategory));
+  }
+</script>
+
+<style>
+.stats-bar { display: flex; flex-wrap: wrap; gap: 28px 48px; margin: 0 0 38px; padding: 27px 0; border-bottom: 1px solid var(--border-subtle); }
+.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat b { font-family: var(--font-mono); font-size: 1.35rem; font-weight: 600; letter-spacing: -.03em; }
+.stat span { font-size: .72rem; color: var(--text-tertiary); }
+
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 44px; }
+.filter-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; color: var(--text-tertiary); }
+.filter-cat { font-size: .78rem; color: var(--text-secondary); padding: 5px 12px; border: 1px solid var(--border-subtle); border-radius: 20px; background: var(--bg-surface); }
+.filter-cat:hover, .filter-cat.active { color: var(--accent-text); border-color: var(--accent-tech-border); background: var(--accent-tech-soft); }
+.research-card[hidden], .featured-section[hidden], .rest-section[hidden] { display: none; }
+.filtered-empty[hidden] { display: none; }
+
+.cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+@media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } }
+
+.empty-state { text-align: center; padding: 80px 0; }
+.empty-state p { font-size: 1.1rem; color: var(--text-secondary); }
+.empty-sub { margin-top: 8px; font-size: .88rem; color: var(--text-tertiary); }
+
+.featured-section { margin-bottom: 56px; }
+@media (max-width: 600px) { .stats-bar { gap: 22px 30px; }.stat { min-width: calc(50% - 20px); } }
+</style>

@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import RadarFrame from '../../../components/RadarFrame.astro';
 import Base from '../../../layouts/Base.astro';
 import ContextNavigation from '../../../components/ContextNavigation.astro';
 import { getTopicLabel, isCanonicalTopic, topicSlugsForRadar } from '../../../data/topics';
@@ -25,8 +26,10 @@ const relatedTopics = getRelatedTopics(entry);
 ---
 
 <Base title={`${entry.data.title} — Horizon`} description={entry.data.description ?? entry.data.verdict}>
+  <RadarFrame>
   <article class="radar-report container">
-    <header>
+    <header class="report-header">
+      <a class="report-back" href={`/radar/${entry.data.radar}/`}>← 返回分类雷达</a>
       <p class="eyebrow">{entry.data.radar.toUpperCase()} RADAR　/　DAILY</p>
       <p class="report-date">{date.replaceAll('-', '.')}</p>
       <h1>{entry.data.title}</h1>
@@ -47,11 +50,19 @@ const relatedTopics = getRelatedTopics(entry);
       </details>
       <dl class="metrics"><div><dt>信号</dt><dd>{entry.data.signalCount}</dd></div><div><dt>重点</dt><dd>{entry.data.highSignalCount}</dd></div><div><dt>需处理</dt><dd>{entry.data.actionRequired}</dd></div></dl>
     </header>
+    <div class:list={["report-reading-layout", { "has-directory": sections.length > 0 }]} >
     {sections.length > 0 && <details class="report-contents" open><summary>本期目录</summary><nav aria-label="日报目录">{sections.map(h => <a href={`#${h.slug}`}>{h.text} <span aria-hidden="true">↓</span></a>)}</nav></details>}
     <div class="prose"><Content /></div>
+    </div>
     <ContextNavigation kind="radar" topics={relatedTopics} research={relatedResearch} />
   </article>
+  </RadarFrame>
 </Base>
+
+<script>
+  const directory = document.querySelector<HTMLDetailsElement>('.report-contents');
+  if (directory && window.matchMedia('(max-width: 900px)').matches) directory.open = false;
+</script>
 
 <style>
 .radar-report { max-width: 1000px; padding-top: 82px; padding-bottom: 112px; }.eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent-text); }.report-date { margin-top: 16px; font-family: var(--font-mono); font-size: 1rem; color: var(--text-tertiary); }.radar-report h1 { margin-top: 10px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; letter-spacing: -.045em; }.description { margin-top: 14px; color: var(--text-secondary); font-size: 1.05rem; }.metrics { display: flex; gap: 0; margin-top: 34px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }.metrics div { flex: 1; padding: 17px 20px; border-right: 1px solid var(--border-subtle); }.metrics div:last-child { border-right: 0; }.metrics dt { font-family: var(--font-mono); font-size: .59rem; letter-spacing: .07em; color: var(--text-tertiary); }.metrics dd { margin-top: 6px; font-size: 1.65rem; font-weight: 700; }.highlight-list { margin-top: 32px; border-top: 1px solid var(--border-subtle); }.highlight-list > h2 { padding: 15px 0; font: .65rem var(--font-mono); letter-spacing: .08em; color: var(--text-tertiary); }.highlight-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 13px 4px; border-top: 1px solid var(--border-subtle); }.highlight-row > div { display: flex; flex-direction: column; gap: 4px; font: .61rem var(--font-mono); }.highlight-level { color: var(--accent-text); }.highlight-action { color: var(--text-tertiary); }.highlight-row h3 { font-size: .8rem; font-weight: 500; }.highlight-topic { color: var(--text-tertiary); font-size: .68rem; }.highlight-topic:hover { color: var(--accent-text); }.prose { max-width: 760px; margin-top: 38px; color: var(--text-body); font-size: 1rem; line-height: 1.85; }.prose :global(h2) { margin: 42px 0 14px; color: var(--text-primary); font-size: 1.45rem; }.prose :global(p) { margin: 12px 0; }.prose :global(ul) { margin: 14px 0 14px 20px; }@media (max-width: 560px) { .metrics { flex-direction: column; }.metrics div { border-right: 0; border-bottom: 1px solid var(--border-subtle); }.metrics div:last-child { border-bottom: 0; }.highlight-row { grid-template-columns: 68px minmax(0, 1fr); }.highlight-topic { grid-column: 2; } }

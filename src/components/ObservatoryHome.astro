@@ -1,0 +1,50 @@
+---
+import { getTopicLabel } from '../data/topics';
+const { home } = Astro.props;
+const actions = { action: '需处理', test: '试用', watch: '观察', read: '阅读', explore: '探索', ignore: '略过' };
+const dateLabel = (date: Date) => date.toISOString().slice(0, 10).replaceAll('-', '.');
+const featured = home.featuredResearch;
+---
+<div class="observatory-home">
+  <section class="observatory-cover container">
+    <div class="edition"><span>独立技术观测站 / EST. 2026</span><span>{home.latestRadarDate ?? '等待更新'} · DAILY EDITION</span></div>
+    <div class="cover-grid">
+      <div class="cover-copy">
+        <p class="small-label">TECHNOLOGY FIELD NOTES</p>
+        <h1>HORIZON<span aria-hidden="true">.</span></h1>
+        <h2>看见变化，<br/>留下判断。</h2>
+        <p class="cover-description">每日扫描技术世界的变化。<br/>从短暂的信号，走向值得留下的研究。</p>
+        <div class="cover-actions"><a class="primary-link" href="#brief">阅读今日精选 <span>↗</span></a><a class="text-link" href="#research">进入研究档案 →</a></div>
+      </div>
+      <figure class="observation-art" aria-label="地平线与太阳组成的技术观测图形">
+        <div class="art-label"><span>FIG. 01 — THE HORIZON</span><span>观察 / 理解 / 沉淀</span></div>
+        <svg viewBox="0 0 560 420" role="img" aria-label="太阳、地平线和观测刻度">
+          <defs><pattern id="horizon-lines" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 6H12" stroke="var(--obs-bg)" stroke-width="3"/></pattern></defs>
+          <g fill="none" stroke="var(--obs-line)"><path d="M40 210H520M280 28V390"/><circle cx="280" cy="210" r="182"/><circle cx="280" cy="210" r="164" stroke-dasharray="2 10"/><path d="M40 50v20m0-10h20M520 50v20m-20-10h20M40 350v20m0-10h20M520 350v20m-20-10h20"/></g>
+          <circle cx="280" cy="190" r="110" fill="var(--obs-gold)"/>
+          <path d="M170 210a110 110 0 0 0 220 0Z" fill="url(#horizon-lines)"/>
+          <path d="M60 211H500" stroke="var(--obs-text)" stroke-width="2"/>
+          <g fill="none" stroke="var(--obs-green)" stroke-width="1.5"><path d="M65 270l60-23 60 38 60-18 62 31 69-36 62 17 57-24M65 307l68-17 51 34 62-21 61 30 69-37 62 16 57-26"/></g>
+          <g fill="var(--obs-text)" font-family="IBM Plex Mono, monospace" font-size="10"><text x="40" y="32">N / 00°</text><text x="464" y="32">SCAN. 05</text><text x="40" y="402">SIGNAL → KNOWLEDGE</text><text x="461" y="402">H / 001</text></g>
+          <path class="scan-line" d="M60 210H500" stroke="var(--obs-green)" stroke-width="1.5" opacity="0"/><circle class="signal-point" cx="440" cy="147" r="5" fill="var(--obs-green)"/><path d="M445 147h43" stroke="var(--obs-green)"/>
+        </svg>
+        <figcaption><span class="live-mark"></span>{home.hero.activeRadarCount} 类雷达已更新<span>PUBLIC OBSERVATIONS</span></figcaption>
+      </figure>
+    </div>
+    <nav class="radar-strip" aria-label="五类雷达">{home.radarCards.map((radar, i) => <a href={`/radar/${radar.id}/`}><span class="radar-index">0{i + 1}</span><strong>{radar.name}</strong><span class="radar-total">{radar.signalCount ?? '—'} <small>信号</small></span><span aria-hidden="true">↗</span></a>)}</nav>
+  </section>
+  <section id="brief" class="field-section container">
+    <header class="field-heading"><div><span class="small-label">01 / DAILY OBSERVATIONS</span><h2>今日值得看</h2></div><a href="/radar/">全部雷达 ↗</a></header>
+    <div class="field-signals">{home.briefs.length ? home.briefs.map((brief, i) => <a class="field-signal" href={brief.href}><span class="signal-index">0{i + 1}</span><div><span class:list={['signal-action',brief.action]}>{actions[brief.action]}</span><h3>{brief.title}</h3><p>{brief.topic ? getTopicLabel(brief.topic) : brief.radarName} · {brief.sourceName ?? brief.radarName}</p></div><span class="signal-arrow" aria-hidden="true">↗</span></a>) : <p>今日暂无公开信号。</p>}</div>
+  </section>
+  <section id="research" class="field-section container">
+    <header class="field-heading"><div><span class="small-label">02 / RESEARCH FILES</span><h2>把信号读深一点</h2></div><a href="/research/">研究档案 ↗</a></header>
+    {featured && <a class="research-lead" href={`/research/${featured.data.slug}/`}><div class="research-spine"><span>FIELD REPORT</span><b>H.</b><span>{dateLabel(featured.data.updated)}</span></div><div class="research-lead-copy"><p class="small-label">最新研究 / {featured.data.category.slice(0,2).join(' · ')}</p><h3>{featured.data.title}</h3><p class="research-summary">{featured.data.subtitle}</p><span class="research-read">阅读全文 <span aria-hidden="true">↗</span></span></div></a>}
+    <div class="research-notes">{home.recentResearch.slice(0,3).map((entry,i) => <a href={`/research/${entry.data.slug}/`}><span class="small-label">FILE / 0{i+2} · {dateLabel(entry.data.updated)}</span><h3>{entry.data.title}</h3><span class="note-link">阅读研究 ↗</span></a>)}</div>
+  </section>
+  <section class="field-section container">
+    <header class="field-heading"><div><span class="small-label">03 / LONG-TERM THREADS</span><h2>持续追踪的议题</h2></div><a href="/topics/">全部议题 ↗</a></header>
+    <div class="thread-list">{home.topics.map((topic,i) => <a href={`/topics/${topic.slug}/`}><span class="thread-number">0{i+1}</span><h3>{topic.name}</h3><span>{topic.researchCount} 篇研究 / {topic.radarCount} 期日报</span><span aria-hidden="true">↗</span></a>)}</div>
+  </section>
+  <section class="field-end container"><p>工具会变，<br/><span>判断留下。</span></p><a href="/stack/">看看我的工具栈 ↗</a><span class="small-label">SCAN. UNDERSTAND. BUILD.</span></section>
+</div>

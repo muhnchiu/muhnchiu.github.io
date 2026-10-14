@@ -1,0 +1,18 @@
+---
+interface Props { name: string; }
+const { name } = Astro.props;
+const paths: Record<string, string> = {
+  radar: 'M12 3a9 9 0 1 0 9 9M12 7a5 5 0 1 0 5 5M12 12V3l7 4-7 5M3 12h2M12 19v2',
+  research: 'M6 3h10l3 3v15H6ZM16 3v4h3M9 10h7M9 14h7M9 18h4M3 7v12',
+  topics: 'M12 5 5 17h14ZM12 8v6M8 17h8',
+  stack: 'M3 4h7v6H3ZM14 4h7v6h-7ZM3 14h7v6H3ZM14 14h7v6h-7ZM10 7h4M7 10v4M17 10v4M10 17h4',
+  about: 'M3 13h18M6 13a6 6 0 0 1 12 0M8 17h8M10 20h4M12 2v2M3 6l2 2M21 6l-2 2',
+  search: 'M15 15l6 6M9 3v3M3 9h3M9 12v3M12 9h3',
+};
+---
+<svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
+  {name === 'radar' && <circle cx="12" cy="12" r="1" fill="currentColor" />}
+  {name === 'topics' && <g fill="var(--obs-bg, transparent)"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/></g>}
+  {name === 'search' && <circle cx="9" cy="9" r="6" />}
+  <path d={paths[name] ?? paths.about} />
+</svg>

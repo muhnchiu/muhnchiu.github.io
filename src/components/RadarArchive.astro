@@ -1,0 +1,10 @@
+---
+import { displayRadarDate, formatRadarDate } from '../data/radar';
+import { paginateReports, reportPageHref } from '../lib/radar-pagination.mjs';
+const { reports, radar, page = 1 } = Astro.props;
+const result = paginateReports(reports, page);
+---
+<section class="category-section archive" id="report-archive" aria-labelledby="archive-heading"><div class="section-heading"><div><p class="section-label">REPORT ARCHIVE</p><h2 id="archive-heading">历史观测记录</h2></div><span>共 {result.total} 期 · 第 {page} / {result.totalPages} 页</span></div>
+<div class="archive-list">{result.entries.length ? result.entries.map(report => <a href={`/radar/${radar}/${formatRadarDate(report.data.date)}/`}><time>{displayRadarDate(report.data.date)}</time><div class="archive-copy"><strong>{report.data.title}</strong><small>{report.data.highSignalCount} 条重点 · {report.data.actionRequired} 项需处理</small></div><span>{report.data.signalCount} 条信号</span><i aria-hidden="true">→</i></a>) : <p>暂无公开日报。</p>}</div>
+{result.totalPages > 1 && <nav class="archive-pagination" aria-label="历史日报分页">{page > 1 && <a href={reportPageHref(radar, page - 1)}>← 上一页</a>}<span aria-current="page">{page} / {result.totalPages}</span>{page < result.totalPages && <a href={reportPageHref(radar, page + 1)}>下一页 →</a>}</nav>}
+</section>

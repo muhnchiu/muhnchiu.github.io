@@ -1,16 +1,19 @@
 ---
 import Base from '../../layouts/Base.astro';
-import CollectionHero from '../../components/CollectionHero.astro';
+import TopicsFrame from '../../components/TopicsFrame.astro';
+import ColumnCover from '../../components/ColumnCover.astro';
 import { loadTopics, topicGroups } from '../../data/topics';
 
 const topics = await loadTopics();
 const displayDate = (date?: Date) => date ? date.toISOString().slice(0, 10) : '尚在观察';
 ---
 
-<Base title="长期议题｜Horizon" description="不是追逐每一则新闻，而是持续追踪那些正在改变技术与工作的长期变量。">
+<Base title="脉络｜长期议题 — Horizon" description="不是追逐每一则新闻，而是持续追踪那些正在改变技术与工作的长期变量。">
+  <TopicsFrame>
   <section class="topics-index collection-index container">
-    <CollectionHero eyebrow="TOPICS / LONG-TERM VIEW" title="长期议题" description="不是追逐每一则新闻，而是持续追踪那些正在改变技术与工作的长期变量。" count={topics.length} countLabel="长期议题" />
+    <ColumnCover title="脉络" eyebrow="TOPICS / 长期议题" description="沿着长期议题，追踪技术变化之间的联系。" />
 
+    <nav class="topics-nav" aria-label="议题分类">{topicGroups.map(group => <a href={`#group-${group.id}`}>{group.name}<span>{topics.filter(topic => topic.group === group.id).length}</span></a>)}</nav>
     <div class="topic-groups">
       {topicGroups.map((group) => (
         <section class="topic-group" aria-labelledby={`group-${group.id}`}>
@@ -19,13 +22,14 @@ const displayDate = (date?: Date) => date ? date.toISOString().slice(0, 10) : '�
             <span>{String(topics.filter((topic) => topic.group === group.id).length).padStart(2, '0')} / TOPICS</span>
           </div>
           <div class="topic-grid">
-            {topics.filter((topic) => topic.group === group.id).map((topic) => (
+            {topics.filter((topic) => topic.group === group.id).map((topic, index) => (
               <a class="topic-card" href={`/topics/${topic.slug}/`}>
-                <div class="topic-card-heading"><h3>{topic.name}</h3><span class="arrow" aria-hidden="true">↗</span></div>
-                <p class="topic-description">{topic.description}</p>
+                <span class="topic-number">{String(index + 1).padStart(2, '0')}</span>
+                <div class="topic-entry-copy"><div class="topic-card-heading"><h3>{topic.name}</h3><span class="arrow" aria-hidden="true">↗</span></div>
+                <p class="topic-description">{topic.description}</p></div>
                 <div class="topic-stats">
-                  <span><b>{topic.radarCount}</b> Radar</span>
-                  <span><b>{topic.researchCount}</b> Research</span>
+                  <span><b>{topic.radarCount}</b> 期雷达</span>
+                  <span><b>{topic.researchCount}</b> 篇研究</span>
                   <span>最近更新 <time>{displayDate(topic.latestActivity)}</time></span>
                 </div>
               </a>
@@ -35,21 +39,5 @@ const displayDate = (date?: Date) => date ? date.toISOString().slice(0, 10) : '�
       ))}
     </div>
   </section>
+  </TopicsFrame>
 </Base>
-
-<style>
-.topic-groups { display: grid; gap: 54px; padding-top: 46px; padding-bottom: 90px; }
-.topic-group { min-width: 0; }
-.topic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.topic-card { display: flex; flex-direction: column; min-width: 0; min-height: 190px; padding: 25px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); }
-.topic-card:hover { color: inherit; border-color: var(--accent-tech-border); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.topic-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.topic-card h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.32rem, 2vw, 1.65rem); line-height: 1.35; letter-spacing: -.025em; overflow-wrap: anywhere; }
-.arrow { flex: none; color: var(--text-tertiary); font-size: 1rem; }
-.topic-description { margin-top: 12px; color: var(--text-secondary); font-size: .83rem; line-height: 1.65; }
-.topic-stats { display: flex; flex-wrap: wrap; gap: 7px 18px; margin-top: auto; padding-top: 22px; color: var(--text-tertiary); font-size: .7rem; }
-.topic-stats b { color: var(--text-primary); font-size: .84rem; }
-.topic-stats time { font-family: var(--font-mono); }
-@media (max-width: 760px) { .topic-groups { gap: 42px; padding-top: 36px; }.topic-card { padding: 21px; }.topic-stats { gap: 7px 12px; } }
-@media (max-width: 600px) { .topic-grid { grid-template-columns: 1fr; }.topic-card { min-height: 0; }.topic-group .collection-section-heading > span { display: none; } }
-</style>

@@ -1,0 +1,14 @@
+---
+import SectionMasthead from './SectionMasthead.astro';
+import '@fontsource/fraunces/latin-800.css';
+import '@fontsource/fraunces/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/noto-serif-tc/600.css';
+import '@fontsource/noto-serif-sc/600.css';
+import '../styles/observatory.css';
+import '../styles/radar-field.css';
+---
+<div class="radar-field">
+  <SectionMasthead href="/radar/" label="技术观测记录 / RADAR" edition="SCAN / UNDERSTAND / ARCHIVE" />
+  <slot />
+</div>

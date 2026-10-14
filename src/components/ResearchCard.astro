@@ -1,94 +1,11 @@
 ---
-import { statusLabel, confidenceLabel, formatDate } from '../data/research';
+import { statusLabel, formatDate } from '../data/research';
 import { getTopicName, getCanonicalTopicSlugs } from '../data/topics';
-
 const { entry } = Astro.props;
 const { data } = entry;
 ---
-
-<a
-  href={`/research/${data.slug}`}
-  class="research-card"
-  data-status={data.status}
-  data-categories={data.category.join('|')}
->
-  <div class="card-cats">
-    {data.category.slice(0, 2).map((category) => <span class="cat">{category}</span>)}
-  </div>
-  <h3 class="card-title">{data.title}</h3>
-  <p class="card-sub">{data.subtitle}</p>
-  {getCanonicalTopicSlugs(data.topics).length > 0 && <div class="card-topics">
-    {getCanonicalTopicSlugs(data.topics).slice(0, 2).map((topic) => <span class="topic">{getTopicName(topic)}</span>)}
-  </div>}
-  <div class="card-meta">
-    <span class="meta-date">{formatDate(data.created)}</span>
-    <span class="meta-sep">·</span>
-    <span class="meta-status">{statusLabel(data.status)}</span>
-    <span class="meta-sep">·</span>
-    <span class="meta-conf">{confidenceLabel(data.confidence)}</span>
-  </div>
-  <span class="card-arrow">阅读研究 →</span>
+<a href={`/research/${data.slug}/`} class="research-card" data-status={data.status} data-categories={data.category.join('|')}>
+  <div class="file-meta"><span>RESEARCH FILE</span><time datetime={data.updated.toISOString().slice(0,10)}>{formatDate(data.updated)}</time><span class="file-status">{statusLabel(data.status)}</span></div>
+  <div class="file-copy"><p class="file-topics">{getCanonicalTopicSlugs(data.topics).slice(0,2).map(getTopicName).join(' / ') || data.category.slice(0,2).join(' / ')}</p><h3>{data.title}</h3><p class="file-summary">{data.subtitle}</p></div>
+  <span class="file-arrow" aria-hidden="true">↗</span>
 </a>
-
-<style>
-.research-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 290px;
-  padding: 26px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
-  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
-}
-.research-card[hidden] { display: none; }
-.research-card:hover {
-  color: inherit;
-  border-color: var(--accent-tech-border);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-.research-card[data-status="archived"] { opacity: .7; }
-.card-cats { display: flex; flex-wrap: wrap; gap: 8px; }
-.cat {
-  color: var(--accent-text);
-  font-family: var(--font-mono);
-  font-size: .64rem;
-  letter-spacing: .06em;
-}
-.card-title {
-  margin-top: 17px;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.3rem, 2vw, 1.6rem);
-  line-height: 1.35;
-  letter-spacing: -.025em;
-}
-.card-sub { margin-top: 9px; color: var(--text-secondary); font-size: .84rem; line-height: 1.6; }
-.card-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
-.topic {
-  padding: 3px 8px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  color: var(--text-secondary);
-  font-size: .7rem;
-}
-.card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 24px;
-  color: var(--text-tertiary);
-  font-family: var(--font-mono);
-  font-size: .66rem;
-}
-.meta-sep { color: var(--border-default); }
-.card-arrow { margin-top: 14px; color: var(--accent-text); font-size: .77rem; }
-@media (max-width: 600px) { .research-card { min-height: 0; padding: 21px; } }
-
-.card-title { font-family: var(--font-sans); font-weight: 600; font-size: 1.15rem; line-height: 1.5; letter-spacing: 0; }
-.card-sub { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.card-meta, .cat { font-size: .78rem; }
-</style>

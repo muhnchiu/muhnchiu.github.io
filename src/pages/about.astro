@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import ColumnCover from '../components/ColumnCover.astro';
+import AboutFrame from '../components/AboutFrame.astro';
 
 const focusAreas = [
   { label: 'AI / MODELS', name: 'AI 模型', description: '关注模型能力、推理、本地 AI 与模型生态的变化。' },
@@ -31,16 +33,25 @@ const principles = [
 ];
 ---
 
-<Base title="关于 | Horizon" description="关于 Horizon 以及它背后的个人技术观察与研究系统，记录 AI、软件、开发工具、智能体与知识系统的长期探索。">
+<Base title="自省｜关于 Horizon — Horizon" description="关于 Horizon 以及它背后的个人技术观察与研究系统，记录 AI、软件、开发工具、智能体与知识系统的长期探索。">
+  <AboutFrame>
   <div class="about-page collection-index container">
-    <header class="about-hero">
-      <p class="eyebrow">ABOUT / 关于</p>
-      <h1>关于 Horizon，<br />也关于我</h1>
+    <ColumnCover title="自省" eyebrow="ABOUT / 关于与思考" description="关于我，也关于这套持续演进的观察与工作系统。" />
+    <section class="about-hero personal-opening" aria-labelledby="personal-heading">
+      <div class="about-cover"><div><p class="eyebrow">ABOUT / 关于</p>
+      <h2 id="personal-heading">关于 Horizon，<br />也关于我</h2>
+      <p class="cover-note">扫描变化，理解技术，沉淀判断。</p></div>
+      <figure class="about-emblem" aria-label="Horizon 地平线观测图形">
+        <div class="emblem-label">H / FIELD NOTES</div>
+        <svg viewBox="0 0 340 260" aria-hidden="true"><g fill="none" stroke="var(--obs-line)"><circle cx="170" cy="130" r="112"/><circle cx="170" cy="130" r="94" stroke-dasharray="2 8"/><path d="M20 130h300M170 8v244"/></g><path d="M100 130a70 70 0 0 1 140 0Z" fill="var(--obs-gold)"/><g fill="none" stroke="var(--obs-green)"><path d="M105 151h130m-118 15h106m-91 15h76m-56 15h36"/></g><path d="M50 130h240" stroke="var(--obs-text)" stroke-width="2"/><g fill="var(--obs-gold)"><circle cx="170" cy="18" r="3"/><circle cx="282" cy="130" r="3"/><circle cx="170" cy="242" r="3"/><circle cx="58" cy="130" r="3"/></g></svg>
+        <figcaption>观察 / 理解 / 实践</figcaption>
+      </figure></div>
       <div class="hero-bottom">
         <p class="hero-lede">在技术、产品与设计之间，<br />持续构建自己的观察与工作系统。</p>
         <p class="hero-body">我长期关注 AI、软件、开发工具与智能体系统，也关心这些技术最终如何进入真实的产品与工作流。Horizon 是这个过程留下的公开记录：扫描变化，理解技术，沉淀判断，再把真正有价值的东西带回实践。</p>
       </div>
-    </header>
+    </section>
+    <nav class="about-index" aria-label="关于页面章节"><a href="#identity-heading">身份</a><a href="#why-heading">缘起</a><a href="#focus-heading">关注</a><a href="#work-heading">方法</a><a href="#principles-heading">原则</a><a href="#explore-heading">探索</a></nav>
 
     <section class="identity-section about-section" aria-labelledby="identity-heading">
       <p class="eyebrow">01 / IDENTITY</p>
@@ -109,12 +120,13 @@ const principles = [
       <div class="section-head"><p class="eyebrow">07 / EXPLORE</p><h2 id="explore-heading">继续探索</h2></div>
       <p class="section-intro">想知道最近在关注什么，可以从 Radar 开始；想看经过整理的判断，去 Research；想看这些技术如何进入我的工作，看看 Stack。</p>
       <div class="explore-primary">
-        <a href="/research/"><span>DEEP DIVE / RESEARCH</span><strong>深度研究</strong><span aria-hidden="true">↗</span></a>
-        <a href="/stack/"><span>TOOLS / WORK ENVIRONMENT</span><strong>工作栈</strong><span aria-hidden="true">↗</span></a>
+        <a href="/research/"><span>RESEARCH / 深度研究</span><strong>洞见</strong><p>从信号出发，深入理解技术与变化。</p><span aria-hidden="true">↗</span></a>
+        <a href="/stack/"><span>STACK / 工具与方法</span><strong>方略</strong><p>把工具组织成可以持续维护的工作流。</p><span aria-hidden="true">↗</span></a>
       </div>
-      <div class="explore-secondary"><a href="/radar/">每日情报 <span aria-hidden="true">↗</span></a><a href="/topics/">长期议题 <span aria-hidden="true">↗</span></a></div>
+      <div class="explore-secondary"><a href="/radar/">雷达 · 每日观测 <span aria-hidden="true">↗</span></a><a href="/topics/">脉络 · 长期议题 <span aria-hidden="true">↗</span></a></div>
     </nav>
   </div>
+  </AboutFrame>
 </Base>
 
 <style>

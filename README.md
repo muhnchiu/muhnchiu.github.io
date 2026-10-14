@@ -73,7 +73,7 @@ npm ci
 npm run dev
 ```
 
-`npm run dev` 显示简体源文案。`npm run build` 会运行 prebuild 校验与测试，再构建 Astro 页面并生成简繁两套页面；`npm run preview` 用于查看构建结果。构建会写入输出文件，不能用于要求零写入的审计。
+`npm run dev` 与正式构建使用同一套繁简转换：默认路由显示繁体，`/zh-hans/` 显示简体，语言切换保留当前页面。`npm run build` 会运行 prebuild 校验与测试，再构建 Astro 页面并生成简繁两套页面；`npm run preview` 用于查看构建结果。构建会写入输出文件，不能用于要求零写入的审计。
 
 维护时先查看[运行手册](docs/06-operations.md)和[排障入口](docs/07-troubleshooting.md)。本次文档整理不执行采集、发布、部署或资格验证调用。
 

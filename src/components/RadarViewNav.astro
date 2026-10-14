@@ -1,0 +1,5 @@
+---
+const views = [{id:'',label:'全部'},{id:'ai',label:'AI'},{id:'dev',label:'开发'},{id:'security',label:'安全'},{id:'app',label:'软件'},{id:'skill',label:'Skills'}];
+const active = Astro.params.radar ?? '';
+---
+<nav class="radar-view-nav" aria-label="雷达分类">{views.map(view => <a href={`/radar/${view.id ? view.id + '/' : ''}`} aria-current={active === view.id ? 'page' : undefined}>{view.label}</a>)}</nav>

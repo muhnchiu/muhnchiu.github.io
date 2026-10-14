@@ -1,5 +1,9 @@
 ---
+import RadarArchive from '../../components/RadarArchive.astro';
+import RadarViewNav from '../../components/RadarViewNav.astro';
 import { getCollection } from 'astro:content';
+import RadarFrame from '../../components/RadarFrame.astro';
+import { getTopicLabel } from '../../data/topics';
 import Base from '../../layouts/Base.astro';
 import { displayRadarDate, formatRadarDate, radarCatalog, signalPriority } from '../../data/radar';
 
@@ -15,6 +19,7 @@ export async function getStaticPaths() {
   }));
 }
 
+const actions = { action:'需处理',test:'试用',watch:'观察',read:'阅读',explore:'探索',ignore:'略过' };
 const { radar, reports } = Astro.props;
 const latest = reports.at(0);
 const highlights = latest?.data.highlights
@@ -23,6 +28,7 @@ const highlights = latest?.data.highlights
 ---
 
 <Base title={`${radar.name} Radar — Horizon`} description={radar.description}>
+  <RadarFrame>
   <section class="category-page container">
     <header class="category-hero">
       <p class="eyebrow">{radar.id.toUpperCase()} RADAR</p>
@@ -30,19 +36,21 @@ const highlights = latest?.data.highlights
       <p>{radar.description}</p>
       <div class="active-line"><span></span>{latest ? `ACTIVE · LATEST REPORT ${displayRadarDate(latest.data.date)}` : 'PENDING · NO PUBLISHED REPORT'}</div>
     </header>
+    <RadarViewNav />
 
     {latest ? <>
-      <section class="metrics"><div><b>{String(latest.data.signalCount).padStart(2, '0')}</b><span>SIGNALS</span></div><div><b>{String(latest.data.highSignalCount).padStart(2, '0')}</b><span>HIGH SIGNAL</span></div><div><b>{String(latest.data.actionRequired).padStart(2, '0')}</b><span>ACTION REQUIRED</span></div></section>
-      <section class="category-section verdict"><p class="section-label">LATEST VERDICT</p><blockquote>{latest.data.verdict}</blockquote><a href={`/radar/${radar.id}/${formatRadarDate(latest.data.date)}`}>View Daily Report　→</a></section>
-      <section class="category-section"><div class="section-heading"><div><p class="section-label">LATEST HIGHLIGHTS</p><h2>Signals from the latest report.</h2></div></div><div class="highlights">
-        {highlights.map((highlight, index) => <a href={`/radar/${radar.id}/${formatRadarDate(latest.data.date)}`}><span>{String(index + 1).padStart(2, '0')}</span><em class={`signal-${highlight.action}`}>{highlight.action.toUpperCase()}</em><div><strong>{highlight.title}</strong><small>{highlight.type.toUpperCase()}{highlight.topic && ` · ${highlight.topic}`}</small></div><i>→</i></a>)}
+      <div class="category-latest">
+      <section class="metrics"><div><b>{String(latest.data.signalCount).padStart(2, '0')}</b><span>条信号</span></div><div><b>{String(latest.data.highSignalCount).padStart(2, '0')}</b><span>重点信号</span></div><div><b>{String(latest.data.actionRequired).padStart(2, '0')}</b><span>需处理</span></div></section>
+      <section class="category-section verdict"><p class="section-label">LATEST VERDICT</p><blockquote>{latest.data.verdict}</blockquote><a href={`/radar/${radar.id}/${formatRadarDate(latest.data.date)}`}>阅读本期日报　→</a></section>
+      </div>
+      <section class="category-section"><div class="section-heading"><div><p class="section-label">LATEST HIGHLIGHTS</p><h2>本期重点信号</h2></div></div><div class="highlights">
+        {highlights.map((highlight, index) => <a href={`/radar/${radar.id}/${formatRadarDate(latest.data.date)}`}><span>{String(index + 1).padStart(2, '0')}</span><em class={`signal-${highlight.action}`}>{actions[highlight.action]}</em><div><strong>{highlight.title}</strong><small>{highlight.type.toUpperCase()}{highlight.topic && ` · ${getTopicLabel(highlight.topic)}`}</small></div><i>→</i></a>)}
       </div></section>
-    </> : <section class="category-section empty-state"><p>尚未发布 {radar.name} Radar。发布一份符合 schema 的 Markdown 后，该页面会自动生成最新摘要与归档。</p></section>}
+    </> : <section class="category-section empty-state"><p>尚未发布 {radar.name} Radar。后续公开日报将收录在这里。</p></section>}
 
-    <section class="category-section archive"><div class="section-heading"><div><p class="section-label">REPORT ARCHIVE</p><h2>Published daily reports.</h2></div></div><div class="archive-list">
-      {reports.length ? reports.map((report) => <a href={`/radar/${radar.id}/${formatRadarDate(report.data.date)}`}><time>{displayRadarDate(report.data.date)}</time><strong>{report.data.title}</strong><span>{report.data.signalCount} SIGNALS</span><i>→</i></a>) : <p>暂无公开日报。</p>}
-    </div></section>
+    <RadarArchive reports={reports} radar={radar.id} />
   </section>
+  </RadarFrame>
 </Base>
 
 <style>
