@@ -1,0 +1,14 @@
+{
+  "article": "world-models-three-landing-routes",
+  "checked_at": "2026-10-14T08:45:00Z",
+  "content_sha256": "06d9745a7bc99421983cd7cdf834c19e3df0ca9b34bae8214eb3a66ff46448c3",
+  "status": "PASSED",
+  "checks": { "G1": "PASS", "G2": "PASS", "G3": "PASS", "G4": "PASS", "G5": "PASS" },
+  "evidence": {
+    "G1": "三篇 arXiv 标题与编号 2026-10-14 核对；DeepMind 博客规范 URL 可访问",
+    "G2": "arXiv 编号/热榜快照标注核查日期；量化结果统一为论文自述口径",
+    "G3": "缺陷率/成功率/胜率均标注未独立复现；趋势判断为推断；无自报升已证实",
+    "G4": "决策「暂不采用」带三条重新评估条件；无当前适用条件已注明",
+    "G5": "章节 00-08 连续；TL;DR/正文/5.1/8.1 决策口径一致"
+  }
+}
