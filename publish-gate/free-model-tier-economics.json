@@ -1,0 +1,14 @@
+{
+  "article": "free-model-tier-economics",
+  "checked_at": "2026-10-15T01:55:00Z",
+  "content_sha256": "542f98babe5cf10a831dc3081e992ad6abab6e6bb5e83e7ee2df10f0e833155e",
+  "status": "PASSED",
+  "checks": { "G1": "PASS", "G2": "PASS", "G3": "PASS", "G4": "PASS", "G5": "PASS" },
+  "evidence": {
+    "G1": "来源独立性: Round 2 独立验证记录(/tmp/horizon-verification-inputs/free-tier/verification-record-round1.md §2.2/§3)——10-14 与 10-15 两次独立 OpenRouter API 拉取, 按模型 ID 精确对比; C1-C13 逐条 evidence_refs, 证据独立于文章自述",
+    "G2": "时效标注: 文章 L160 '最后核查时间 2026-10-14'; Research Asset observed_at/retrieved_at 字段(C1 observed 10-11 记录值; C2-C6 retrieved 10-14); 更新记录 10-14/10-15 两节",
+    "G3": "断言降级: F-001(458/15 降级为记录值不可回放) + F-004(规格平台口径不得标记 verified) + C11(gemini-4-argon 冲突保留待核验), 全部已落实正文 L46/L65/L137/L143/L156",
+    "G4": "适用边界: 第5节 '生产不可依赖' 限定为稳定 SLA/容量保障/连续性要求高的核心负载, 非关键可降级场景不禁止; 数据纪律硬边界保留",
+    "G5": "跨章节一致性: 458/15 仅 10-11 记录值语境(3处一致); 462/14 仅 10-14/15 核验语境; 15→14 未用作趋势证据; gemini-4-argon 4处均为冲突/待核验语境"
+  }
+}
