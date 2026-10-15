@@ -45,4 +45,32 @@
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule); update();
   }
+
+  // Only the visible illustration runs; the content never depends on animation.
+  const instruments = [...document.querySelectorAll<HTMLElement>('[data-motion-instrument]')];
+  const visibleInstruments = new Set<Element>();
+  const syncMotion = () => {
+    document.documentElement.classList.toggle('motion-suspended', document.hidden);
+    const allowed = !document.hidden && !reduced.matches && innerWidth > 720;
+    for (const element of instruments) element.classList.toggle('motion-running', allowed && visibleInstruments.has(element));
+  };
+  if ('IntersectionObserver' in window) {
+    const instrumentObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) { visibleInstruments.add(entry.target); entry.target.classList.add('instrument-arrived'); }
+        else visibleInstruments.delete(entry.target);
+      }
+      syncMotion();
+    }, {threshold: .15});
+    instruments.forEach(element => instrumentObserver.observe(element));
+    const onceObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add('instrument-arrived'); onceObserver.unobserve(entry.target);
+      }
+    }, {threshold: .2});
+    document.querySelectorAll('[data-motion-once]').forEach(element => onceObserver.observe(element));
+  }
+  document.addEventListener('visibilitychange', syncMotion);
+  window.addEventListener('resize', syncMotion);
+  reduced.addEventListener('change', syncMotion);
 </script>

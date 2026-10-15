@@ -1,0 +1,12 @@
+---
+interface Props { kind: string; }
+const { kind } = Astro.props;
+const captions:Record<string,string> = {research:'信号 / 聚焦 / 判断',topics:'节点 / 关联 / 脉络',stack:'工具 / 连接 / 实践',about:'观察 / 回看 / 修正'};
+---
+<figure class="column-instrument" data-motion-instrument aria-label={captions[kind]}><svg viewBox="0 0 220 180" aria-hidden="true">
+<path d="M20 145H200" fill="none" stroke="var(--obs-line)"/>
+{kind === 'research' && <><g class="diagram-trace" fill="none" stroke="var(--obs-green)"><path pathLength="1" d="M35 35 110 85 185 35M35 85h150M35 135 110 85 185 135"/></g><circle cx="110" cy="85" r="27" fill="var(--obs-bg)" stroke="var(--obs-gold)"/><circle cx="110" cy="85" r="5" fill="var(--obs-gold)"/></>}
+{kind === 'topics' && <><g class="diagram-trace" fill="none" stroke="var(--obs-green)"><path pathLength="1" d="m40 120 40-80 60 70 40-60M40 120l100-10M80 40l100 10"/></g>{[[40,120],[80,40],[140,110],[180,50]].map(([x,y],i)=><circle cx={x} cy={y} r={i===1?7:4} fill="var(--obs-bg)" stroke="var(--obs-gold)"/>)}</>}
+{kind === 'stack' && <><g class="diagram-trace" fill="none" stroke="var(--obs-green)"><path pathLength="1" d="M55 85h110M110 45v80"/></g><g fill="var(--obs-bg)" stroke="var(--obs-gold)"><rect x="35" y="65" width="40" height="40"/><rect x="90" y="25" width="40" height="40"/><rect x="145" y="65" width="40" height="40"/><rect x="90" y="105" width="40" height="40"/></g></>}
+{kind === 'about' && <><path d="M40 85h140" stroke="var(--obs-text)"/><path d="M70 85a40 40 0 0 1 80 0Z" fill="var(--obs-gold)"/><g class="diagram-trace" stroke="var(--obs-green)" fill="none"><path pathLength="1" d="M75 99h70m-60 12h50m-40 12h30"/></g><circle cx="110" cy="65" r="62" fill="none" stroke="var(--obs-line)" stroke-dasharray="2 8"/></>}
+</svg><figcaption>{captions[kind]}</figcaption></figure>

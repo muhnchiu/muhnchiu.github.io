@@ -49,8 +49,8 @@ const activityMax = Math.max(...sevenDayActivity.map((day) => day.count), 1);
 
     <section class="dashboard-section split-section"><div><div class="collection-section-heading"><div><p class="section-label">HIGH SIGNAL</p><h2>值得关注的信号</h2></div></div><div class="highlights">
       {highSignals.length ? highSignals.map((highlight, index) => <a href={`/radar/${highlight.radar}/${formatRadarDate(highlight.date)}`} class="highlight"><span>{String(index + 1).padStart(2, '0')}</span><em class={`signal-${highlight.action}`}>{actionLabels[highlight.action]}</em><small>{highlight.radar.toUpperCase()} / {highlight.type.toUpperCase()}</small><strong>{highlight.title}</strong><i>→</i></a>) : <p class="empty">尚无已发布的高信号。</p>}
-    </div></div><div><div class="collection-section-heading"><div><p class="section-label">7 DAY ACTIVITY</p><h2>近七日信号</h2></div></div><div class="activity">
-      {sevenDayActivity.length ? sevenDayActivity.map((day) => <div class="activity-day"><span class="bar" style={`height: ${Math.max((day.count / activityMax) * 100, day.count ? 10 : 2)}%`}></span><b>{day.count}</b><small>{formatRadarDate(day.date).slice(5).replace('-', '.')}</small></div>) : <p class="empty">尚无日报数据。</p>}
+    </div></div><div><div class="collection-section-heading"><div><p class="section-label">7 DAY ACTIVITY</p><h2>近七日信号</h2></div></div><div class="activity" data-motion-once>
+      {sevenDayActivity.length ? sevenDayActivity.map((day, index) => <div class="activity-day" style={`--bar-delay: ${index * 55}ms`}><span class="bar" style={`height: ${Math.max((day.count / activityMax) * 100, day.count ? 10 : 2)}%`}></span><b>{day.count}</b><small>{formatRadarDate(day.date).slice(5).replace('-', '.')}</small></div>) : <p class="empty">尚无日报数据。</p>}
     </div></div></section>
 
     <section class="dashboard-section split-section reports-status"><div><div class="collection-section-heading"><div><p class="section-label">RECENT REPORTS</p><h2>最新日报</h2></div></div><div class="reports">

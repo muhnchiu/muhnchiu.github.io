@@ -1,0 +1,48 @@
+/* Ink, ruled lines and measured signals; navigation remains a normal document load. */
+.radar-instrument { width:200px; margin:0; }.radar-instrument svg { display:block; width:100%; height:auto; }.radar-instrument figcaption { text-align:center; color:var(--obs-muted); font:.68rem/1.6 var(--font-sans); letter-spacing:.06em; }
+.column-cover.has-instrument { position:relative; padding-right:230px; }.column-cover > .radar-instrument { position:absolute; right:0; top:0; }
+.radar-sweep { transform-origin:110px 85px; }.radar-echo { opacity:.65; }
+@keyframes instrument-sweep { to { transform:rotate(360deg); } }
+@keyframes instrument-echo { 0%,8% { opacity:1; } 25%,92% { opacity:.25; } 100% { opacity:1; } }
+@keyframes instrument-ink { from { opacity:.2; } to { opacity:1; } }
+@keyframes instrument-rule { from { stroke-dashoffset:440; } to { stroke-dashoffset:0; } }
+@keyframes instrument-bar { from { transform:scaleY(0); } to { transform:scaleY(1); } }
+@keyframes paper-enter { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+@keyframes paper-leave { to { opacity:0; } }
+@media(prefers-reduced-motion:no-preference) and (min-width:721px) {
+ .radar-sweep { animation:instrument-sweep 12s linear infinite; animation-play-state:paused; }
+ .radar-echo { animation:instrument-echo 12s linear infinite; animation-play-state:paused; }.echo-two { animation-delay:3s; }.echo-three { animation-delay:6s; }.echo-four { animation-delay:9s; }
+ [data-motion-instrument].motion-running :is(.radar-sweep,.radar-echo,.scan-line,.signal-point) { animation-play-state:running; }
+ [data-motion-instrument]:not(.motion-running) :is(.scan-line,.signal-point) { animation-play-state:paused; }
+ .instrument-arrived .horizon-sun { animation:instrument-ink 900ms ease-out both; }
+ .instrument-arrived .horizon-axis { stroke-dasharray:440; animation:instrument-rule 900ms ease-out both; }
+ .activity.instrument-arrived .bar { transform-origin:bottom; animation:instrument-bar 600ms cubic-bezier(.2,.7,.3,1) both; animation-delay:var(--bar-delay,0ms); }
+}
+/* CSS document transitions progressively enhance same-origin links, without a router. */
+@view-transition { navigation:auto; }
+@media(prefers-reduced-motion:no-preference) {
+ .site-header { view-transition-name:site-navigation; }
+ .section-masthead { view-transition-name:section-masthead; }
+ main { view-transition-name:page-content; }
+ ::view-transition-old(root),::view-transition-new(root),::view-transition-old(site-navigation),::view-transition-new(site-navigation),::view-transition-old(section-masthead),::view-transition-new(section-masthead) { animation:none; }
+ ::view-transition-group(site-navigation),::view-transition-group(section-masthead) { animation-duration:200ms; }
+ ::view-transition-old(page-content) { animation:paper-leave 120ms ease-out both; }
+ ::view-transition-new(page-content) { animation:paper-enter 220ms ease-out both; }
+ .site-header .nav-link { position:relative; }
+ .site-header .nav-link[aria-current='page']::after { content:''; position:absolute; left:25px; right:0; bottom:-8px; height:1px; background:var(--obs-gold); view-transition-name:nav-selection; }
+ ::view-transition-group(nav-selection) { animation-duration:220ms; }
+}
+/* One ongoing illustration per view: the LIVE label stays still. */
+html body .logo-dot { animation:none; }
+@media(max-width:720px) { .column-cover.has-instrument { padding-right:0; }.column-cover > .radar-instrument { display:none; } }
+@media(prefers-reduced-motion:reduce) { @view-transition { navigation:none; } ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*) { animation:none!important; }.radar-sweep,.radar-echo { animation:none; } }
+.column-instrument { width:200px; margin:0; }.column-instrument svg { display:block; width:100%; height:auto; }.column-instrument figcaption { text-align:center; color:var(--obs-muted); font:.68rem/1.6 var(--font-sans); letter-spacing:.06em; }
+.column-cover > .column-instrument { position:absolute; right:0; top:0; }
+@media(prefers-reduced-motion:no-preference) and (min-width:721px) { .instrument-arrived .diagram-trace path { stroke-dasharray:1; animation:instrument-rule-unit 950ms ease-out both; }.instrument-arrived .diagram-trace { animation:instrument-ink 700ms ease-out both; }[data-motion-instrument]:not(.motion-running) :is(.horizon-axis,.horizon-sun,.diagram-trace,.diagram-trace path) { animation-play-state:paused; } }
+@keyframes instrument-rule-unit { from { stroke-dashoffset:1; } to { stroke-dashoffset:0; } }
+html.motion-suspended :is(.radar-sweep,.radar-echo,.scan-line,.signal-point,.horizon-axis,.horizon-sun,.diagram-trace,.diagram-trace path,.activity .bar) { animation-play-state:paused!important; }
+@media(max-width:720px) { .column-cover > .column-instrument { display:none; } }
+html body .column-cover.has-instrument { padding-right:230px; }
+@media(max-width:720px) { html body .column-cover.has-instrument { padding-right:0; } }
+/* Transition snapshots never intercept the next navigation or a scroll gesture. */
+::view-transition { pointer-events:none; }

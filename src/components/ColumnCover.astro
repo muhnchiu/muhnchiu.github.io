@@ -1,8 +1,12 @@
 ---
+import ColumnInstrument from './ColumnInstrument.astro';
+import RadarInstrument from './RadarInstrument.astro';
 interface Props { title: string; eyebrow: string; description: string; }
 const { title, eyebrow, description } = Astro.props;
+const instruments:Record<string,string> = {'雷达':'radar','洞见':'research','脉络':'topics','方略':'stack','自省':'about'};
+const instrument = instruments[title];
 ---
-<header class="column-cover"><p class="column-kicker">{eyebrow}</p><h1>{title}</h1><p class="column-description">{description}</p></header>
+<header class:list={["column-cover", {"has-instrument": Boolean(instrument)}]}><p class="column-kicker">{eyebrow}</p><h1>{title}</h1><p class="column-description">{description}</p>{instrument === 'radar' ? <RadarInstrument /> : instrument && <ColumnInstrument kind={instrument} />}</header>
 <style>
 .column-cover { height:224px; padding:0 0 32px; border-bottom:1px solid var(--obs-line); background:transparent; }
 .column-kicker { color:var(--obs-gold); font:.75rem/1.6 var(--font-sans); letter-spacing:.035em; }
