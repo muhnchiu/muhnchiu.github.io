@@ -231,8 +231,8 @@ export function publish({radar, date, siteRoot = SITE(), archiveRoot, commit = t
   if (commit) {
     git(siteRoot, 'add', '--', target);
     try {
-      git(siteRoot, 'commit', '--only', '--', target, '-m', `content: publish ${radar} ${date} (V2 personal)`);
-      commitSha = git(siteRoot, 'log', '-1', '--format=%H', '--', target) || null;
+      git(siteRoot, 'commit', '-m', `content: publish ${radar} ${date} (V2 personal)`, '--', target);
+      commitSha = git(siteRoot, 'log', '-1', '--format=%H') || null;
     } catch (e) { commitSha = null; remoteStatus = 'COMMIT_FAILED: ' + String(e.message || e).slice(0, 120); }
   }
   if (push) { try { git(siteRoot, 'push'); remoteStatus = 'PUSHED'; } catch (e) { remoteStatus = 'PUSH_FAILED: ' + String(e.message || e).slice(0, 120); } }
